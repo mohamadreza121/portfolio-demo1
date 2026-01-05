@@ -67,6 +67,7 @@ export default function ScrollDeck({
   const boundaryCooldownUntilRef = useRef(0);
   const touchStartYRef = useRef(0);
   const touchTriggeredRef = useRef(false);
+  const touchIgnoreRef = useRef(false);
 
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -693,10 +694,19 @@ export default function ScrollDeck({
     const THRESHOLD_PX = 26;
     const COOLDOWN_MS = 80;
 
+    const IGNORE_SELECTOR =
+      ".carousel, .carousel__viewport, .lightbox, .lightbox-inner, .rpv-core__viewer, .rpv-default-layout__container," +
+      " a, button, input, textarea, select, label";
+
     const onTouchStart = (e) => {
       if (isQuoteOpen) return;
       if (isTransitioningRef.current) return;
       if (!e.touches || e.touches.length !== 1) return;
+
+      // Decide whether this gesture belongs to an interactive child (carousel / pdf / form / link)
+      const target = e.target;
+      touchIgnoreRef.current = !!target?.closest?.(IGNORE_SELECTOR);
+      if (touchIgnoreRef.current) return;
 
       touchTriggeredRef.current = false;
       touchStartYRef.current = e.touches[0].clientY;
@@ -704,17 +714,13 @@ export default function ScrollDeck({
 
     const onTouchMove = (e) => {
       if (isQuoteOpen) return;
+      if (touchIgnoreRef.current) return;
 
       const now = performance.now();
-      if (now < boundaryCooldownUntilRef.current) {
-        e.preventDefault();
-        return;
-      }
 
-      if (isTransitioningRef.current) {
-        e.preventDefault();
-        return;
-      }
+      // IMPORTANT: do NOT preventDefault here (keeps momentum smooth)
+      if (now < boundaryCooldownUntilRef.current) return;
+      if (isTransitioningRef.current) return;
 
       if (!e.touches || e.touches.length !== 1) return;
       if (touchTriggeredRef.current) return;
@@ -738,12 +744,14 @@ export default function ScrollDeck({
       if (deltaY > 0 && atBottom) {
         if (idx >= maxIdx) {
           boundaryCooldownUntilRef.current = now + COOLDOWN_MS;
-          e.preventDefault();
+          // Allow native overscroll/bounce on last panel
           return;
         }
 
         touchTriggeredRef.current = true;
         boundaryCooldownUntilRef.current = now + COOLDOWN_MS;
+
+        // We are hijacking the gesture to transition panels
         e.preventDefault();
 
         goToIndex(idx + 1, {
@@ -757,12 +765,13 @@ export default function ScrollDeck({
       if (deltaY < 0 && atTop) {
         if (idx <= 0) {
           boundaryCooldownUntilRef.current = now + COOLDOWN_MS;
-          e.preventDefault();
+          // Allow native overscroll/bounce on first panel
           return;
         }
 
         touchTriggeredRef.current = true;
         boundaryCooldownUntilRef.current = now + COOLDOWN_MS;
+
         e.preventDefault();
 
         goToIndex(idx - 1, {
@@ -775,6 +784,7 @@ export default function ScrollDeck({
 
     const onTouchEnd = () => {
       touchTriggeredRef.current = false;
+      touchIgnoreRef.current = false;
     };
 
     container.addEventListener("touchstart", onTouchStart, { passive: true });

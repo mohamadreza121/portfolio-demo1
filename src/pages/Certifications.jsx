@@ -1,6 +1,14 @@
+// src/pages/Certifications.jsx
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
-import { useState, useEffect, useMemo, lazy, Suspense } from "react";
+import {
+  useState,
+  useEffect,
+  useMemo,
+  lazy,
+  Suspense,
+  useCallback,
+} from "react";
 
 import DecryptedText from "../components/DecryptedText";
 import LightboxPortal from "../components/LightboxPortal";
@@ -59,6 +67,7 @@ const certs = [
 export default function Certifications() {
   const [lightboxPdf, setLightboxPdf] = useState(null);
 
+  // Lock scroll while the lightbox is open (restores prior values on close)
   useEffect(() => {
     if (!lightboxPdf) return;
 
@@ -74,6 +83,18 @@ export default function Certifications() {
     };
   }, [lightboxPdf]);
 
+  // ✅ Optional improvement: force a small layout refresh after closing
+  const closeLightbox = useCallback(() => {
+    setLightboxPdf(null);
+
+    // iOS/Safari can keep scroll containers in a stale state after heavy overlays.
+    // This nudge helps ScrollDeck + Carousel re-measure and restores smoothness.
+    requestAnimationFrame(() => {
+      window.dispatchEvent(new Event("resize"));
+      window.dispatchEvent(new Event("scroll"));
+    });
+  }, []);
+
   /* Convert certs to carousel items */
   const carouselItems = useMemo(
     () =>
@@ -86,7 +107,7 @@ export default function Certifications() {
         href: undefined,
         onClick: () => setLightboxPdf(cert.pdf),
       })),
-    [setLightboxPdf]
+    []
   );
 
   return (
@@ -143,11 +164,11 @@ export default function Certifications() {
       </div>
 
       {/* ===============================
-          LIGHTBOX (UNCHANGED)
+          LIGHTBOX
       =============================== */}
       {lightboxPdf && (
         <LightboxPortal>
-          <div className="lightbox" onClick={() => setLightboxPdf(null)}>
+          <div className="lightbox" onClick={closeLightbox}>
             <div
               className="lightbox-inner"
               onClick={(e) => e.stopPropagation()}

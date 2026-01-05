@@ -21,10 +21,15 @@ export default function RackInteractive({
   className = "",
 }) {
   return (
-    <section className={`rack ${className}`} aria-label={title || "Rack diagram"}>
+    <section
+      className={`rack ${className}`}
+      aria-label={title || "Rack diagram"}
+    >
       <div className="rack__header">
         <h2 className="rack__title">{title}</h2>
-        <p className="rack__hint">Click a highlighted device to open its card.</p>
+        <p className="rack__hint">
+          Click a highlighted device to open its card.
+        </p>
       </div>
 
       <div className="rack__frame">
