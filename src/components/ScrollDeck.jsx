@@ -1,5 +1,11 @@
 // src/components/ScrollDeck.jsx
-import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useCallback,
+} from "react";
 import gsap from "gsap";
 import "./ScrollDeck.css";
 
@@ -93,10 +99,12 @@ export default function ScrollDeck({
     else if (mqCoarse?.addListener) mqCoarse.addListener(apply);
 
     return () => {
-      if (mqReduce?.removeEventListener) mqReduce.removeEventListener("change", apply);
+      if (mqReduce?.removeEventListener)
+        mqReduce.removeEventListener("change", apply);
       else if (mqReduce?.removeListener) mqReduce.removeListener(apply);
 
-      if (mqCoarse?.removeEventListener) mqCoarse.removeEventListener("change", apply);
+      if (mqCoarse?.removeEventListener)
+        mqCoarse.removeEventListener("change", apply);
       else if (mqCoarse?.removeListener) mqCoarse.removeListener(apply);
     };
   }, []);
@@ -161,7 +169,8 @@ export default function ScrollDeck({
       const first = getFirstFocusable(panelEl);
       if (first && focusSafely(first)) return;
 
-      if (!panelEl.hasAttribute("tabindex")) panelEl.setAttribute("tabindex", "-1");
+      if (!panelEl.hasAttribute("tabindex"))
+        panelEl.setAttribute("tabindex", "-1");
       focusSafely(panelEl);
     },
     [focusSafely, getFirstFocusable]
@@ -268,20 +277,23 @@ export default function ScrollDeck({
     [panels.length, setActive, setHashQuietly]
   );
 
-  const scrollPanelTo = useCallback((idx, position = "top", behavior = "auto") => {
-    const el = panelRefs.current[idx];
-    if (!el) return;
+  const scrollPanelTo = useCallback(
+    (idx, position = "top", behavior = "auto") => {
+      const el = panelRefs.current[idx];
+      if (!el) return;
 
-    const top = 0;
-    const bottom = Math.max(0, el.scrollHeight - el.clientHeight);
-    const target = position === "bottom" ? bottom : top;
+      const top = 0;
+      const bottom = Math.max(0, el.scrollHeight - el.clientHeight);
+      const target = position === "bottom" ? bottom : top;
 
-    try {
-      el.scrollTo({ top: target, behavior });
-    } catch {
-      el.scrollTop = target;
-    }
-  }, []);
+      try {
+        el.scrollTo({ top: target, behavior });
+      } catch {
+        el.scrollTop = target;
+      }
+    },
+    []
+  );
 
   /* =====================================================
      Initial state (post-curtain reveal)
@@ -302,7 +314,8 @@ export default function ScrollDeck({
         el.style.zIndex = "20";
       });
 
-      if (typeof queueMicrotask === "function") queueMicrotask(() => applyActive(0));
+      if (typeof queueMicrotask === "function")
+        queueMicrotask(() => applyActive(0));
       else Promise.resolve().then(() => applyActive(0));
 
       return;
@@ -346,8 +359,17 @@ export default function ScrollDeck({
 
     const prevHtml = document.documentElement.style.overflow;
     const prevBody = document.body.style.overflow;
+
     document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
+
+    // ✅ Fix: kill any preserved window scroll when returning from a Project route.
+    // This does NOT force Home; ScrollDeck handles section selection internally.
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    });
 
     return () => {
       document.documentElement.style.overflow = prevHtml;
@@ -433,7 +455,8 @@ export default function ScrollDeck({
 
         isTransitioningRef.current = false;
 
-        if (typeof queueMicrotask === "function") queueMicrotask(() => focusIntoPanel(target));
+        if (typeof queueMicrotask === "function")
+          queueMicrotask(() => focusIntoPanel(target));
         else Promise.resolve().then(() => focusIntoPanel(target));
 
         return;
@@ -785,7 +808,9 @@ export default function ScrollDeck({
     publishDeckState(activeIndex);
 
     const id = SECTION_ORDER[activeIndex]?.id || "home";
-    window.dispatchEvent(new CustomEvent("deck:active", { detail: { index: activeIndex, id } }));
+    window.dispatchEvent(
+      new CustomEvent("deck:active", { detail: { index: activeIndex, id } })
+    );
 
     if (!IS_TEST) {
       requestAnimationFrame(() => {
