@@ -577,6 +577,9 @@ a.btn-pill {
   display: grid;
   place-items: center;
 
+  overscroll-behavior: contain;
+  touch-action: none;
+
   z-index: 3000; /* ABOVE CURTAINS + NAV + CURSOR */
 }
 
@@ -590,6 +593,7 @@ a.btn-pill {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  touch-action: pan-y;
 
   background: var(--card-bg);
   border: 1px solid var(--accent-border);

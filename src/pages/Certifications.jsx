@@ -24,15 +24,35 @@ import cert10 from "../assets/cert10.png";
 
 /* Certificates */
 const certs = [
-  { title: "Cisco Certified Specialist – Enterprise Core", thumb: cert1, pdf: "/assets/cert1.pdf" },
-  { title: "CCNA – Routing & Switching", thumb: cert2, pdf: "/assets/cert2.pdf" },
+  {
+    title: "Cisco Certified Specialist – Enterprise Core",
+    thumb: cert1,
+    pdf: "/assets/cert1.pdf",
+  },
+  {
+    title: "CCNA – Routing & Switching",
+    thumb: cert2,
+    pdf: "/assets/cert2.pdf",
+  },
   { title: "Computer Hardware Basics", thumb: cert3, pdf: "/assets/cert3.pdf" },
   { title: "Endpoint Security", thumb: cert4, pdf: "/assets/cert4.pdf" },
-  { title: "Introduction to Cybersecurity", thumb: cert5, pdf: "/assets/cert5.pdf" },
+  {
+    title: "Introduction to Cybersecurity",
+    thumb: cert5,
+    pdf: "/assets/cert5.pdf",
+  },
   { title: "Introduction to Java", thumb: cert6, pdf: "/assets/cert6.pdf" },
-  { title: "Network Support & Security", thumb: cert7, pdf: "/assets/cert7.pdf" },
+  {
+    title: "Network Support & Security",
+    thumb: cert7,
+    pdf: "/assets/cert7.pdf",
+  },
   { title: "Networking Basics", thumb: cert8, pdf: "/assets/cert8.pdf" },
-  { title: "Networking Devices and Initial Configuration", thumb: cert9, pdf: "/assets/cert9.pdf" },
+  {
+    title: "Networking Devices and Initial Configuration",
+    thumb: cert9,
+    pdf: "/assets/cert9.pdf",
+  },
   { title: "Python Essentials 1", thumb: cert10, pdf: "/assets/cert10.pdf" },
 ];
 
@@ -40,8 +60,18 @@ export default function Certifications() {
   const [lightboxPdf, setLightboxPdf] = useState(null);
 
   useEffect(() => {
-    document.body.style.overflow = lightboxPdf ? "hidden" : "";
-    return () => (document.body.style.overflow = "");
+    if (!lightboxPdf) return;
+
+    const prevHtml = document.documentElement.style.overflow;
+    const prevBody = document.body.style.overflow;
+
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.documentElement.style.overflow = prevHtml;
+      document.body.style.overflow = prevBody;
+    };
   }, [lightboxPdf]);
 
   /* Convert certs to carousel items */
@@ -59,8 +89,6 @@ export default function Certifications() {
     [setLightboxPdf]
   );
 
-
-
   return (
     <div id="certifications" className="certifications-page">
       <span className="spy-marker" />
@@ -70,48 +98,48 @@ export default function Certifications() {
             CENTERED HERO (MATCH PROJECTS)
         =============================== */}
         <section className="certifications-hero-center">
-            <h1 className="certifications-title">
-              <DecryptedText
-                text="Professional Certifications"
-                animateOn="view"
-                sequential
-                speed={80}
-                revealDirection="center"
-                encryptedClassName="encrypted"
-                className="revealed"
-              />
-            </h1>
+          <h1 className="certifications-title">
+            <DecryptedText
+              text="Professional Certifications"
+              animateOn="view"
+              sequential
+              speed={80}
+              revealDirection="center"
+              encryptedClassName="encrypted"
+              className="revealed"
+            />
+          </h1>
 
-            <p className="certifications-subtitle">
-              Industry-recognized credentials validating enterprise networking,
-              security, and systems expertise.
-            </p>
+          <p className="certifications-subtitle">
+            Industry-recognized credentials validating enterprise networking,
+            security, and systems expertise.
+          </p>
 
-            <a
-              href="https://www.credly.com/users/mohammadreza-heidarpoor"
-              target="_blank"
-              rel="noreferrer"
-              className="btn-pill primary credly-btn cursor-target"
-            >
-              <FontAwesomeIcon icon={faLink} />
-              <span>Verify on Credly</span>
-            </a>
+          <a
+            href="https://www.credly.com/users/mohammadreza-heidarpoor"
+            target="_blank"
+            rel="noreferrer"
+            className="btn-pill primary credly-btn cursor-target"
+          >
+            <FontAwesomeIcon icon={faLink} />
+            <span>Verify on Credly</span>
+          </a>
         </section>
 
         {/* ===============================
             CERTIFICATIONS CAROUSEL
         =============================== */}
-          <section className="certifications-carousel">
-            <Carousel
-              items={carouselItems.map((item) => ({
-                ...item,
-                href: item.href,
-                onClick: item.onClick
-              }))}
-              ariaLabel="Certifications carousel"
-              className="cert-carousel-large"
-            />
-          </section>
+        <section className="certifications-carousel">
+          <Carousel
+            items={carouselItems.map((item) => ({
+              ...item,
+              href: item.href,
+              onClick: item.onClick,
+            }))}
+            ariaLabel="Certifications carousel"
+            className="cert-carousel-large"
+          />
+        </section>
       </div>
 
       {/* ===============================
@@ -120,8 +148,13 @@ export default function Certifications() {
       {lightboxPdf && (
         <LightboxPortal>
           <div className="lightbox" onClick={() => setLightboxPdf(null)}>
-            <div className="lightbox-inner" onClick={(e) => e.stopPropagation()}>
-              <Suspense fallback={<div className="lightbox-loading" aria-busy="true" />}>
+            <div
+              className="lightbox-inner"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Suspense
+                fallback={<div className="lightbox-loading" aria-busy="true" />}
+              >
                 <PdfViewerLightbox fileUrl={lightboxPdf} />
               </Suspense>
             </div>
