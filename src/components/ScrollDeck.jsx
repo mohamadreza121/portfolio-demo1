@@ -48,6 +48,8 @@ const IS_TEST =
   import.meta.env &&
   (import.meta.env.MODE === "test" || import.meta.env.VITEST);
 
+const BOUNDARY_EPS = 12; // px tolerance for rounding/overscroll across devices
+
 export default function ScrollDeck({
   setActive,
   isQuoteOpen,
@@ -634,8 +636,10 @@ export default function ScrollDeck({
       const delta = e.deltaY;
       if (Math.abs(delta) < 2) return;
 
-      const atTop = el.scrollTop <= 0;
-      const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1;
+      const atTop = el.scrollTop <= BOUNDARY_EPS;
+      const atBottom =
+        Math.ceil(el.scrollTop + el.clientHeight) >=
+        el.scrollHeight - BOUNDARY_EPS;
 
       const maxIdx = Math.min(SECTION_ORDER.length - 1, panels.length - 1);
       const COOLDOWN_MS = 80;
@@ -726,8 +730,10 @@ export default function ScrollDeck({
 
       if (Math.abs(deltaY) < THRESHOLD_PX) return;
 
-      const atTop = el.scrollTop <= 0;
-      const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1;
+      const atTop = el.scrollTop <= BOUNDARY_EPS;
+      const atBottom =
+        Math.ceil(el.scrollTop + el.clientHeight) >=
+        el.scrollHeight - BOUNDARY_EPS;
 
       if (deltaY > 0 && atBottom) {
         if (idx >= maxIdx) {
