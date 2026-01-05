@@ -1,0 +1,539 @@
+/* ======================================================
+   ABOUT — TOKENIZED CHASSIS SYSTEM (NO SCATTERED OVERRIDES)
+   - Notched corners via clip-path
+   - Screw dots via pseudo-elements
+   - Day/Night differentiation via About-specific tokens
+====================================================== */
+
+:root {
+  /* Slightly taller chassis/profile card for better balance */
+  --about-card-height: min(70svh, 450px);
+
+  /* chassis geometry */
+  --notch: 14px;
+  --chassis-radius: 10px;
+
+  /* spacing */
+  --about-gap: 96px;
+  --about-pad-x: 24px;
+
+  /* default (fallbacks if theme not set) */
+  --about-surface-stack: rgba(10, 10, 10, 0.55);
+  --about-surface-card: rgba(0, 0, 0, 0.35);
+  --about-border: rgba(255, 255, 255, 0.08);
+  --about-keyline: rgba(255, 255, 255, 0.06);
+  --about-shadow: rgba(0, 0, 0, 0.60);
+
+  /* screws */
+  --about-screw-hi: rgba(255, 255, 255, 0.20);
+  --about-screw-core: rgba(0, 0, 0, 0.70);
+  --about-screw-ring: rgba(97, 220, 163, 0.20); /* defaults to accent-ish */
+
+  /* bevel */
+  --about-bevel-top: rgba(255, 255, 255, 0.03);
+  --about-bevel-bot: rgba(0, 0, 0, 0.30);
+
+  /* internal grid strength */
+  --about-grid-opacity: 0.75;
+}
+
+/* ======================================================
+   THEME MAPPING (ONE PLACE ONLY)
+   - This is the "permanent solution"
+====================================================== */
+
+/* NIGHT */
+:root[data-theme="night"] {
+  /* stack: slightly darker / richer to separate from inner modules */
+  --about-surface-stack: linear-gradient(
+    180deg,
+    rgba(12, 14, 13, 0.72),
+    rgba(8, 9, 9, 0.82)
+  );
+
+  /* modules: slightly lighter so they read as separate plates */
+  --about-surface-card: linear-gradient(
+    180deg,
+    rgba(18, 22, 20, 0.70),
+    rgba(10, 12, 11, 0.82)
+  );
+
+  --about-border: rgba(255, 255, 255, 0.085);
+  --about-keyline: rgba(97, 220, 163, 0.14);
+  --about-shadow: rgba(0, 0, 0, 0.70);
+
+  /* screws */
+  --about-screw-hi: rgba(255, 255, 255, 0.24);
+  --about-screw-core: rgba(0, 0, 0, 0.80);
+  --about-screw-ring: rgba(97, 220, 163, 0.22);
+
+  /* bevel */
+  --about-bevel-top: rgba(255, 255, 255, 0.035);
+  --about-bevel-bot: rgba(0, 0, 0, 0.38);
+
+  --about-grid-opacity: 0.78;
+}
+
+/* DAY */
+:root[data-theme="day"] {
+  --about-surface-stack: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.84),
+    rgba(246, 246, 246, 0.92)
+  );
+
+  --about-surface-card: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.90),
+    rgba(245, 245, 245, 0.96)
+  );
+
+  --about-border: rgba(0, 0, 0, 0.12);
+  --about-keyline: rgba(0, 0, 0, 0.10);
+  --about-shadow: rgba(0, 0, 0, 0.14);
+
+  --about-screw-hi: rgba(0, 0, 0, 0.10);
+  --about-screw-core: rgba(0, 0, 0, 0.22);
+  --about-screw-ring: rgba(0, 0, 0, 0.10);
+
+  --about-bevel-top: rgba(255, 255, 255, 0.55);
+  --about-bevel-bot: rgba(0, 0, 0, 0.07);
+
+  --about-grid-opacity: 0.45;
+}
+
+/* ======================================================
+   ABOUT PAGE BASE
+====================================================== */
+
+.about-page {
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+  font-family: "JetBrains Mono", monospace;
+  color: var(--text-color);
+  margin-top: 120px;
+  padding-bottom: calc(80px + env(safe-area-inset-bottom));
+}
+
+/* Grid background */
+.about-page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: var(--about-grid-opacity);
+}
+
+/* Container */
+.about-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--about-pad-x);
+  position: relative;
+  z-index: 2;
+}
+
+/* ======================================================
+   HEADER
+====================================================== */
+
+.about-header.centered {
+  text-align: center;
+  margin-bottom: 34px;
+}
+
+.about-title-center {
+  font-size: 2.8rem;
+  color: var(--accent);
+  text-shadow: 0 0 10px var(--accent-glow);
+  margin-bottom: 10px;
+}
+
+.about-subtitle {
+  max-width: 720px;
+  margin: 0 auto;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--text-color);
+  opacity: 0.85;
+}
+
+/* ======================================================
+   MAIN ROW
+====================================================== */
+
+.about-main-row {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: var(--about-gap);
+  align-items: flex-start;
+  padding-bottom: 120px;
+}
+
+/* Left: Profile Card scaling */
+.about-left {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.about-left .pc-card-wrapper {
+  transform: scale(0.88);
+  transform-origin: top center;
+}
+
+.about-left .pc-card {
+  height: var(--about-card-height);
+}
+
+/* ======================================================
+   CHASSIS SHARED (NOTCH + SCREWS)
+====================================================== */
+
+.chassis {
+  position: relative;
+  overflow: hidden;
+
+  -webkit-clip-path: polygon(
+    var(--notch) 0%,
+    calc(100% - var(--notch)) 0%,
+    100% var(--notch),
+    100% calc(100% - var(--notch)),
+    calc(100% - var(--notch)) 100%,
+    var(--notch) 100%,
+    0% calc(100% - var(--notch)),
+    0% var(--notch)
+  );
+  clip-path: polygon(
+    var(--notch) 0%,
+    calc(100% - var(--notch)) 0%,
+    100% var(--notch),
+    100% calc(100% - var(--notch)),
+    calc(100% - var(--notch)) 100%,
+    var(--notch) 100%,
+    0% calc(100% - var(--notch)),
+    0% var(--notch)
+  );
+}
+
+/* inner bevel / plate edge */
+.chassis::after {
+  content: "";
+  position: absolute;
+  inset: 10px;
+  pointer-events: none;
+  opacity: 0.78;
+  border-radius: var(--chassis-radius);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+    inset 0 12px 30px var(--about-bevel-top),
+    inset 0 -18px 40px var(--about-bevel-bot);
+}
+
+/* screw dots (asymmetric: top-left + bottom-right) */
+.chassis::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+
+  background:
+    radial-gradient(circle at 18px 18px,
+      var(--about-screw-hi) 0 2px,
+      var(--about-screw-core) 2.2px 4px,
+      transparent 4.2px
+    ),
+    radial-gradient(circle at calc(100% - 18px) calc(100% - 18px),
+      var(--about-screw-hi) 0 2px,
+      var(--about-screw-core) 2.2px 4px,
+      transparent 4.2px
+    ),
+    radial-gradient(circle at 18px 18px,
+      transparent 0 4px,
+      var(--about-screw-ring) 4px 5px,
+      transparent 5.2px
+    ),
+    radial-gradient(circle at calc(100% - 18px) calc(100% - 18px),
+      transparent 0 4px,
+      var(--about-screw-ring) 4px 5px,
+      transparent 5.2px
+    );
+
+  opacity: 0.95;
+}
+
+/* ======================================================
+   RIGHT STACK CARD
+====================================================== */
+
+.about-stack-card {
+  background: var(--about-surface-stack);
+  border: 1px solid var(--about-border);
+
+  padding: 22px 26px 14px;
+
+  box-shadow:
+    0 18px 54px var(--about-shadow),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  height: calc(var(--about-card-height) * 0.90);
+}
+
+/* calm keyline to differentiate plate edges */
+.about-stack-card {
+  box-shadow:
+    0 18px 54px var(--about-shadow),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.03),
+    inset 0 0 0 1px var(--about-keyline);
+}
+
+/* ======================================================
+   PANELS
+====================================================== */
+
+.about-panel {
+  flex: 1;
+  overflow: visible;
+  padding-right: 4px;
+  animation: fadeUp 260ms ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ======================================================
+   TITLES
+====================================================== */
+
+.section-title {
+  font-size: 1.6rem;
+  margin-bottom: 16px;
+  color: var(--accent);
+  text-shadow: 0 0 6px var(--accent-glow);
+}
+
+/* ======================================================
+   SKILLS GRID
+====================================================== */
+
+.about-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+  margin-bottom: 4px;
+}
+
+/* module cards */
+.about-card {
+  background: var(--about-surface-card);
+  border: 1px solid var(--about-border);
+  padding: 18px 18px 16px;
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.18),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+}
+
+.about-card h3 {
+  color: var(--accent);
+  margin-bottom: 8px;
+  font-size: 1.05rem;
+}
+
+.about-card p {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--text-color);
+  opacity: 0.85;
+}
+
+/* ======================================================
+   WIDE MODULE (EXPERIENCE / EDUCATION)
+====================================================== */
+
+.about-wide-card {
+  background: var(--about-surface-card);
+  border: 1px solid var(--about-border);
+  padding: 22px;
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.18),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+}
+
+.about-wide-card p {
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: var(--text-color);
+  opacity: 0.9;
+}
+
+.about-edu-block {
+  margin-top: 12px;
+}
+
+/* ======================================================
+   PANEL NAV
+====================================================== */
+
+.about-panel-nav {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 10px;
+  padding-top: 10px;
+  flex-shrink: 0;
+
+  border-top: 1px solid var(--about-border);
+}
+
+.about-panel-nav .btn-pill {
+  min-width: 40px;
+  padding: 5px 12px;
+}
+
+/* ======================================================
+   SCROLL ALIGNMENT
+====================================================== */
+
+#about {
+  scroll-margin-top: 140px;
+}
+
+/* Scrollbar (only used on mobile where panel becomes scrollable) */
+.about-panel::-webkit-scrollbar {
+  width: 4px;
+}
+.about-panel::-webkit-scrollbar-thumb {
+  background: var(--accent-border);
+  border-radius: 4px;
+}
+
+/* ======================================================
+   RESPONSIVE
+====================================================== */
+
+@media (max-width: 960px) {
+  .about-main-row {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+
+  .about-stack-card {
+    height: auto;
+  }
+
+  .about-panel {
+    overflow-y: visible;
+  }
+
+  .about-left {
+    justify-content: center;
+  }
+
+  .about-left .pc-card-wrapper {
+    transform: scale(0.95);
+  }
+
+  .about-title-center {
+    font-size: 2.4rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .about-title-center {
+    font-size: 1.95rem;
+    margin-bottom: 6px;
+  }
+
+  .about-subtitle {
+    font-size: 0.9rem;
+    line-height: 1.45;
+  }
+
+  .about-main-row {
+    gap: 36px;
+    padding-bottom: 72px;
+  }
+
+  .about-left .pc-card-wrapper {
+    transform: scale(0.92);
+  }
+
+  .about-left .pc-card {
+    height: min(62svh, 380px);
+  }
+
+  .about-stack-card {
+    padding: 16px 18px 12px;
+  }
+
+  .about-panel {
+    overflow-y: auto;
+  }
+
+  .about-grid {
+    gap: 12px;
+  }
+
+  .about-card {
+    padding: 14px;
+  }
+
+  .about-card h3 {
+    font-size: 0.95rem;
+  }
+
+  .about-card p {
+    font-size: 0.85rem;
+    line-height: 1.45;
+  }
+
+  .about-wide-card {
+    padding: 16px;
+  }
+
+  .about-wide-card p {
+    font-size: 0.9rem;
+    line-height: 1.55;
+  }
+
+  .about-panel-nav {
+    margin-top: 8px;
+    gap: 10px;
+  }
+
+  .about-panel-nav .btn-pill {
+    padding: 4px 10px;
+    min-width: 36px;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .about-stack-card {
+    padding: 16px 18px 12px;
+  }
+}

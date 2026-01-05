@@ -1,0 +1,204 @@
+/* =====================================================
+   PROJECT CLI SHELL — Cisco-style terminal containers
+   - Compatible with day/night theme tokens (index.css)
+   - Uses existing .project-page padding from ProjectDetail.css
+===================================================== */
+
+.project-cli-page {
+  position: relative;
+  width: 100%;
+  font-family: "JetBrains Mono", monospace;
+  color: var(--text-color);
+}
+
+.project-cli-page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.7;
+}
+
+.project-cli-container {
+  position: relative;
+  z-index: 2;
+  max-width: 1320px;
+  margin: 0 auto;
+}
+
+.project-cli-hero {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.project-cli-title {
+  font-size: clamp(1.55rem, 2.6vw, 2.35rem);
+  letter-spacing: 0.6px;
+  margin: 0 0 8px;
+  color: var(--accent);
+}
+
+.project-cli-subtitle {
+  margin: 0 auto;
+  max-width: 78ch;
+  color: var(--muted);
+  line-height: 1.6;
+  font-size: 0.98rem;
+}
+
+.project-cli-badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+/* Terminal card */
+
+.cli-terminal-card {
+  background: var(--section-bg);
+  border: 1px solid var(--accent-border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0,0,0,0.55);
+}
+
+.cli-terminalbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--accent-border);
+  background: rgba(0,0,0,0.25);
+}
+
+:root[data-theme="day"] .cli-terminalbar {
+  background: rgba(255,255,255,0.25);
+}
+
+.cli-dots {
+  display: flex;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+
+.cli-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  opacity: 0.9;
+}
+
+.cli-dot.dot-red { background: #ff5f56; }
+.cli-dot.dot-yellow { background: #ffbd2e; }
+.cli-dot.dot-green { background: #27c93f; }
+
+.cli-label {
+  font-size: 0.84rem;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cli-spacer {
+  flex: 1 1 auto;
+}
+
+.cli-badge {
+  font-size: 0.78rem;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--accent-border);
+  background: rgba(97, 220, 163, 0.08);
+  color: var(--text-color);
+  letter-spacing: 0.8px;
+}
+
+.cli-body {
+  padding: 14px 14px 16px;
+}
+
+.cli-promptline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.cli-host {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.cli-prompt {
+  color: var(--muted);
+}
+
+.cli-cmd {
+  color: var(--text-color);
+}
+
+.cli-pre {
+  margin: 0;
+  padding: 12px 12px;
+  border-radius: 14px;
+  border: 1px solid var(--accent-border);
+  background: rgba(0,0,0,0.25);
+  overflow-x: auto;
+  white-space: pre;
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+:root[data-theme="day"] .cli-pre {
+  background: rgba(255,255,255,0.2);
+}
+
+.cli-pre .muted {
+  color: var(--muted);
+}
+
+.cli-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+@media (min-width: 980px) {
+  .cli-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.cli-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 18px;
+}
+
+/* Make buttons feel like CLI controls */
+.cli-actions .nav-btn {
+  background: rgba(97, 179, 220, 0.10);
+}
+
+.cli-actions .nav-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 1px var(--accent-border), 0 0 18px rgba(97,220,163,0.22);
+}
+
+@media (max-width: 520px) {
+  .project-cli-badges { gap: 8px; }
+  .cli-body { padding: 12px 12px 14px; }
+  .cli-pre { font-size: 0.88rem; }
+}

@@ -1,0 +1,63 @@
+.rack {
+  margin: 18px 0 24px;
+}
+
+.rack__header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.rack__title {
+  margin: 0;
+  font-size: 1.15rem;
+  letter-spacing: 0.2px;
+}
+
+.rack__hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.rack__frame {
+  position: relative;
+  border: 1px solid var(--accent-border);
+  border-radius: 14px;
+  background: var(--section-bg);
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+}
+
+.rack__image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.rack__hotspots {
+  position: absolute;
+  inset: 0;
+}
+
+.rack__hotspot {
+  position: absolute;
+  border: 1px solid var(--hotspot-border);
+  background: var(--hotspot-bg);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+}
+
+.rack__hotspot:hover {
+  transform: scale(1.01);
+  border-color: var(--hotspot-border-hover);
+  background: var(--hotspot-bg-hover);
+}
+
+.rack__hotspot.is-active {
+  border-color: var(--hotspot-border-active);
+  background: var(--hotspot-bg-active);
+  box-shadow: 0 0 0 2px var(--hotspot-inset) inset;
+}
