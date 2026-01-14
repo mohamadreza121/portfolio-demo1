@@ -1,0 +1,129 @@
+/* RackDeck - minimal, aligns with ProjectDetail.css + ProjectCli.css */
+
+.rackdeckx {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+@media (min-width: 920px) {
+  .rackdeckx {
+    grid-template-columns: minmax(0, 1fr) 460px;
+  }
+}
+
+.rackdeckx__rack,
+.rackdeckx__deck {
+  min-width: 0;
+}
+
+.rackdeckx__title {
+  margin: 0 0 12px;
+}
+
+.rackdeckx__figure {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--accent-border);
+  background: var(--card-bg);
+}
+
+.rackdeckx__img {
+  width: 100%;
+  display: block;
+  height: auto;
+}
+
+.rackdeckx__hotspot {
+  position: absolute;
+  border: 1px solid var(--hotspot-border);
+  background: var(--hotspot-bg);
+  box-shadow: inset 0 0 0 1px var(--hotspot-inset);
+  border-radius: 12px;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.rackdeckx__hotspot:hover {
+  transform: translateY(-1px);
+  border-color: var(--hotspot-border-hover);
+  background: var(--hotspot-bg-hover);
+  box-shadow: inset 0 0 0 1px var(--hotspot-inset),
+    0 0 0 1px var(--accent-strong-shadow),
+    0 0 22px var(--accent-strong-shadow);
+}
+
+.rackdeckx__hotspot.is-active {
+  border-color: var(--hotspot-border-active);
+  background: var(--hotspot-bg-active);
+  box-shadow: inset 0 0 0 1px var(--hotspot-inset),
+    0 0 0 1px var(--accent-strong-shadow),
+    0 0 28px var(--accent-strong-shadow);
+}
+
+.rackdeckx__hotspotLabel {
+  position: absolute;
+  left: 10px;
+  top: 8px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.85rem;
+  color: var(--text-color);
+  opacity: 0.95;
+  pointer-events: none;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.65);
+}
+
+/* =====================================================
+   RackDeck — Fill the right-side empty space (desktop)
+   Scope: ONLY inside RackDeck, so it won't affect other pages
+   ===================================================== */
+
+@media (min-width: 1100px) {
+  /* If rackdeckx is grid, these widen the deck column */
+  .rackdeckx {
+    /* You can push the right side harder if needed: 0.8fr 1.4fr */
+    grid-template-columns: 0.85fr 1.35fr;
+    align-items: start;
+  }
+
+  /* Make sure the right column can actually use its width */
+  .rackdeckx__deck {
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* This is the usual culprit: the card wrapper is capped */
+  .rackdeckx__deck .section-block,
+  .rackdeckx__deck .hardware-card,
+  .rackdeckx__deck .deck-card {
+    width: 100%;
+    max-width: none; /* remove caps */
+  }
+
+  /* Make the CLI grid and each CLI card stretch fully */
+  .rackdeckx__deck .cli-grid {
+    width: 100%;
+  }
+
+  .rackdeckx__deck .cli-terminal-card {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+@media (min-width: 1400px) {
+  .rackdeckx {
+    grid-template-columns: 0.8fr 1.45fr;
+    gap: 24px;
+  }
+}
+
+
+@media (max-width: 520px) {
+  .rackdeckx__hotspotLabel {
+    font-size: 0.78rem;
+  }
+}

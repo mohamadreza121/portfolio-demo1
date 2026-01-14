@@ -1,8 +1,7 @@
 import { useEffect, useMemo } from "react";
-import { Link } from "react-router-dom";
-import DecryptedText from "../components/DecryptedText";
 import CliTerminalCard from "../components/CliTerminalCard";
-import { project1Plan } from "../data/project1Plan";
+import { project1 } from "../data/projects/project1";
+import ProjectPager from "../components/ProjectPager";
 import "./ProjectDetail.css";
 import "./ProjectCli.css";
 
@@ -11,182 +10,143 @@ function pad(value, width) {
   return s.length >= width ? s.slice(0, width - 1) + "…" : s.padEnd(width, " ");
 }
 
-function formatConnections(connections = []) {
+function formatKV(rows = []) {
+  const header = pad("KEY", 22) + "VALUE";
+  const body = rows.map((r) => pad(r.k, 22) + (r.v || "")).join("\n");
+  return `${header}\n${"-".repeat(78)}\n${body}`;
+}
+
+function formatConnections(rows = []) {
   const header =
-    pad("FROM", 18) +
+    pad("FROM", 16) +
     pad("IF", 10) +
-    pad("TO", 18) +
+    pad("TO", 16) +
     pad("IF", 10) +
-    pad("TYPE", 16) +
+    pad("TYPE", 10) +
     "NOTES";
-  const sep = "-".repeat(86);
 
-  const lines = connections.map((c) => {
-    return (
-      pad(c.from, 18) +
-      pad(c.fromIf, 10) +
-      pad(c.to, 18) +
-      pad(c.toIf, 10) +
-      pad(c.type, 16) +
-      (c.notes || "")
-    );
-  });
+  const body = rows
+    .map(
+      (r) =>
+        pad(r.from, 16) +
+        pad(r.fromIf, 10) +
+        pad(r.to, 16) +
+        pad(r.toIf, 10) +
+        pad(r.type, 10) +
+        (r.notes || "")
+    )
+    .join("\n");
 
-  return [header, sep, ...lines].join("\n");
+  return `${header}\n${"-".repeat(92)}\n${body}`;
 }
 
-function formatDeviceSummary(devices = []) {
-  const header = pad("DEVICE", 28) + pad("ROLE", 52) + "INTERFACES";
-  const sep = "-".repeat(92);
-
-  const lines = devices.map((d) => {
-    const ifCount = Array.isArray(d.interfaces) ? d.interfaces.length : 0;
-    return pad(d.name, 28) + pad(d.role || "", 52) + String(ifCount);
-  });
-
-  return [header, sep, ...lines].join("\n");
-}
-
-function formatInterfaces(device) {
-  const ifs = device?.interfaces || [];
-  const roleLine = device?.role ? `! Role: ${device.role}\n` : "";
-  const header = pad("INTERFACE", 18) + pad("IP-ADDRESS", 22) + "NOTES";
-  const sep = "-".repeat(82);
-
-  const lines = ifs.map((i) => {
-    const ip = i.ip && i.ip !== "—" ? i.ip : "unassigned";
-    return pad(i.if, 18) + pad(ip, 22) + (i.notes || "");
-  });
-
-  return roleLine + [header, sep, ...lines].join("\n");
-}
-
-function formatVerification(verification = []) {
-  const lines = verification.map((v, idx) => {
-    const title = v?.title ? `${idx + 1}. ${v.title}` : `${idx + 1}. Check`;
-    const bullets = (v?.checks || []).map((c) => `   - ${c}`);
-    return [title, ...bullets].join("\n");
-  });
-
-  return lines.join("\n\n");
+function formatChecklist(rows = []) {
+  const header = pad("CHECK", 24) + pad("COMMAND", 30) + "EXPECTED";
+  const body = rows
+    .map((r) => pad(r.check, 24) + pad(r.command, 30) + (r.expected || ""))
+    .join("\n");
+  return `${header}\n${"-".repeat(92)}\n${body}`;
 }
 
 export default function Project1() {
-  useEffect(() => {
-    requestAnimationFrame(() => {
-      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-    });
+  useEffect(() => window.scrollTo({ top: 0, behavior: "auto" }), []);
+
+  const kvText = useMemo(() => formatKV(project1.topologyAtAGlance || []), []);
+  const connText = useMemo(
+    () => formatConnections(project1.connections || []),
+    []
+  );
+  const checklistText = useMemo(
+    () => formatChecklist(project1.validationChecklist || []),
+    []
+  );
+
+  const outcomesText = useMemo(() => {
+    const header = "OUTCOMES";
+    const body = (project1.keyOutcomes || [])
+      .map((x, i) => `${String(i + 1).padStart(2, "0")}. ${x}`)
+      .join("\n");
+    return `${header}\n${"-".repeat(78)}\n${body}`;
   }, []);
 
-  const { summary, connections, devices, verification } = project1Plan;
-
-  const connectionRows = useMemo(() => connections || [], [connections]);
-  const deviceRows = useMemo(() => devices || [], [devices]);
-  const verificationRows = useMemo(() => verification || [], [verification]);
-
   return (
-    <div className="project-page project-cli-page" id="project-1">
-      <span className="spy-marker" />
+    <main className="project-page">
+      <div className="project-container">
+        <section className="section-block">
+          <div className="hero-grid">
+            <div className="hero-copy">
+              <h1 className="project-title">{project1.title}</h1>
+              <p className="muted">{project1.subtitle}</p>
 
-      <div className="project-cli-container">
-        <header className="project-cli-hero">
-          <h1 className="project-cli-title">
-            <span className="decrypt-stable">
-              <DecryptedText
-                text={summary.title}
-                animateOn="view"
-                sequential
-                speed={55}
-                revealDirection="start"
+              <div className="pill-row">
+                {(project1.badges || []).map((b) => (
+                  <span className="pill" key={b}>
+                    {b}
+                  </span>
+                ))}
+              </div>
+
+              <div className="cta-row">
+                <a className="btn btn-primary cursor-target" href="#linkmap">
+                  Link Map
+                </a>
+                <a className="btn btn-ghost cursor-target" href="#runbook">
+                  Validation
+                </a>
+              </div>
+            </div>
+
+            <div className="hero-media">
+              <img
+                src={project1.media?.heroImage}
+                alt="Full network topology"
+                className="hero-img"
               />
-            </span>
-          </h1>
-
-          <p className="project-cli-subtitle">{summary.subtitle}</p>
-
-          <div className="project-cli-badges" aria-label="Highlights">
-            {summary.highlights.map((h) => (
-              <span key={h} className="badge">
-                {h}
-              </span>
-            ))}
+            </div>
           </div>
-        </header>
+        </section>
 
-        <div className="cli-grid">
+        <section className="section-block">
+          <h2>Topology at a Glance (CLI)</h2>
           <CliTerminalCard
-            id="p1-01"
-            label="neteng@lab:~/projects$ open p1-01"
-            host="R1-CORE"
-            cmd="show running-config | section topology"
-          >
-            <pre className="cli-pre">{`${summary.title}\n\n${summary.subtitle}\n\nHighlights:\n- ${summary.highlights.join(
-              "\n- "
-            )}`}</pre>
-          </CliTerminalCard>
+            title="Design Summary"
+            subtitle="High-level inventory and roles"
+            content={kvText}
+          />
+        </section>
 
+        <section id="linkmap" className="section-block">
+          <h2>Physical / Logical Link Map (CLI)</h2>
           <CliTerminalCard
-            id="p1-02"
-            label="neteng@lab:~/projects$ open p1-02"
-            host="SW1-HQ"
-            cmd="show cdp neighbors detail"
-          >
-            <pre className="cli-pre">{formatConnections(connectionRows)}</pre>
-          </CliTerminalCard>
+            title="Connections"
+            subtitle="Documentation-ready interconnect list"
+            content={connText}
+          />
+        </section>
 
+        <section className="section-block">
+          <h2>Key Outcomes (CLI)</h2>
           <CliTerminalCard
-            id="p1-03"
-            label="neteng@lab:~/projects$ open p1-03"
-            host="NMS"
-            cmd="show inventory | include ROLE"
-          >
-            <pre className="cli-pre">{formatDeviceSummary(deviceRows)}</pre>
-          </CliTerminalCard>
+            title="Outcomes"
+            subtitle="What the lab proves in a portfolio review"
+            content={outcomesText}
+          />
+        </section>
 
+        <section id="runbook" className="section-block">
+          <h2>Representative Validation Checklist (CLI)</h2>
           <CliTerminalCard
-            id="p1-04"
-            label="neteng@lab:~/projects$ open p1-04"
-            host="NOC"
-            cmd="run validation --enterprise"
-          >
-            <pre className="cli-pre">{formatVerification(verificationRows)}</pre>
-          </CliTerminalCard>
-        </div>
+            title="Runbook"
+            subtitle="Commands + expected outcomes"
+            content={checklistText}
+          />
+        </section>
 
-        {/* Device interface shells */}
-        <div className="cli-grid" style={{ marginTop: 14 }}>
-          {deviceRows.map((d, idx) => {
-            const id = `p1-${String(idx + 5).padStart(2, "0")}`;
-            const label = `neteng@lab:~/projects$ open ${id}`;
-            const host = (d.name || "DEVICE")
-              .toUpperCase()
-              .replace(/\s+/g, "-")
-              .replace(/[()]/g, "");
-            const cmd = "show ip interface brief";
-
-            return (
-              <CliTerminalCard
-                key={id}
-                id={id}
-                label={label}
-                host={host}
-                cmd={cmd}
-              >
-                <pre className="cli-pre">{formatInterfaces(d)}</pre>
-              </CliTerminalCard>
-            );
-          })}
-        </div>
-
-        <div className="cli-actions" aria-label="Project navigation">
-          <Link to="/" className="nav-btn cursor-target">
-            Back to Home
-          </Link>
-          <Link to="/projects/2" className="nav-btn cursor-target">
-            Next Project →
-          </Link>
-        </div>
+        <ProjectPager
+          prev={null}
+          next={{ href: "/projects/2", label: "Project 2" }}
+        />
       </div>
-    </div>
+    </main>
   );
 }

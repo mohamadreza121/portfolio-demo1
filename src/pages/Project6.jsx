@@ -1,141 +1,217 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-import DecryptedText from "../components/DecryptedText";
 import CarouselProject from "../components/CarouselProject";
-import ProjectLightbox from "../components/ProjectLightbox";
-import CliTerminalCard from "../components/CliTerminalCard";
-import { project6Evidence } from "../data/project6Evidence";
+import { project6 } from "../data/projects/project6";
+import ProjectPager from "../components/ProjectPager";
 import "./ProjectDetail.css";
 import "./ProjectCli.css";
 
-function pad(value, width) {
-  const s = String(value ?? "");
-  return s.length >= width ? s.slice(0, width - 1) + "…" : s.padEnd(width, " ");
-}
-
-function formatChecklist(checklist = []) {
-  const lines = checklist.map((section) => {
-    const title = section?.title ? section.title.toUpperCase() : "SECTION";
-    const items = (section?.items || []).map((i) => `- ${i}`);
-    return [`[${title}]`, ...items].join("\n");
-  });
-
-  return lines.join("\n\n");
-}
-
-function formatEvidenceIndex(items = []) {
-  const header = pad("ID", 14) + pad("TYPE", 10) + "TITLE";
-  const sep = "-".repeat(72);
-  const lines = items.map((i) => {
-    return pad(i.id, 14) + pad(i.type, 10) + (i.title || "");
-  });
-  return [header, sep, ...lines].join("\n");
-}
-
-export default function Project6() {
-  const [lightboxItem, setLightboxItem] = useState(null);
-
+function Lightbox({ item, onClose }) {
   useEffect(() => {
-    requestAnimationFrame(() => {
-      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-    });
-  }, []);
+    if (!item) return;
 
-  useEffect(() => {
-    document.body.style.overflow = lightboxItem ? "hidden" : "";
-    return () => (document.body.style.overflow = "");
-  }, [lightboxItem]);
+    const onKeyDown = (e) => e.key === "Escape" && onClose?.();
+    const prevOverflow = document.body.style.overflow;
 
-  const checklistText = useMemo(
-    () => formatChecklist(project6Evidence.checklist),
-    []
-  );
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKeyDown);
 
-  const evidenceIndex = useMemo(
-    () => formatEvidenceIndex(project6Evidence.carousel || []),
-    []
-  );
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [item, onClose]);
+
+  if (!item) return null;
 
   return (
-    <div className="project-page project-cli-page" id="project-6">
-      <span className="spy-marker" />
+    <div
+      className="lightbox-project"
+      role="dialog"
+      aria-modal="true"
+      aria-label={item.title || "Media viewer"}
+      onMouseDown={(e) => {
+        if (e.target === e.currentTarget) onClose?.();
+      }}
+    >
+      <button
+        type="button"
+        className="project-lightbox-close cursor-target"
+        onClick={onClose}
+        aria-label="Close"
+        title="Close"
+      >
+        ×
+      </button>
 
-      <div className="project-cli-container">
-        <header className="project-cli-hero">
-          <h1 className="project-cli-title">
-            <span className="decrypt-stable">
-              <DecryptedText
-                text={project6Evidence.title}
-                animateOn="view"
-                sequential
-                speed={55}
-                revealDirection="start"
-              />
-            </span>
-          </h1>
+      <div
+        className="lightbox-project-inner"
+        onMouseDown={(e) => e.stopPropagation()}
+      >
+        <img
+          src={item.fullSrc || item.mediaSrc}
+          alt={item.title || "Media"}
+          style={{ width: "100%", height: "auto", borderRadius: 14 }}
+        />
 
-          <p className="project-cli-subtitle">{project6Evidence.subtitle}</p>
-        </header>
-
-        <div className="cli-grid">
-          <CliTerminalCard
-            id="p6-01"
-            label="neteng@lab:~/projects$ open p6-01"
-            host="NOC"
-            cmd="run validation --all --verbose"
-          >
-            <pre className="cli-pre">{checklistText}</pre>
-          </CliTerminalCard>
-
-          <CliTerminalCard
-            id="p6-02"
-            label="neteng@lab:~/projects$ open p6-02"
-            host="EVIDENCE"
-            cmd="ls -la ./screenshots"
-          >
-            <pre className="cli-pre">{evidenceIndex}</pre>
-          </CliTerminalCard>
-
-          <CliTerminalCard
-            id="p6-03"
-            label="neteng@lab:~/projects$ open p6-03"
-            host="ANALYST"
-            cmd="open evidence-carousel --mode review"
-          >
-            <div>
-              <CarouselProject
-                items={project6Evidence.carousel}
-                onOpen={setLightboxItem}
-              />
-            </div>
-          </CliTerminalCard>
-
-          <CliTerminalCard
-            id="p6-04"
-            label="neteng@lab:~/projects$ open p6-04"
-            host="OPS"
-            cmd="notes --what-this-proves"
-          >
-            <pre className="cli-pre">{`This page captures operational proof points for the full enterprise topology:\n\n- Control-plane stability (OSPF/BGP)\n- Service reachability (DHCP/DNS)\n- Perimeter enforcement (policy + NAT)\n- Artifacts to support troubleshooting and audit narratives\n\nUse the carousel to open evidence screenshots at full size.`}</pre>
-          </CliTerminalCard>
-        </div>
-
-        <div className="cli-actions" aria-label="Project navigation">
-          <Link to="/projects/5" className="nav-btn cursor-target">
-            ← Previous Project
-          </Link>
-          <Link to="/" className="nav-btn cursor-target">
-            Back to Home
-          </Link>
-        </div>
-
-        {lightboxItem && (
-          <ProjectLightbox
-            item={lightboxItem}
-            onClose={() => setLightboxItem(null)}
-          />
+        {(item.title || item.caption) && (
+          <div className="section-block" style={{ marginTop: 12 }}>
+            {item.title && <h3 style={{ marginBottom: 6 }}>{item.title}</h3>}
+            {item.caption && <p className="muted">{item.caption}</p>}
+          </div>
         )}
       </div>
     </div>
+  );
+}
+
+function buildCmdBlock() {
+  const header = [
+    "Microsoft Windows [Version 10.0.20348.0000]",
+    "(c) Microsoft Corporation. All rights reserved.",
+    "",
+    "C:\\Users\\Administrator>",
+  ].join("\n");
+
+  const sections = project6.cmdRunbook
+    .map((s) => {
+      const lines = (s.lines || [])
+        .map((l) => `C:\\Users\\Administrator>${l}`)
+        .join("\n");
+      return [`:: ${s.title}`, lines, ""].join("\n");
+    })
+    .join("\n");
+
+  return `${header}\n\n${sections}`.trimEnd();
+}
+
+export default function Project6() {
+  useEffect(() => window.scrollTo({ top: 0, behavior: "auto" }), []);
+
+  const [lightboxItem, setLightboxItem] = useState(null);
+  const isLightboxOpen = Boolean(lightboxItem);
+
+  const cmdText = useMemo(() => buildCmdBlock(), []);
+
+  return (
+    <main className="project-page">
+      <div className="project-container">
+        <section className="section-block">
+          <div className="hero-grid">
+            <div className="hero-copy">
+              <h1 className="project-title">{project6.title}</h1>
+              <p className="muted">{project6.subtitle}</p>
+
+              <div className="pill-row">
+                {project6.badges.map((b) => (
+                  <span className="pill" key={b}>
+                    {b}
+                  </span>
+                ))}
+              </div>
+
+              <div className="cta-row">
+                <a className="btn btn-primary" href="#cmd">
+                  Runbook (CMD)
+                </a>
+                <a className="btn btn-ghost" href="#troubleshooting">
+                  Troubleshooting Screenshots
+                </a>
+              </div>
+            </div>
+
+            <div className="hero-media">
+              <img
+                src="/project-media/SRV1-info1.png"
+                alt="Windows Server SRV1"
+                className="hero-img"
+              />
+            </div>
+          </div>
+        </section>
+
+        <section className="section-block" id="cmd">
+          <h2>Server Runbook (CMD)</h2>
+          <p className="muted">
+            This is intentionally formatted as a Windows Server terminal
+            workflow for repeatable validation.
+          </p>
+
+          <div className="cmd-terminal-card">
+            <div className="cmd-terminalbar">
+              <span className="cmd-title">Administrator: Command Prompt</span>
+            </div>
+            <pre className="cmd-pre">{cmdText}</pre>
+          </div>
+        </section>
+
+        <section className="section-block">
+          <h2>SRV1 Baseline</h2>
+          <dl className="kv">
+            {project6.srv1.map((x) => (
+              <div className="kv__item" key={x.k}>
+                <div className="kv__label">{x.k}</div>
+                <p className="kv__value">{x.v}</p>
+              </div>
+            ))}
+          </dl>
+        </section>
+
+        <section className="section-block">
+          <h2>Scope Strategy</h2>
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Site</th>
+                <th>VLAN</th>
+                <th>Subnet</th>
+                <th>Router</th>
+                <th>DNS</th>
+              </tr>
+            </thead>
+            <tbody>
+              {project6.scopes.map((s) => (
+                <tr key={`${s.site}-${s.vlan}`}>
+                  <td>{s.site}</td>
+                  <td>{s.vlan}</td>
+                  <td>{s.subnet}</td>
+                  <td>{s.router}</td>
+                  <td>{s.dns}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+
+        <section className="section-block">
+          <h2>Join Workflow</h2>
+          <ul className="list">
+            {project6.joinWorkflow.map((x, i) => (
+              <li key={i}>{x}</li>
+            ))}
+          </ul>
+        </section>
+
+        <section className="section-block" id="troubleshooting">
+          <h2>Troubleshooting Screenshots</h2>
+          <p className="muted">
+            One carousel only—used as a visual proof pack for SRV1 services.
+          </p>
+
+          <CarouselProject
+            items={project6.troubleshootingScreenshots}
+            onOpen={(item) => setLightboxItem(item)}
+            isLightboxOpen={isLightboxOpen}
+            ariaLabel="Project 6 troubleshooting screenshots carousel"
+          />
+        </section>
+
+        <ProjectPager
+          prev={{ href: "/projects/5", label: "Project 5" }}
+          next={null}
+        />
+      </div>
+
+      <Lightbox item={lightboxItem} onClose={() => setLightboxItem(null)} />
+    </main>
   );
 }

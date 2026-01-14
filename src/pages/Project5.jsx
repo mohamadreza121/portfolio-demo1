@@ -1,15 +1,48 @@
-import RackProjectPage from "../components/RackProjectPage";
+import { useEffect } from "react";
+import RackDeck from "../components/RackDeck";
 import { project5Rack } from "../data/project5Rack";
+import ProjectPager from "../components/ProjectPager";
+import "./ProjectDetail.css";
+import "./ProjectCli.css";
 
 export default function Project5() {
+  useEffect(() => window.scrollTo({ top: 0, behavior: "auto" }), []);
+
   return (
-    <RackProjectPage
-      projectId={5}
-      headerTitle="Project 5 — Providers / Internet Simulation"
-      headerSubtitle="Dual provider simulation: ISP1/ISP2 routers with upstream NAT nodes to validate NAT, policy, and failover behavior."
-      rack={project5Rack}
-      prevPath="/projects/4"
-      nextPath="/projects/6"
-    />
+    <main className="project-page project-page--rack">
+      <div className="project-container">
+        <section className="section-block">
+          <h1 className="project-title">
+            Multihoming Simulation with Repeatable Tests
+          </h1>
+          <p className="project-subtitle">
+            Two ISPs and an Internet-core simulator enable measurable validation
+            for routing preference, default-only posture, NAT proof, and edge
+            policy outcomes.
+          </p>
+          <div className="badges">
+            {[
+              "EBGP",
+              "Default-only policy",
+              "Primary/Secondary preference",
+              "Simulated public services",
+            ].map((b) => (
+              <span className="badge" key={b}>
+                {b}
+              </span>
+            ))}
+          </div>
+        </section>
+
+        <section className="section-block">
+          <RackDeck data={project5Rack} />
+        </section>
+
+        <ProjectPager
+          prev={{ href: "/projects/4", label: "Project 4" }}
+          next={{ href: "/projects/6", label: "Project 6" }}
+        />
+      </div>
+    </main>
   );
 }
