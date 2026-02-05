@@ -625,8 +625,8 @@ a.btn-pill {
 }
 
 .lightbox-project-inner {
-  max-width: min(92vw, 1100px);
-  max-height: 88vh;
+  max-width: min(86vw, 980px);
+  max-height: 72vh;
   border-radius: 18px;
   overflow: hidden;
   background: var(--card-bg);
