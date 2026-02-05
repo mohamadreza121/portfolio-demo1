@@ -110,10 +110,13 @@ export default function Project6() {
               </div>
 
               <div className="cta-row">
-                <a className="btn btn-primary" href="#cmd">
+                <a className="btn btn-primary cursor-target" href="#cmd">
                   Runbook (CMD)
                 </a>
-                <a className="btn btn-ghost" href="#troubleshooting">
+                <a
+                  className="btn btn-ghost cursor-target"
+                  href="#troubleshooting"
+                >
                   Troubleshooting Screenshots
                 </a>
               </div>

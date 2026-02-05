@@ -615,6 +615,7 @@ a.btn-pill {
 
 .lightbox-project {
   position: fixed;
+  height: 100dvh;
   inset: 0;
   background: rgba(0, 0, 0, 0.82);
   backdrop-filter: blur(6px);
@@ -631,6 +632,7 @@ a.btn-pill {
   background: var(--card-bg);
   border: 1px solid var(--accent-border);
   box-shadow: 0 40px 120px rgba(0, 0, 0, 0.8);
+  transform: translateY(48px);
 }
 
 .lightbox-project-inner img,
@@ -715,4 +717,15 @@ a.btn-pill {
     transition: none !important;
     filter: none !important;
   }
+}
+
+
+/* When any lightbox is open, disable transforms on the site wrapper(s)
+   so position:fixed overlays are truly viewport-fixed */
+html:has(.lightbox-project) .site-visible,
+html:has(.lightbox-project) .site-hidden,
+html:has(.lightbox-project) .site-content,
+html:has(.lightbox-project) .site-shell {
+  transform: none !important;
+  filter: none !important;
 }

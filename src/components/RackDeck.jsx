@@ -2,20 +2,34 @@ import { useMemo, useState } from "react";
 import "./RackDeck.css";
 import "../pages/ProjectCli.css";
 
-const EMPTY_ARR = [];
+const EMPTY_ARR = Object.freeze([]);
 
 export default function RackDeck({ data }) {
-  // ✅ stable fallbacks (no new [] created each render)
   const cards = data?.cards ?? EMPTY_ARR;
   const hotspots = data?.hotspots ?? EMPTY_ARR;
 
-  const defaultId = cards[0]?.id || hotspots[0]?.target || "";
+  const defaultId = useMemo(
+    () => cards[0]?.id || hotspots[0]?.target || "",
+    [cards, hotspots],
+  );
+
   const [activeId, setActiveId] = useState(defaultId);
 
+  // ✅ derive validity (no effect)
+  const isValid = useMemo(() => {
+    if (!activeId) return false;
+    const inCards = cards.some((c) => c.id === activeId);
+    const inHotspots = hotspots.some((h) => h.target === activeId);
+    return inCards || inHotspots;
+  }, [activeId, cards, hotspots]);
+
+  // ✅ what the UI should use
+  const safeActiveId = isValid ? activeId : defaultId;
+
   const activeCard = useMemo(() => {
-    const found = cards.find((c) => c.id === activeId);
+    const found = cards.find((c) => c.id === safeActiveId);
     return found || cards[0] || null;
-  }, [cards, activeId]);
+  }, [cards, safeActiveId]);
 
   return (
     <div className="rackdeckx">
@@ -35,7 +49,7 @@ export default function RackDeck({ data }) {
           />
 
           {hotspots.map((h) => {
-            const isActive = h.target === activeId;
+            const isActive = h.target === safeActiveId;
             return (
               <button
                 key={h.id}
