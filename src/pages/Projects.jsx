@@ -12,54 +12,54 @@ import "./Projects.css";
 const projects = [
   {
     id: 1,
-    title: "Master Enterprise Topology",
+    title: "Enterprise Multi-Site Network Lab",
     summary:
       "HQ VLAN segmentation, branch connectivity, dual edge routers, FortiGate dual-ISP, and Windows Server services.",
     tech: ["OSPF", "BGP", "FortiGate", "VLANs", "DHCP/DNS"],
     // These exist in src/assets/projects/ in this repo
-    image: new URL("../assets/projects/p1-topology.png", import.meta.url).href,
-    video: new URL("../assets/projects/p1-topology.mp4", import.meta.url).href,
+    image: new URL("../assets/projects/Topology.png", import.meta.url).href,
+    video: new URL("../assets/projects/vid1.mp4", import.meta.url).href,
   },
   {
     id: 2,
-    title: "HQ Access & Services Rack",
-    summary: "SW1 VLAN access, SRV1 services, and management/monitoring point.",
-    tech: ["802.1Q", "VLANs", "DHCP", "DNS"],
+    title: "Campus Switching + Gateway Experience",
+    summary: "SW1 VLAN access, HQ-GW1, and HQ-GW2",
+    tech: ["802.1Q", "VLANs", "OSPF", "VRRP"],
     // Public path (replace freely)
-    image: "/hq-access-and-services.png",
-    video: null,
+    image: new URL("../assets/projects/Topology.png", import.meta.url).href,
+    video: new URL("../assets/projects/vid2.mp4", import.meta.url).href,
   },
   {
     id: 3,
-    title: "Firewall & VPN Security",
-    summary: "FortiGate perimeter enforcement, NAT, VPN overlays, and logging.",
-    tech: ["FortiGate", "NAT", "IPsec", "SSL VPN"],
-    image: "/hq-core-and-edge.png",
-    video: null,
+    title: "Predictable Routing and Observable Failover",
+    summary: "BGP Default, OSPF database, Int Tunnel.",
+    tech: ["BGP", "NAT", "IPsec", "OSPF"],
+    image: new URL("../assets/projects/Topology.png", import.meta.url).href,
+    video: new URL("../assets/projects/vid3.mp4", import.meta.url).href,
   },
   {
     id: 4,
-    title: "HQ Core & Edge Routing",
-    summary: "HQRouter and WAN/edge path assembly with primary and backup routing.",
-    tech: ["OSPF", "Routing", "Failover"],
-    image: "/hq-core-and-edge.png",
-    video: null,
+    title: "Edge Enforcement and Management Hardening",
+    summary: "Wan section. Ip Route",
+    tech: ["BGP", "SSH-V2", "Failover"],
+    image: new URL("../assets/projects/Topology.png", import.meta.url).href,
+    video: new URL("../assets/projects/vid5.mp4", import.meta.url).href,
   },
   {
     id: 5,
-    title: "Providers / Internet Simulation",
-    summary: "ISP1/ISP2 simulation with upstream NAT nodes for realistic testing.",
-    tech: ["BGP", "NAT", "Failover"],
-    image: "/providers-internet-simulation.png",
-    video: null,
+    title: "Multihoming Simulation with Repeatable Tests",
+    summary: "SW2, R2",
+    tech: ["OSPF", "NAT", "IPsec"],
+    image: new URL("../assets/projects/Topology.png", import.meta.url).href,
+    video: new URL("../assets/projects/vid5.mp4", import.meta.url).href,
   },
   {
     id: 6,
-    title: "Validation & Ops Evidence",
-    summary: "Command evidence, verification checklist, and operational validation artifacts.",
-    tech: ["Verification", "Troubleshooting", "Logging"],
-    image: "/projects/placeholder.png",
-    video: null,
+    title: "Windows Infrastructure Runbook",
+    summary: "Windows Server 2022.",
+    tech: ["Verification", "Troubleshooting", "Logging", "DHCP", "DNS", "AD"],
+    image: new URL("../assets/projects/Topology.png", import.meta.url).href,
+    video: new URL("../assets/projects/vid5.mp4", import.meta.url).href,
   },
 ];
 
@@ -114,7 +114,8 @@ export default function Projects() {
       if (reducedMotionRef.current) return;
 
       // Disable on coarse pointers (mobile/touch)
-      if (window.matchMedia && window.matchMedia("(pointer: coarse)").matches) return;
+      if (window.matchMedia && window.matchMedia("(pointer: coarse)").matches)
+        return;
 
       const rect = el.getBoundingClientRect();
       const px = (e.clientX - rect.left) / rect.width; // 0..1
@@ -134,10 +135,10 @@ export default function Projects() {
         requestAnimationFrame(() => {
           setCardOffset(el, tx, ty);
           map.delete(idx);
-        })
+        }),
       );
     },
-    [reducedMotionRef, setCardOffset]
+    [reducedMotionRef, setCardOffset],
   );
 
   const onCardPointerLeave = useCallback(
@@ -158,7 +159,7 @@ export default function Projects() {
         }
       }
     },
-    [setCardOffset]
+    [setCardOffset],
   );
 
   const onCardPointerEnter = useCallback(
@@ -181,7 +182,7 @@ export default function Projects() {
         }
       }
     },
-    [reducedMotionRef]
+    [reducedMotionRef],
   );
 
   const onCardFocus = useCallback(
@@ -204,13 +205,16 @@ export default function Projects() {
         }
       }
     },
-    [reducedMotionRef]
+    [reducedMotionRef],
   );
 
-  const onCardBlur = useCallback((idx) => {
-    // When focus leaves the card, stop preview
-    onCardPointerLeave(idx);
-  }, [onCardPointerLeave]);
+  const onCardBlur = useCallback(
+    (idx) => {
+      // When focus leaves the card, stop preview
+      onCardPointerLeave(idx);
+    },
+    [onCardPointerLeave],
+  );
 
   /* =====================================================
      Scroll parallax (media drifts as the panel scrolls)
@@ -221,7 +225,9 @@ export default function Projects() {
 
     // In your ScrollDeck setup, the scroll container is the nearest .scroll-deck__panel
     const scrollContainer =
-      root.closest(".scroll-deck__panel") || root.closest(".scroll-deck") || window;
+      root.closest(".scroll-deck__panel") ||
+      root.closest(".scroll-deck") ||
+      window;
 
     const maxShift = 18; // px (keep calm)
 
@@ -238,7 +244,9 @@ export default function Projects() {
       }
 
       const viewportH =
-        scrollContainer === window ? window.innerHeight : scrollContainer.clientHeight;
+        scrollContainer === window
+          ? window.innerHeight
+          : scrollContainer.clientHeight;
 
       const viewportMid =
         scrollContainer === window
@@ -297,7 +305,7 @@ export default function Projects() {
     <section id="projects" className="projects-page">
       <span className="spy-marker" />
 
-      <div 
+      <div
         className="projects-container"
         aria-label="Enterprise Network Architecture Portfolio"
       >
@@ -305,7 +313,6 @@ export default function Projects() {
            HEADER
         ============================== */}
         <header className="projects-hero">
-
           <h1 className="projects-title">
             <DecryptedText
               text="Enterprise Network Architecture"
@@ -319,8 +326,8 @@ export default function Projects() {
           </h1>
 
           <p className="projects-subtitle">
-            A progressive, real-world enterprise infrastructure — designed, secured, routed,
-            and operated as a unified system.
+            A progressive, real-world enterprise infrastructure — designed,
+            secured, routed, and operated as a unified system.
           </p>
         </header>
 
@@ -353,17 +360,17 @@ export default function Projects() {
                   draggable="false"
                 />
 
-              {project.video ? (
-                <video
-                  className="project-video"
-                  muted
-                  loop
-                  playsInline
-                  preload="metadata"
-                >
-                  <source src={project.video} type="video/mp4" />
-                </video>
-              ) : null}
+                {project.video ? (
+                  <video
+                    className="project-video"
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                  >
+                    <source src={project.video} type="video/mp4" />
+                  </video>
+                ) : null}
 
                 <div className="project-vignette" />
               </div>
@@ -382,9 +389,7 @@ export default function Projects() {
 
                 <div className="term-spacer" />
 
-                <div className="term-badge">
-                  {project.tech?.[0] || "LAB"}
-                </div>
+                <div className="term-badge">{project.tech?.[0] || "LAB"}</div>
               </div>
 
               {/* Content */}
