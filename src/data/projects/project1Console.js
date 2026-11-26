@@ -1,4 +1,5 @@
 import { project1 } from "./project1";
+import { project6 } from "./project6";
 import { project2Rack } from "../project2Rack";
 import { project3Rack } from "../project3Rack";
 import { project4Rack } from "../project4Rack";
@@ -25,6 +26,7 @@ const groups = [
       ["HQ-GW1", "VRRP backup"],
       ["HQ-GW2", "VRRP master"],
       ["HQ-EDGE", "WAN and VPN edge"],
+      ["SRV1", "Windows Server"],
     ],
   },
   {
@@ -45,6 +47,55 @@ const groups = [
 ];
 
 export const consoleGroups = groups;
+
+export const labChapters = [
+  {
+    id: "switching",
+    title: "Campus switching and gateway redundancy",
+    summary: "Trace the access VLANs through SW1’s redundant trunks and check which gateway owns the virtual IPs.",
+    cards: project2Rack.cards,
+  },
+  {
+    id: "routing",
+    title: "Routing, VPN and failover",
+    summary: "Inspect HQ-EDGE’s OSPF adjacencies, primary and standby tunnels, NAT counters and default route.",
+    cards: project3Rack.cards,
+  },
+  {
+    id: "wan",
+    title: "Dual-ISP WAN and edge policy",
+    summary: "Compare each ISP’s eBGP routes, default advertisement and the public-service loopbacks on INET-RTR.",
+    cards: project4Rack.cards,
+  },
+  {
+    id: "branch",
+    title: "Branch switching and WAN verification",
+    summary: "Follow the branch VLANs from SW2 into R2, then verify the VTI, DHCP relay and NAT evidence.",
+    cards: project5Rack.cards,
+  },
+];
+
+export const labNavigation = [
+  { id: "topology", title: "Topology" },
+  ...labChapters.map(({ id, title }, index) => ({
+    id,
+    title: ["Switching", "Routing & VPN", "WAN & policy", "Branch"][index] || title,
+  })),
+  { id: "windows", title: "Windows infrastructure" },
+];
+
+
+export const rackDevices = [
+  ...[project2Rack, project3Rack, project4Rack, project5Rack].flatMap((rack) =>
+    rack.hotspots.map((hotspot) => ({
+      host: rack.cards.find((card) => card.id === hotspot.target).terminals[0].host,
+      style: hotspot.style,
+    }))
+  ),
+  { host: "SRV1", style: { top: "64.8%", left: "20%", width: "59.5%", height: "4.9%" } },
+].sort((a, b) => parseFloat(a.style.top) - parseFloat(b.style.top));
+
+export const consolePrompt = (host) => host === "SRV1" ? "C:\\Users\\Administrator>" : host + "#";
 export const defaultConsole = "HQ-EDGE";
 
 const unassigned = "unassigned";
@@ -265,11 +316,74 @@ const deviceCommands = {
   ],
 };
 
+const windowsIdentity = [
+  "Windows IP Configuration",
+  "",
+  "   Host Name . . . . . . . . . . . . : SRV1",
+  "",
+  "Ethernet adapter Ethernet:",
+  "",
+  "   DHCP Enabled. . . . . . . . . . . : No",
+  "   IPv4 Address. . . . . . . . . . . : 192.168.50.10(Preferred)",
+  "   Subnet Mask . . . . . . . . . . . : 255.255.255.0",
+  "   Default Gateway . . . . . . . . . : 192.168.50.254",
+  "   DNS Servers . . . . . . . . . . . : 192.168.50.10",
+].join("\n");
+
+const windowsRoute = [
+  "IPv4 Route Table",
+  "===========================================================================",
+  "Active Routes:",
+  "Network Destination        Netmask          Gateway       Interface  Metric",
+  "          0.0.0.0          0.0.0.0   192.168.50.254    192.168.50.10     25",
+  "     192.168.50.0    255.255.255.0         On-link     192.168.50.10    281",
+  "    192.168.50.10  255.255.255.255         On-link     192.168.50.10    281",
+].join("\n");
+
+const windowsScopes = columns([
+  ["ScopeId", "Name", "State"],
+  ...project6.scopes.map(({ subnet, site, vlan }) => [subnet.split("/")[0], site + " VLAN " + vlan, "Active"]),
+], [17, 19]);
+
+const windowsCommands = [
+  ["ipconfig /all", "Review the static IPv4 address, gateway and DNS", windowsIdentity],
+  ["route print", "Display the IPv4 routing table", windowsRoute],
+  ["nslookup srv1", "Check DNS resolution for SRV1", "Server:  SRV1\nAddress:  192.168.50.10\n\nName:    srv1\nAddress:  192.168.50.10"],
+  ["hostname", "Display the server’s host name", "SRV1"],
+  ["powershell -NoProfile -Command \"Get-DhcpServerv4Scope | Select-Object ScopeId,Name,State\"", "List DHCP scopes", windowsScopes],
+];
+
+function extraEvidence(host) {
+  return captured
+    .filter((entry) => entry.host === host && !entry.command.includes("|") && entry.command !== "show running-config")
+    .map((entry) => {
+      const name = entry.command.toLowerCase()
+        .replace(/ \((excerpt|key ports)\)$/, "")
+        .replace(/^show interface /, "show interfaces ")
+        .replace(/^show run interface /, "show running-config interface ");
+      return [name, entry.badge || "Lab output", () => entry.output];
+    });
+}
+
 export function commandsFor(host) {
+  if (host === "SRV1") {
+    return windowsCommands.map(([name, description, output]) => ({ name, description, output: () => output }));
+  }
+
   const routes = routerRoutes[host] ? routing : [];
-  return [...(deviceCommands[host] ?? []), ...common, ...routes].map(([name, description, output]) => ({
-    name, description, output: () => output(host),
-  }));
+  const entries = [...(deviceCommands[host] ?? []), ...common, ...routes, ...extraEvidence(host)];
+  return entries
+    .filter(([name], i) => entries.findIndex(([earlier]) => earlier === name) === i)
+    .map(([name, description, output]) => ({ name, description, output: () => output(host) }));
+}
+
+export function runWindowsCommand(input) {
+  const command = commandsFor("SRV1").find(({ name }) => name.toLowerCase() === input.trim().replace(/\s+/g, " ").toLowerCase());
+  if (command) return { name: command.name, text: command.output() };
+  if (input.trim() === "?" || input.trim().toLowerCase() === "help") {
+    return { text: commandsFor("SRV1").map(({ name, description }) => name + "\n    " + description).join("\n") };
+  }
+  return { text: "'" + input.split(/\s+/)[0] + "' is not recognized as an internal or external command,\noperable program or batch file." };
 }
 
 export const verificationSteps = [
@@ -279,4 +393,32 @@ export const verificationSteps = [
   { host: "HQ-EDGE", command: "show ip bgp summary", label: "Inspect both ISPs", finding: "Check the neighbor AS numbers and prefix counts in State/PfxRcd." },
   { host: "R2", command: "show ip route", label: "Trace routes back to HQ", finding: "Find the HQ subnets learned by OSPF through Tunnel10." },
   { host: "HQ-EDGE", command: "show interfaces tunnel20", label: "Check backup tunnel status", finding: "Compare Tunnel20’s standby state with Tunnel10’s up/up state." },
+  { host: "SRV1", command: "ipconfig /all", label: "Verify Windows infrastructure", finding: "Confirm the fixed address, VRRP gateway and DNS on the HQ server VLAN." },
 ];
+
+export const topologyPositions = {
+  SRV1: [11, 22],
+  SW1: [11, 57],
+  "HQ-GW1": [29, 29],
+  "HQ-GW2": [29, 64],
+  "HQ-EDGE": [48, 47],
+  "ISP1-RTR": [66, 20],
+  "ISP2-RTR": [66, 52],
+  "INET-RTR": [87, 36],
+  R2: [87, 75],
+  SW2: [66, 76],
+};
+
+export function linkWaypoints({ from, to, type, fromIf }) {
+  const start = topologyPositions[from];
+  const end = topologyPositions[to];
+  if (type === "IPSEC") {
+    const bottom = fromIf === "Tunnel20" ? 93 : 87;
+    return [start, [52, bottom], [84, bottom], end];
+  }
+  if (from === "INET-RTR" && to === "R2") {
+    const side = fromIf === "Gi4/0" ? 95 : 89;
+    return [start, [side, 51], [side, 60], end];
+  }
+  return [start, end];
+}

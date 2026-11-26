@@ -1,9 +1,12 @@
 import { completeLabCommand, labCommandHelp, runLabCommand } from "../utils/labConsole";
-import { commandsFor, consoleGroups } from "../data/projects/project1Console";
+import { project1 } from "../data/projects/project1";
+import { commandsFor, consoleGroups, consolePrompt, rackDevices, linkWaypoints, topologyPositions, runWindowsCommand } from "../data/projects/project1Console";
 
 const host = "HQ-EDGE";
 const commands = commandsFor(host);
-const run = (input, device = host) => runLabCommand(input, commandsFor(device), `${device}#`);
+const run = (input, device = host) => device === "SRV1"
+  ? runWindowsCommand(input)
+  : runLabCommand(input, commandsFor(device), consolePrompt(device));
 
 test("resolves Cisco-style abbreviations against the active device", () => {
   expect(run("SH   IP INT BR")).toMatchObject({ name: "show ip interface brief", text: expect.stringContaining("10.255.101.1") });
@@ -49,4 +52,31 @@ test("every advertised command has output on its device", () => {
       }
     }
   }
+});
+
+test("every topology link and rack slot opens a known device", () => {
+  const devices = consoleGroups.flatMap(({ nodes }) => nodes.map(([device]) => device)).sort();
+  expect(Object.keys(topologyPositions).sort()).toEqual(devices);
+  expect(rackDevices.map(({ host }) => host).sort()).toEqual(devices);
+  for (const link of project1.connections) {
+    const points = linkWaypoints(link);
+    expect(points[0]).toEqual(topologyPositions[link.from]);
+    expect(points.at(-1)).toEqual(topologyPositions[link.to]);
+    expect(points.every((point) => point?.every((axis) => axis > 0 && axis < 100))).toBe(true);
+  }
+  let lowerEdge = 0;
+  for (const { style } of rackDevices) {
+    const top = parseFloat(style.top);
+    expect(top >= lowerEdge).toBe(true);
+    lowerEdge = top + parseFloat(style.height);
+  }
+});
+
+test("SRV1 accepts Windows commands with case-insensitive arguments", () => {
+  expect(run("  IPCONFIG   /ALL", "SRV1")).toMatchObject({
+    name: "ipconfig /all",
+    text: expect.stringContaining("192.168.50.254"),
+  });
+  expect(run("help", "SRV1").text).toContain("Get-DhcpServerv4Scope");
+  expect(run("show ip route", "SRV1").text).toContain("is not recognized");
 });

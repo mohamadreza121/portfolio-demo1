@@ -15,52 +15,11 @@ const projects = [
     id: 1,
     title: "Enterprise Multi-Site Network Lab",
     summary:
-      "HQ VLAN segmentation, branch connectivity, dual edge routers, FortiGate dual-ISP, and Windows Server services.",
-    tech: ["OSPF", "BGP", "FortiGate", "VLANs", "DHCP/DNS"],
+      "Explore the full HQ-to-branch lab, from access VLANs and VRRP to dual-ISP routing, IPsec, and Windows Server.",
+    tech: ["VLANs", "VRRP", "OSPF", "BGP", "IPsec", "DHCP/DNS"],
     // These exist in src/assets/projects/ in this repo
     image: new URL("../assets/projects/Topology.png", import.meta.url).href,
     video: new URL("../assets/projects/vid1.mp4", import.meta.url).href,
-  },
-  {
-    id: 2,
-    title: "Campus Switching + Gateway Experience",
-    summary: "SW1 VLAN access, HQ-GW1, and HQ-GW2",
-    tech: ["802.1Q", "VLANs", "OSPF", "VRRP"],
-    // Public path (replace freely)
-    image: new URL("../assets/projects/Topology.png", import.meta.url).href,
-    video: new URL("../assets/projects/vid2.mp4", import.meta.url).href,
-  },
-  {
-    id: 3,
-    title: "Predictable Routing and Observable Failover",
-    summary: "BGP Default, OSPF database, Int Tunnel.",
-    tech: ["BGP", "NAT", "IPsec", "OSPF"],
-    image: new URL("../assets/projects/Topology.png", import.meta.url).href,
-    video: new URL("../assets/projects/vid3.mp4", import.meta.url).href,
-  },
-  {
-    id: 4,
-    title: "Edge Enforcement and Management Hardening",
-    summary: "Wan section. Ip Route",
-    tech: ["BGP", "SSH-V2", "Failover"],
-    image: new URL("../assets/projects/Topology.png", import.meta.url).href,
-    video: new URL("../assets/projects/vid5.mp4", import.meta.url).href,
-  },
-  {
-    id: 5,
-    title: "Multihoming Simulation with Repeatable Tests",
-    summary: "SW2, R2",
-    tech: ["OSPF", "NAT", "IPsec"],
-    image: new URL("../assets/projects/Topology.png", import.meta.url).href,
-    video: new URL("../assets/projects/vid5.mp4", import.meta.url).href,
-  },
-  {
-    id: 6,
-    title: "Windows Infrastructure Runbook",
-    summary: "Windows Server 2022.",
-    tech: ["Verification", "Troubleshooting", "Logging", "DHCP", "DNS", "AD"],
-    image: new URL("../assets/projects/Topology.png", import.meta.url).href,
-    video: new URL("../assets/projects/vid5.mp4", import.meta.url).href,
   },
 ];
 
@@ -337,7 +296,7 @@ export default function Projects({ compact = false }) {
         {/* ==============================
            GRID
         ============================== */}
-        <div className="projects-grid" role="list">
+        <div className="projects-grid projects-grid--network-lab" role="list">
           {projectsList.map((project, idx) => (
             <article
               key={project.id}
@@ -421,7 +380,7 @@ export default function Projects({ compact = false }) {
                       }}
                       aria-label={`View architecture for ${project.title}`}
                     >
-                      View Architecture →
+                      Explore case study →
                     </button>
                   </div>
                 </div>

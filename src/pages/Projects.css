@@ -473,3 +473,9 @@ html[data-theme="day"] .tech-pill {
     display: none;
   }
 }
+
+.projects-grid.projects-grid--network-lab {
+  grid-template-columns: minmax(0, 800px);
+  justify-content: center;
+}
+

@@ -144,19 +144,6 @@ export default function App() {
   }, [location.pathname, phase]);
 
   /* =====================================================
-    CLEAR SECTION HASH OUTSIDE MAIN ROUTE
-  ===================================================== */
-  useEffect(() => {
-    if (location.pathname !== "/" && window.location.hash) {
-      window.history.replaceState(
-        window.history.state,
-        "",
-        location.pathname + location.search
-      );
-    }
-  }, [location.pathname, location.search]);
-
-  /* =====================================================
      SCROLL-TOP VISIBILITY
   ===================================================== */
   useEffect(() => {

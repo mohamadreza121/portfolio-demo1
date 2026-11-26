@@ -1,19 +1,25 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FaAngleRight, FaCheck, FaNetworkWired, FaTerminal } from "react-icons/fa";
 import {
   commandsFor,
   consoleGroups,
+  consolePrompt,
   defaultConsole,
+  runWindowsCommand,
   verificationSteps,
 } from "../data/projects/project1Console";
 import { completeLabCommand, labCommandHelp, runLabCommand } from "../utils/labConsole";
+import ProjectTopology from "./ProjectTopology";
+import ProjectLabChapters from "./ProjectLabChapters";
 import "./Project1Console.css";
 
 const consoleDevices = Object.fromEntries(consoleGroups.flatMap((group) => group.nodes));
-const showCommand = (name, command) => `${name}#${command}`;
+const showCommand = (name, command) => consolePrompt(name) + command;
 const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-export default function Project1Console() {
+const isTouch = () => window.matchMedia("(pointer: coarse)").matches;
+
+export default function Project1Console({ theme }) {
   const [host, setHost] = useState(defaultConsole);
   const [sessions, setSessions] = useState({});
   const [draft, setDraft] = useState("");
@@ -32,9 +38,9 @@ export default function Project1Console() {
   const current = sessions[host] ?? [];
   const commands = useMemo(() => commandsFor(host), [host]);
   const history = current.filter((entry) => entry.history).map((entry) => entry.command);
-  const prompt = `${host}#`;
+  const windows = host === "SRV1";
+  const prompt = consolePrompt(host);
   const running = reveal?.host === host;
-  const isTouch = () => window.matchMedia("(pointer: coarse)").matches;
 
   function updateView() {
     const viewport = screen.current;
@@ -47,11 +53,11 @@ export default function Project1Console() {
 
   useEffect(() => () => cancelAnimationFrame(frame.current), []);
 
-  function stopReveal(message = "") {
+  const stopReveal = useCallback((message = "") => {
     cancelAnimationFrame(frame.current);
     setReveal(null);
     if (message) setStatus(message);
-  }
+  }, []);
 
   function interruptReveal() {
     if (!reveal) {
@@ -77,7 +83,7 @@ export default function Project1Console() {
     return id;
   }
 
-  function selectDevice(device) {
+  const selectDevice = useCallback((device) => {
     if (device === host) return;
     stopReveal();
     setStatus("");
@@ -85,10 +91,10 @@ export default function Project1Console() {
     setHistoryIndex(null);
     setShowAllCommands(false);
     setHost(device);
-  }
+  }, [host, stopReveal]);
 
   function details(command) {
-    const help = labCommandHelp(command, commands);
+    const help = windows ? runWindowsCommand("help").text : labCommandHelp(command, commands);
     append(host, command + "?", help || "% Unrecognized command");
     setStatus("Command help displayed.");
   }
@@ -100,7 +106,7 @@ export default function Project1Console() {
     setDraft("");
     setHistoryIndex(null);
     const available = device === host ? commands : commandsFor(device);
-    const result = runLabCommand(text, available, `${device}#`);
+    const result = device === "SRV1" ? runWindowsCommand(text) : runLabCommand(text, available, consolePrompt(device));
     const output = result.text ?? "";
     const id = append(device, text, output, true);
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -142,14 +148,23 @@ export default function Project1Console() {
     if (!isTouch()) input.current?.focus({ preventScroll: true });
   }
 
-  function runStep(step) {
-    selectDevice(step.host);
-    run(step.command, step.host);
+  const moveToConsole = useCallback(() => {
     heading.current?.scrollIntoView({
       block: "start",
       behavior: reducedMotion() || isTouch() ? "instant" : "smooth",
     });
     heading.current?.focus({ preventScroll: true });
+  }, []);
+
+  const openDevice = useCallback((device) => {
+    selectDevice(device);
+    moveToConsole();
+  }, [selectDevice, moveToConsole]);
+
+  function runStep(step) {
+    selectDevice(step.host);
+    run(step.command, step.host);
+    moveToConsole();
   }
 
   function clearSession() {
@@ -167,7 +182,10 @@ export default function Project1Console() {
       event.preventDefault();
       details(draft);
     } else if (event.key === "Tab" && !event.shiftKey && draft.trim()) {
-      const completed = completeLabCommand(draft, commands);
+      const candidates = windows ? commands.filter(({ name }) => name.toLowerCase().startsWith(draft.toLowerCase())) : [];
+      const completed = windows
+        ? (candidates.length === 1 ? candidates[0].name : null)
+        : completeLabCommand(draft, commands);
       if (completed && completed !== draft) {
         event.preventDefault();
         setDraft(completed);
@@ -185,13 +203,15 @@ export default function Project1Console() {
 
   return (
     <>
+      <ProjectTopology active={host} onOpen={openDevice} theme={theme} />
+
       <section id="console" className="section-block lab-console" aria-labelledby="lab-console-heading">
         <header className="lab-console__heading">
           <div>
             <h2 id="lab-console-heading" tabIndex={-1} ref={heading}>Network lab console</h2>
-            <p>Select a device and run a <code>show</code> command to explore the topology.</p>
+            <p>Run device-specific commands to verify interfaces, routes and server services.</p>
           </div>
-          <span className="lab-console__tag">Simulated Cisco IOS</span>
+          <span className="lab-console__tag">{windows ? "Simulated Windows CMD" : "Simulated Cisco IOS"}</span>
         </header>
 
         <div className="lab-console__workbench">
@@ -247,7 +267,7 @@ export default function Project1Console() {
                 })}
               </div>
 
-              <form className="lab-terminal__prompt" onSubmit={(event) => {
+              <form className="lab-terminal__prompt" data-platform={windows ? "windows" : "ios"} onSubmit={(event) => {
                 event.preventDefault();
                 run(draft);
               }}>
@@ -325,8 +345,12 @@ export default function Project1Console() {
           </div>
         </div>
 
-        <p className="lab-console__note">The console uses a read-only lab snapshot. Pipe filters match literal text, for example <code>show ip route | include 10.255.101.2</code>.</p>
+        <p className="lab-console__note">{windows
+            ? "The console uses a simulated Windows Server snapshot based on the lab baseline."
+            : <>The console uses a read-only lab snapshot. Pipe filters match literal text, for example <code>show ip route | include 10.255.101.2</code>.</>}</p>
       </section>
+
+      <ProjectLabChapters onOpen={openDevice} />
 
       <section id="runbook" className="section-block lab-verification" aria-labelledby="lab-verification-heading">
         <h2 id="lab-verification-heading">Verify the network</h2>
