@@ -419,7 +419,7 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
   -webkit-background-clip: text;
-  text-shadow: 0 0 4px rgba(255, 123, 84, 0.4);
+  text-shadow: 0 0 4px rgb(var(--accent-rgb) / 0.4);
 }
 
 .pc-details p {
@@ -435,7 +435,7 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
   -webkit-background-clip: text;
-  text-shadow: 0 0 4px rgba(255, 123, 84, 0.4);
+  text-shadow: 0 0 4px rgb(var(--accent-rgb) / 0.4);
 }
 
 @keyframes glow-bg {

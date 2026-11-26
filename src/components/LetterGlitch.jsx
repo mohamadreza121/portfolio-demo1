@@ -5,9 +5,8 @@ const LetterGlitch = ({
   theme = "night",
   className = "",
   glitchSpeed = 90, // ms between new glitch updates
-  centerVignette = false,
-  outerVignette = true,
   smooth = true,
+  paused = false,
   characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$&*()-_+=/[]{};:<>.,0123456789",
   // Optional perf knobs (safe defaults)
   maxFps = 30, // cap work rate (24/30/40 are good)
@@ -41,7 +40,7 @@ const LetterGlitch = ({
     // rgb(r,g,b)
     const rgbMatch = color
       .trim()
-      .match(/^rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i);
+      .match(/^rgb\(\s*(\d+)[,\s]+(\d+)[,\s]+(\d+)\s*\)$/i);
     if (rgbMatch) {
       return {
         r: Number(rgbMatch[1]),
@@ -78,16 +77,16 @@ const LetterGlitch = ({
     if (!canvas) return;
 
     const ctx = canvas.getContext("2d");
+    if (!ctx) return;
     context.current = ctx;
 
     const symbols = Array.from(characters);
 
-    const palettes = {
-      night: ["#2b4539", "#61dca3", "#61b3dc"],
-      day: ["#ff7b54", "#ffb347", "#e85d04"],
-    };
-
-    const colors = palettes[theme] ?? palettes.night;
+    const palette = window.getComputedStyle(document.documentElement);
+    const colors = ["--accent", "--accent-alt", "--ambient"]
+      .map((token) => palette.getPropertyValue(token).trim())
+      .filter(Boolean);
+    if (!colors.length) colors.push("#7af0c3", "#5cd3ff", "#a794ff");
 
     const getRandomChar = () =>
       symbols[Math.floor(Math.random() * symbols.length)];
@@ -143,7 +142,7 @@ const LetterGlitch = ({
       const parent = canvas.parentElement;
       if (!parent) return;
 
-      const dpr = window.devicePixelRatio || 1;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const rect = parent.getBoundingClientRect();
 
       canvas.width = rect.width * dpr;
@@ -281,7 +280,7 @@ const LetterGlitch = ({
     let isRunning = false;
 
     const start = () => {
-      if (isRunning) return;
+      if (isRunning || paused || document.hidden) return;
       isRunning = true;
       lastGlitchTime.current = 0;
       lastFrameTime.current = 0;
@@ -321,59 +320,11 @@ const LetterGlitch = ({
       document.removeEventListener("visibilitychange", handleVisibility);
       clearTimeout(resizeTimeout);
     };
-  }, [glitchSpeed, smooth, theme, characters, maxFps, transitionMs]);
-
-  const containerStyle = {
-    position: "fixed",
-    inset: 0,
-    width: "100%",
-    height: "100%",
-    background:
-      theme === "night"
-        ? "#000000"
-        : "linear-gradient(135deg, #fefefe 0%, #f5f5f5 100%)",
-    transition: "background 0.5s ease",
-    overflow: "hidden",
-    zIndex: 0,
-    pointerEvents: "none",
-  };
-
-  const canvasStyle = {
-    display: "block",
-    width: "100%",
-    height: "100%",
-    opacity: theme === "night" ? 0.22 : 0.4,
-    mixBlendMode: theme === "night" ? "screen" : "multiply",
-    transition: "opacity 0.5s ease, mix-blend-mode 0.5s ease",
-  };
-
-  const outerVignetteStyle = {
-    position: "absolute",
-    inset: 0,
-    pointerEvents: "none",
-    background:
-      theme === "night"
-        ? "radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,1) 100%)"
-        : "radial-gradient(circle, rgba(255,255,255,0) 60%, rgba(240,240,240,0.9) 100%)",
-    transition: "background 0.5s ease",
-  };
-
-  const centerVignetteStyle = {
-    position: "absolute",
-    inset: 0,
-    pointerEvents: "none",
-    background:
-      theme === "night"
-        ? "radial-gradient(circle, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 60%)"
-        : "radial-gradient(circle, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 60%)",
-    transition: "background 0.5s ease",
-  };
+  }, [glitchSpeed, paused, smooth, theme, characters, maxFps, transitionMs]);
 
   return (
-    <div style={containerStyle} className={className}>
-      <canvas ref={canvasRef} style={canvasStyle} />
-      {outerVignette && <div style={outerVignetteStyle} />}
-      {centerVignette && <div style={centerVignetteStyle} />}
+    <div className={`matrix-field ${className}`} aria-hidden="true">
+      <canvas ref={canvasRef} className="matrix-field__code" />
     </div>
   );
 };

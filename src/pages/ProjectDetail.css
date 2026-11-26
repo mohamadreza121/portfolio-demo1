@@ -182,7 +182,7 @@
 
 /* Match Project 1 CLI navigation styling */
 .project-page--rack .nav-btn {
-  background: rgba(97, 179, 220, 0.10);
+  background: rgb(var(--signal-rgb) / 0.10);
 }
 
 .project-page--rack .nav-btn:hover {

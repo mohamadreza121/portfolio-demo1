@@ -180,7 +180,7 @@ export default function DecryptedText({
 
   // Explicit reveal (revealKey): pre-scramble immediately, then start
   useEffect(() => {
-    if (!revealKey) return;
+    if (!revealKey || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     if (viewTimerRef.current) clearTimeout(viewTimerRef.current);
 
@@ -198,7 +198,7 @@ export default function DecryptedText({
 
   // View-based reveal (when no revealKey): pre-scramble on trigger
   useEffect(() => {
-    if (revealKey) return;
+    if (revealKey || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     if (animateOn !== "view" && animateOn !== "both") return;
 
     const el = containerRef.current;
@@ -272,6 +272,7 @@ export default function DecryptedText({
     animateOn === "hover" || animateOn === "both"
       ? {
           onMouseEnter: () => {
+            if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
             const empty = new Set();
             setRevealedIndices(empty);
             setDisplayText(scrambleOnce(text, empty));
@@ -289,7 +290,7 @@ export default function DecryptedText({
       {...hoverProps}
       {...props}
     >
-      <span style={styles.srOnly}>{displayText}</span>
+      <span style={styles.srOnly}>{text}</span>
 
       <span aria-hidden="true">
         {displayText.split("").map((char, index) => {

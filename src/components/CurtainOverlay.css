@@ -1,72 +1,128 @@
-/* =====================================================
-   CURTAIN OVERLAY (GLOBAL, TEMPORARY)
-   ===================================================== */
-
 .curtain-overlay {
   position: fixed;
+  z-index: 1500;
   inset: 0;
-  z-index: 1500; /* BELOW PRELOADER (2000), ABOVE SITE (10) */
-  pointer-events: none;
   overflow: hidden;
+  pointer-events: none;
+  isolation: isolate;
 }
-
-/* =====================================================
-   CURTAINS
-   ===================================================== */
 
 .curtain {
   position: absolute;
-  top: 0;
-  width: 50%;
-  height: 100%;
-
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.98),
-    rgba(0, 0, 0, 0.92)
-  );
-
-  box-shadow:
-    inset 0 0 60px rgba(0, 0, 0, 0.9),
-    0 0 40px rgba(0, 0, 0, 0.6);
-
-  will-change: transform;
+  inset-block: 0;
+  width: calc(50% + 1px);
+  background:
+    linear-gradient(118deg, rgb(7 10 23 / .61), rgb(8 12 25 / .97) 70%),
+    repeating-linear-gradient(0deg, transparent 0 39px, rgb(111 141 201 / .16) 40px),
+    repeating-linear-gradient(90deg, transparent 0 39px, rgb(111 141 201 / .16) 40px);
 }
 
-/* LEFT / RIGHT POSITIONING */
+.curtain-left { left: 0; }
+.curtain-right { right: 0; background-position: right center; }
 
-.curtain-left {
-  left: 0;
+.opening-rail {
+  position: absolute;
+  inset: 50% 0 auto;
+  width: min(66vw, 510px);
+  height: 1px;
+  margin-inline: auto;
+  opacity: 0;
+  background: linear-gradient(90deg, var(--accent-alt), rgb(var(--ambient-rgb) / .54), var(--accent));
+  box-shadow: 0 0 18px rgb(var(--signal-rgb) / .38);
 }
 
-.curtain-right {
-  right: 0;
-}
-
-/* =====================================================
-   CENTER GLOW SEAM (CINEMATIC DETAIL)
-   ===================================================== */
-
-.curtain::after {
+.opening-rail::before {
   content: "";
   position: absolute;
-  top: 0;
-  width: 2px;
-  height: 100%;
-  background: linear-gradient(
-    to bottom,
-    transparent,
-    var(--accent),
-    transparent
-  );
-  opacity: 0.85;
-  filter: blur(0.5px);
+  inset: -8px 10px;
+  border-block: 1px solid rgb(var(--ambient-rgb) / .19);
 }
 
-.curtain-left::after {
-  right: 0;
+.opening-rail::after {
+  content: "";
+  position: absolute;
+  inset: -3px 4px;
+  opacity: .5;
+  background: repeating-linear-gradient(90deg, transparent 0 22px, rgb(var(--ambient-rgb) / .6) 22px 23px);
 }
 
-.curtain-right::after {
+.opening-port,
+.opening-pulse {
+  position: absolute;
+  top: 50%;
   left: 0;
+  translate: -50% -50%;
 }
+
+.opening-port {
+  z-index: 1;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--accent-alt);
+  border-radius: 4px;
+  background: #0f1d34;
+  box-shadow: 0 0 18px rgb(var(--signal-rgb) / .38);
+  rotate: 45deg;
+}
+
+.opening-port::after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border-radius: 1px;
+  background: currentColor;
+}
+
+.opening-port--left { color: var(--accent-alt); }
+.opening-port--right { left: 100%; color: var(--accent); border-color: var(--accent); }
+
+.opening-pulse {
+  z-index: 2;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  color: var(--accent-alt);
+  background: #f2fdff;
+  box-shadow: 0 0 8px 3px currentColor, 0 0 32px 7px currentColor;
+  opacity: 0;
+}
+
+.opening-pulse--reply,
+.opening-pulse--dock { color: var(--accent); }
+
+.opening-pulse--dock { left: 50%; }
+
+.opening-seam {
+  position: absolute;
+  inset: 0 calc(50% - 1px);
+  width: 2px;
+  opacity: 0;
+  background: linear-gradient(180deg, transparent, var(--ambient) 22%, #efffff 50%, var(--accent-alt) 68%, transparent);
+  box-shadow: 0 0 14px 2px rgb(var(--ambient-rgb) / .6);
+}
+
+.opening-skip {
+  position: absolute;
+  top: max(16px, env(safe-area-inset-top));
+  right: max(18px, env(safe-area-inset-right));
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 13px;
+  border: 1px solid #54678a;
+  border-radius: 8px;
+  background: #0e172bf2;
+  color: #e8f5ff;
+  font: 600 .72rem/1 "JetBrains Mono", monospace;
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+
+.opening-skip span { color: var(--accent-alt); }
+.opening-skip:hover { border-color: var(--accent-alt); }
+.opening-skip:focus-visible { outline: 2px solid var(--accent-alt); outline-offset: 3px; }
+
+.curtain-overlay--compact .opening-rail { width: min(72vw, 360px); }
+.curtain-overlay--compact .opening-port { width: 13px; height: 13px; }
+.curtain-overlay--compact .opening-port::after { inset: 4px; }

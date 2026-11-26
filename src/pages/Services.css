@@ -82,7 +82,7 @@
 
   border-radius: 24px 16px 24px 16px;
 
-  background: rgba(10, 10, 10, 0.36);
+  background: rgb(var(--panel-deep-rgb) / .57);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
 
@@ -100,7 +100,7 @@
 }
 
 html[data-theme="day"] .service-terminal-card {
-  background: rgba(255, 255, 255, 0.56);
+  background: rgb(var(--panel-rgb) / .56);
   border-color: rgba(0, 0, 0, 0.12);
   box-shadow:
     0 16px 44px rgba(0, 0, 0, 0.12),
@@ -140,7 +140,7 @@ html[data-theme="day"] .service-terminal-card::after {
   box-shadow:
     0 44px 100px rgba(0, 0, 0, 0.74),
     0 0 40px var(--accent-glow);
-  border-color: rgba(97, 220, 163, 0.38);
+  border-color: rgb(var(--accent-rgb) / 0.38);
 }
 
 html[data-theme="day"] .service-terminal-card:hover {
@@ -214,7 +214,7 @@ html[data-theme="day"] .service-terminal-card:hover {
   color: var(--accent);
   background: rgba(0, 0, 0, 0.22);
   border: 1px solid var(--accent-border);
-  box-shadow: 0 0 10px rgba(97, 220, 163, 0.14);
+  box-shadow: 0 0 10px rgb(var(--accent-rgb) / 0.14);
 }
 
 .service-terminalbar .term-label::after {
@@ -287,7 +287,7 @@ html[data-theme="day"] .term-body::before {
 
 .term-prompt {
   color: var(--accent);
-  text-shadow: 0 0 8px rgba(97, 220, 163, 0.18);
+  text-shadow: 0 0 8px rgb(var(--accent-rgb) / 0.18);
 }
 
 /* Prefix columns */
@@ -299,7 +299,7 @@ html[data-theme="day"] .term-body::before {
   text-align: left;
 
   color: var(--accent);
-  text-shadow: 0 0 8px rgba(97, 220, 163, 0.18);
+  text-shadow: 0 0 8px rgb(var(--accent-rgb) / 0.18);
   font-weight: 900;
   line-height: 1.5;
 }
@@ -335,18 +335,18 @@ html[data-theme="day"] .cmd-prefix {
   left: calc(var(--prefix-col) + 2px);
   top: 1.55em;
 
-  color: rgba(97, 220, 163, 0.75);
+  color: rgb(var(--accent-rgb) / 0.75);
   opacity: 0.75;
-  text-shadow: 0 0 8px rgba(97, 220, 163, 0.12);
+  text-shadow: 0 0 8px rgb(var(--accent-rgb) / 0.12);
 
   line-height: 1.55;
   white-space: pre;
 
   /* enough repeats for typical wrap depth */
   text-shadow:
-    0 1.55em 0 rgba(97, 220, 163, 0.55),
-    0 3.10em 0 rgba(97, 220, 163, 0.55),
-    0 4.65em 0 rgba(97, 220, 163, 0.55);
+    0 1.55em 0 rgb(var(--accent-rgb) / 0.55),
+    0 3.10em 0 rgb(var(--accent-rgb) / 0.55),
+    0 4.65em 0 rgb(var(--accent-rgb) / 0.55);
 
   pointer-events: none;
   z-index: 0; /* behind text */
@@ -432,7 +432,7 @@ html[data-theme="day"] .term-output {
 }
 
 .out-key {
-  color: rgba(97, 220, 163, 0.92);
+  color: rgb(var(--accent-rgb) / 0.92);
   font-weight: 900;
   letter-spacing: 0.01em;
 }
@@ -473,7 +473,7 @@ html[data-theme="day"] .out-val {
   border-radius: 16px 12px 16px 12px;
 
   background: linear-gradient(180deg, rgba(14, 14, 14, 0.82), rgba(7, 7, 7, 0.72));
-  border: 1px solid rgba(97, 220, 163, 0.35);
+  border: 1px solid rgb(var(--accent-rgb) / 0.35);
 
   color: rgba(230, 247, 239, 0.94);
   font-family: "JetBrains Mono", monospace;
@@ -483,7 +483,7 @@ html[data-theme="day"] .out-val {
 
   box-shadow:
     0 10px 26px rgba(0, 0, 0, 0.45),
-    0 0 12px rgba(97, 220, 163, 0.14);
+    0 0 12px rgb(var(--accent-rgb) / 0.14);
 
   transition:
     transform 180ms ease,
@@ -501,10 +501,10 @@ html[data-theme="day"] .out-val {
 
 .term-btn:hover {
   transform: translateY(-2px);
-  border-color: rgba(97, 220, 163, 0.60);
+  border-color: rgb(var(--accent-rgb) / 0.60);
   box-shadow:
     0 16px 34px rgba(0, 0, 0, 0.55),
-    0 0 18px rgba(97, 220, 163, 0.22);
+    0 0 18px rgb(var(--accent-rgb) / 0.22);
   filter: brightness(1.05);
 }
 
@@ -519,12 +519,12 @@ html[data-theme="day"] .out-val {
   );
   box-shadow:
     0 8px 18px rgba(0, 0, 0, 0.42),
-    0 0 10px rgba(97, 220, 163, 0.10);
+    0 0 10px rgb(var(--accent-rgb) / 0.10);
 }
 
 /* keyboard focus */
 .term-btn:focus-visible {
-  outline: 2px solid rgba(97, 220, 163, 0.78);
+  outline: 2px solid rgb(var(--accent-rgb) / 0.78);
   outline-offset: 3px;
 }
 
@@ -535,7 +535,7 @@ html[data-theme="day"] .out-val {
 }
 
 .btn-cmd {
-  color: rgba(97, 220, 163, 0.92);
+  color: rgb(var(--accent-rgb) / 0.92);
   font-weight: 900;
 }
 

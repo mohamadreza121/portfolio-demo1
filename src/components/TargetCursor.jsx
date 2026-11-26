@@ -40,9 +40,6 @@ const TargetCursor = ({
     if (isMobile || !cursorRef.current) return;
 
     const originalCursor = document.body.style.cursor;
-    if (hideDefaultCursor) {
-      document.body.style.cursor = 'none';
-    }
 
     const cursor = cursorRef.current;
     cornersRef.current = cursor.querySelectorAll('.target-cursor-corner');
@@ -50,6 +47,7 @@ const TargetCursor = ({
     let activeTarget = null;
     let currentLeaveHandler = null;
     let resumeTimeout = null;
+    let hasPointer = false;
 
     const cleanupTarget = target => {
       if (currentLeaveHandler) {
@@ -61,8 +59,7 @@ const TargetCursor = ({
     gsap.set(cursor, {
       xPercent: -50,
       yPercent: -50,
-      x: window.innerWidth / 2,
-      y: window.innerHeight / 2
+      autoAlpha: 0
     });
 
     const createSpinTimeline = () => {
@@ -73,8 +70,6 @@ const TargetCursor = ({
         .timeline({ repeat: -1 })
         .to(cursor, { rotation: '+=360', duration: spinDuration, ease: 'none' });
     };
-
-    createSpinTimeline();
 
     const tickerFn = () => {
       if (!targetCornerPositionsRef.current || !cursorRef.current || !cornersRef.current) {
@@ -118,6 +113,13 @@ const TargetCursor = ({
     const qy = gsap.quickTo(cursor, 'y', { duration: 0.12, ease: 'power3.out' });
 
     const moveHandler = e => {
+      if (!hasPointer) {
+        hasPointer = true;
+        if (hideDefaultCursor) document.body.style.cursor = 'none';
+        gsap.set(cursor, { x: e.clientX, y: e.clientY, autoAlpha: 1 });
+        if (!activeTarget) createSpinTimeline();
+        return;
+      }
       qx(e.clientX);
       qy(e.clientY);
     };

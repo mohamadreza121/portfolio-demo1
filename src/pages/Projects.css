@@ -92,13 +92,13 @@
   --proj-card-shadow1: rgba(0, 0, 0, 0.55);
   --proj-card-shadow2: rgba(255, 255, 255, 0.04);
 
-  --proj-hover-border: rgba(97, 220, 163, 0.35);
+  --proj-hover-border: rgb(var(--accent-rgb) / 0.35);
   --proj-hover-shadow1: rgba(0, 0, 0, 0.72);
-  --proj-hover-glow: rgba(97, 220, 163, 0.22);
+  --proj-hover-glow: rgb(var(--accent-rgb) / 0.22);
 
   --proj-focus-ring:
-    0 0 0 2px rgba(97, 220, 163, 0.65),
-    0 0 26px rgba(97, 220, 163, 0.25);
+    0 0 0 2px rgb(var(--accent-rgb) / 0.65),
+    0 0 26px rgb(var(--accent-rgb) / 0.25);
 
   --proj-termbar-bg: linear-gradient(
     180deg,
@@ -262,7 +262,7 @@ html[data-theme="day"] .project-cta .btn-pill:focus-visible {
   color: var(--accent);
   background: rgba(0, 0, 0, 0.22);
   border: 1px solid var(--accent-border);
-  box-shadow: 0 0 10px rgba(97, 220, 163, 0.14);
+  box-shadow: 0 0 10px rgb(var(--accent-rgb) / 0.14);
 }
 
 html[data-theme="day"] .term-badge {
@@ -406,7 +406,7 @@ html[data-theme="day"] .project-vignette {
   border: 1px solid var(--accent-border);
   color: var(--accent);
 
-  box-shadow: 0 0 6px rgba(97, 220, 163, 0.18);
+  box-shadow: 0 0 6px rgb(var(--accent-rgb) / 0.18);
 }
 
 html[data-theme="day"] .tech-pill {
@@ -420,7 +420,7 @@ html[data-theme="day"] .tech-pill {
 }
 
 .project-cta .btn-pill:focus-visible {
-  outline: 2px solid rgba(97, 220, 163, 0.75);
+  outline: 2px solid rgb(var(--accent-rgb) / 0.75);
   outline-offset: 3px;
 }
 

@@ -27,7 +27,7 @@
   /* screws */
   --about-screw-hi: rgba(255, 255, 255, 0.20);
   --about-screw-core: rgba(0, 0, 0, 0.70);
-  --about-screw-ring: rgba(97, 220, 163, 0.20); /* defaults to accent-ish */
+  --about-screw-ring: rgb(var(--accent-rgb) / 0.20); /* defaults to accent-ish */
 
   /* bevel */
   --about-bevel-top: rgba(255, 255, 255, 0.03);
@@ -47,25 +47,25 @@
   /* stack: slightly darker / richer to separate from inner modules */
   --about-surface-stack: linear-gradient(
     180deg,
-    rgba(12, 14, 13, 0.72),
-    rgba(8, 9, 9, 0.82)
+    rgb(var(--panel-rgb) / .72),
+    rgb(var(--panel-deep-rgb) / .82)
   );
 
   /* modules: slightly lighter so they read as separate plates */
   --about-surface-card: linear-gradient(
     180deg,
-    rgba(18, 22, 20, 0.70),
-    rgba(10, 12, 11, 0.82)
+    rgb(var(--panel-rgb) / .70),
+    rgb(var(--panel-deep-rgb) / .82)
   );
 
   --about-border: rgba(255, 255, 255, 0.085);
-  --about-keyline: rgba(97, 220, 163, 0.14);
+  --about-keyline: rgb(var(--accent-rgb) / 0.14);
   --about-shadow: rgba(0, 0, 0, 0.70);
 
   /* screws */
   --about-screw-hi: rgba(255, 255, 255, 0.24);
   --about-screw-core: rgba(0, 0, 0, 0.80);
-  --about-screw-ring: rgba(97, 220, 163, 0.22);
+  --about-screw-ring: rgb(var(--accent-rgb) / 0.22);
 
   /* bevel */
   --about-bevel-top: rgba(255, 255, 255, 0.035);
@@ -78,14 +78,14 @@
 :root[data-theme="day"] {
   --about-surface-stack: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.84),
-    rgba(246, 246, 246, 0.92)
+    rgb(var(--panel-rgb) / .84),
+    rgb(var(--panel-deep-rgb) / .92)
   );
 
   --about-surface-card: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.90),
-    rgba(245, 245, 245, 0.96)
+    rgb(var(--panel-rgb) / .90),
+    rgb(var(--panel-deep-rgb) / .96)
   );
 
   --about-border: rgba(0, 0, 0, 0.12);
