@@ -64,12 +64,7 @@ test("every topology link and rack slot opens a known device", () => {
     expect(points.at(-1)).toEqual(topologyPositions[link.to]);
     expect(points.every((point) => point?.every((axis) => axis > 0 && axis < 100))).toBe(true);
   }
-  let lowerEdge = 0;
-  for (const { style } of rackDevices) {
-    const top = parseFloat(style.top);
-    expect(top >= lowerEdge).toBe(true);
-    lowerEdge = top + parseFloat(style.height);
-  }
+  expect(rackDevices.every(({ kind, ports }) => kind === "server" ? ports === 0 : ports > 0)).toBe(true);
 });
 
 test("SRV1 accepts Windows commands with case-insensitive arguments", () => {

@@ -35,7 +35,7 @@ test("renders Project1 on /projects/1", async () => {
 
   expect(
     await screen.findByRole("heading", {
-      name: /enterprise multi-site network lab/i,
+      name: /two sites\.\s*one network\./i,
     })
   ).toBeInTheDocument();
 });

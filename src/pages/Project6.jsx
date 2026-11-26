@@ -87,7 +87,7 @@ function buildCmdBlock() {
 
 const cmdText = buildCmdBlock();
 
-export default function WindowsLabEvidence({ onOpen }) {
+export default function WindowsLabEvidence() {
   const [lightboxItem, setLightboxItem] = useState(null);
   const closeLightbox = useCallback(() => setLightboxItem(null), []);
 
@@ -98,7 +98,6 @@ export default function WindowsLabEvidence({ onOpen }) {
           <h2 id="lab-windows-title">{project6.title}</h2>
           <p>{project6.subtitle}</p>
         </div>
-        <button type="button" className="btn btn-primary cursor-target" onClick={() => onOpen("SRV1")}>Open SRV1 CLI</button>
       </header>
       <div className="lab-windows__details">
         <section className="section-block" id="cmd">

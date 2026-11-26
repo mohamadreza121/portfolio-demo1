@@ -75,25 +75,18 @@ export const labChapters = [
   },
 ];
 
-export const labNavigation = [
-  { id: "topology", title: "Topology" },
-  ...labChapters.map(({ id, title }, index) => ({
-    id,
-    title: ["Switching", "Routing & VPN", "WAN & policy", "Branch"][index] || title,
-  })),
-  { id: "windows", title: "Windows infrastructure" },
-];
-
-
 export const rackDevices = [
-  ...[project2Rack, project3Rack, project4Rack, project5Rack].flatMap((rack) =>
-    rack.hotspots.map((hotspot) => ({
-      host: rack.cards.find((card) => card.id === hotspot.target).terminals[0].host,
-      style: hotspot.style,
-    }))
-  ),
-  { host: "SRV1", style: { top: "64.8%", left: "20%", width: "59.5%", height: "4.9%" } },
-].sort((a, b) => parseFloat(a.style.top) - parseFloat(b.style.top));
+  { host: "SW1", kind: "switch", ports: 8 },
+  { host: "HQ-GW1", kind: "gateway", ports: 4 },
+  { host: "HQ-GW2", kind: "gateway", ports: 4 },
+  { host: "HQ-EDGE", kind: "edge", ports: 4 },
+  { host: "ISP1-RTR", kind: "router", ports: 3 },
+  { host: "ISP2-RTR", kind: "router", ports: 3 },
+  { host: "INET-RTR", kind: "router", ports: 3 },
+  { host: "R2", kind: "gateway", ports: 4 },
+  { host: "SW2", kind: "switch", ports: 8 },
+  { host: "SRV1", kind: "server", ports: 0 },
+];
 
 export const consolePrompt = (host) => host === "SRV1" ? "C:\\Users\\Administrator>" : host + "#";
 export const defaultConsole = "HQ-EDGE";

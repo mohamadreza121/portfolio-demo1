@@ -1,10 +1,7 @@
-import { memo, useLayoutEffect, useRef, useState } from "react";
-import { FaAngleRight, FaNetworkWired, FaServer, FaTerminal } from "react-icons/fa";
+import { memo, useLayoutEffect, useRef } from "react";
+import { FaNetworkWired, FaServer } from "react-icons/fa";
 import { project1 } from "../data/projects/project1";
-import { consoleGroups, rackDevices, topologyPositions, linkWaypoints } from "../data/projects/project1Console";
-
-const roles = Object.fromEntries(consoleGroups.flatMap(({ nodes }) => nodes));
-const rackOrder = rackDevices.map(({ host }) => host);
+import { topologyPositions, linkWaypoints } from "../data/projects/project1Console";
 
 function drawLinks(canvas, stage, active) {
   const ctx = canvas.getContext("2d");
@@ -46,7 +43,7 @@ function drawLinks(canvas, stage, active) {
   }
 }
 
-function TopologyMap({ active, onOpen, theme }) {
+function ProjectTopology({ active, onOpen, theme }) {
   const stage = useRef(null);
   const canvas = useRef(null);
 
@@ -67,7 +64,7 @@ function TopologyMap({ active, onOpen, theme }) {
   }, [active, theme]);
 
   return (
-    <div className="lab-topology-scroll" tabIndex={0} aria-label="Topology diagram">
+    <div className="lab-topology-scroll" tabIndex={0} role="region" aria-label="Topology diagram">
       <div className="lab-topology-map" ref={stage}>
         <div className="lab-topology-map__zone lab-topology-map__zone--hq">Headquarters</div>
         <div className="lab-topology-map__zone lab-topology-map__zone--wan">WAN</div>
@@ -81,7 +78,7 @@ function TopologyMap({ active, onOpen, theme }) {
             style={{ left: x + "%", top: y + "%" }}
             aria-pressed={host === active}
             aria-label={"Open " + host + " console"}
-            onClick={() => onOpen(host)}
+            onClick={(event) => onOpen(host, event.currentTarget)}
           >
             {host === "SRV1" ? <FaServer aria-hidden="true" /> : <FaNetworkWired aria-hidden="true" />}
             <strong>{host}</strong>
@@ -89,96 +86,6 @@ function TopologyMap({ active, onOpen, theme }) {
         ))}
       </div>
     </div>
-  );
-}
-
-function RackMap({ active, onOpen }) {
-  return (
-    <div className="lab-rack">
-      <figure className="lab-rack__figure">
-        <img src="/Rack.png" width="1024" height="1536" alt="Rack showing the lab’s switches, gateways, ISP routers and server" />
-        {rackDevices.map(({ host, style }) => (
-          <button
-            className="lab-rack__hotspot cursor-target"
-            key={host}
-            type="button"
-            aria-pressed={host === active}
-            aria-label={"Open " + host + " console from rack"}
-            title={host + " · " + roles[host]}
-            style={style}
-            onClick={() => onOpen(host)}
-          />
-        ))}
-      </figure>
-      <div className="lab-rack__devices" aria-label="Rack device list">
-        {rackOrder.map((host) => (
-          <button
-            key={host}
-            type="button"
-            aria-pressed={host === active}
-            className="cursor-target"
-            onClick={() => onOpen(host)}
-          >
-            <strong>{host}</strong>
-            <span>{roles[host]}</span>
-            <FaAngleRight aria-hidden="true" />
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function ProjectTopology({ active, onOpen, theme }) {
-  const [view, setView] = useState("topology");
-  const links = project1.connections.filter(({ from, to }) => from === active || to === active);
-  return (
-    <section id="topology" className="section-block network-board" aria-labelledby="topology-title">
-      <header className="network-board__heading">
-        <div>
-          <h2 id="topology-title">Topology and rack</h2>
-          <p>Select any device to open its CLI session.</p>
-        </div>
-        <div className="network-board__switch" role="group" aria-label="Lab view">
-          <button type="button" aria-pressed={view === "topology"} onClick={() => setView("topology")}>
-            <FaNetworkWired aria-hidden="true" /> Topology
-          </button>
-          <button type="button" aria-pressed={view === "rack"} onClick={() => setView("rack")}>
-            <FaServer aria-hidden="true" /> Rack
-          </button>
-        </div>
-      </header>
-
-      {view === "topology" ? (
-        <>
-          <p className="network-board__swipe">Swipe to see the full topology, or choose a device from the rack list.</p>
-          <TopologyMap active={active} onOpen={onOpen} theme={theme} />
-          <ul className="network-board__legend" aria-label="Link legend">
-            <li><i /> Physical link</li>
-            <li><i /> Primary IPsec VTI</li>
-            <li><i /> Standby link</li>
-          </ul>
-        </>
-      ) : <RackMap active={active} onOpen={onOpen} />}
-
-      <div className="network-board__inspect">
-        <div>
-          <h3>{active} <span>{roles[active]}</span></h3>
-          <ul aria-label={active + " links"}>
-            {links.map(({ from, to, fromIf, toIf, type }) => (
-              <li key={from + fromIf}>
-                <code>{from === active ? fromIf : toIf}</code>
-                <span>{from === active ? to : from}</span>
-                <small>{type}</small>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <button className="btn btn-ghost cursor-target" type="button" onClick={() => onOpen(active)}>
-          <FaTerminal aria-hidden="true" /> Open {active} CLI
-        </button>
-      </div>
-    </section>
   );
 }
 

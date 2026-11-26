@@ -1,39 +1,28 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { FaAngleRight, FaCheck, FaNetworkWired, FaTerminal } from "react-icons/fa";
+import { FaTerminal, FaTimes } from "react-icons/fa";
+import { project1 } from "../data/projects/project1";
 import {
   commandsFor,
   consoleGroups,
   consolePrompt,
-  defaultConsole,
   runWindowsCommand,
-  verificationSteps,
 } from "../data/projects/project1Console";
 import { completeLabCommand, labCommandHelp, runLabCommand } from "../utils/labConsole";
-import ProjectTopology from "./ProjectTopology";
-import ProjectLabChapters from "./ProjectLabChapters";
 import "./Project1Console.css";
 
 const consoleDevices = Object.fromEntries(consoleGroups.flatMap((group) => group.nodes));
-const showCommand = (name, command) => consolePrompt(name) + command;
-const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const tabs = [["terminal", "Terminal"], ["ports", "Interfaces"], ["commands", "Commands"]];
 
-const isTouch = () => window.matchMedia("(pointer: coarse)").matches;
-
-export default function Project1Console({ theme }) {
-  const [host, setHost] = useState(defaultConsole);
-  const [sessions, setSessions] = useState({});
+export default function Project1Console({ host, open, onSelect, onClose, heading, modal, sessions, setSessions, commandId }) {
+  const [tab, setTab] = useState("terminal");
+  const [previousHost, setPreviousHost] = useState(host);
   const [draft, setDraft] = useState("");
   const [historyIndex, setHistoryIndex] = useState(null);
-  const [showAllCommands, setShowAllCommands] = useState(false);
   const [reveal, setReveal] = useState(null);
   const [status, setStatus] = useState("");
-  const [verified, setVerified] = useState(new Set());
-  const input = useRef(null);
   const screen = useRef(null);
   const frame = useRef(0);
-  const nextId = useRef(0);
   const draftBeforeHistory = useRef("");
-  const heading = useRef(null);
 
   const current = sessions[host] ?? [];
   const commands = useMemo(() => commandsFor(host), [host]);
@@ -41,6 +30,15 @@ export default function Project1Console({ theme }) {
   const windows = host === "SRV1";
   const prompt = consolePrompt(host);
   const running = reveal?.host === host;
+  const links = project1.connections.filter(({ from, to }) => from === host || to === host);
+
+  if (host !== previousHost) {
+    setPreviousHost(host);
+    setTab("terminal");
+    setDraft("");
+    setHistoryIndex(null);
+    setStatus("");
+  }
 
   function updateView() {
     const viewport = screen.current;
@@ -49,7 +47,7 @@ export default function Project1Console({ theme }) {
 
   useEffect(() => {
     updateView();
-  }, [host, current.length, reveal]);
+  }, [host, open, tab, current.length, reveal]);
 
   useEffect(() => () => cancelAnimationFrame(frame.current), []);
 
@@ -60,7 +58,7 @@ export default function Project1Console({ theme }) {
   }, []);
 
   function interruptReveal() {
-    if (!reveal) {
+    if (!running) {
       setDraft("");
       return;
     }
@@ -75,7 +73,7 @@ export default function Project1Console({ theme }) {
   }
 
   function append(hostName, command, output, history = false) {
-    const id = ++nextId.current;
+    const id = ++commandId.current;
     setSessions((state) => ({
       ...state,
       [hostName]: [...(state[hostName] ?? []), { id, command, output, history }].slice(-40),
@@ -83,38 +81,23 @@ export default function Project1Console({ theme }) {
     return id;
   }
 
-  const selectDevice = useCallback((device) => {
-    if (device === host) return;
-    stopReveal();
-    setStatus("");
-    setDraft("");
-    setHistoryIndex(null);
-    setShowAllCommands(false);
-    setHost(device);
-  }, [host, stopReveal]);
-
   function details(command) {
     const help = windows ? runWindowsCommand("help").text : labCommandHelp(command, commands);
     append(host, command + "?", help || "% Unrecognized command");
     setStatus("Command help displayed.");
   }
 
-  function run(command, device = host) {
+  function run(command) {
+    const device = host;
     const text = command.trim();
     if (!text) return;
     stopReveal();
     setDraft("");
     setHistoryIndex(null);
-    const available = device === host ? commands : commandsFor(device);
-    const result = device === "SRV1" ? runWindowsCommand(text) : runLabCommand(text, available, consolePrompt(device));
+    const result = device === "SRV1" ? runWindowsCommand(text) : runLabCommand(text, commands, prompt);
     const output = result.text ?? "";
     const id = append(device, text, output, true);
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
-
-    if (result.name) {
-      const step = verificationSteps.find((step) => step.host === device && step.command === result.name);
-      if (step) setVerified((done) => new Set(done).add(step.command + step.host));
-    }
 
     if (!output || !result.name || motion.matches) {
       setStatus(output ? "Command complete." : "Command complete. No matching output.");
@@ -144,27 +127,17 @@ export default function Project1Console({ theme }) {
   }
 
   function runSuggestion(command) {
+    setTab("terminal");
     run(command);
-    if (!isTouch()) input.current?.focus({ preventScroll: true });
   }
 
-  const moveToConsole = useCallback(() => {
-    heading.current?.scrollIntoView({
-      block: "start",
-      behavior: reducedMotion() || isTouch() ? "instant" : "smooth",
-    });
-    heading.current?.focus({ preventScroll: true });
-  }, []);
-
-  const openDevice = useCallback((device) => {
-    selectDevice(device);
-    moveToConsole();
-  }, [selectDevice, moveToConsole]);
-
-  function runStep(step) {
-    selectDevice(step.host);
-    run(step.command, step.host);
-    moveToConsole();
+  function onTabKey(event, index) {
+    const order = { ArrowRight: (index + 1) % tabs.length, ArrowLeft: (index + tabs.length - 1) % tabs.length, Home: 0, End: tabs.length - 1 };
+    if (!(event.key in order)) return;
+    event.preventDefault();
+    const next = tabs[order[event.key]][0];
+    setTab(next);
+    document.getElementById("lab-tab-" + next)?.focus({ preventScroll: true });
   }
 
   function clearSession() {
@@ -202,177 +175,113 @@ export default function Project1Console({ theme }) {
   }
 
   return (
-    <>
-      <ProjectTopology active={host} onOpen={openDevice} theme={theme} />
-
-      <section id="console" className="section-block lab-console" aria-labelledby="lab-console-heading">
-        <header className="lab-console__heading">
-          <div>
-            <h2 id="lab-console-heading" tabIndex={-1} ref={heading}>Network lab console</h2>
-            <p>Run device-specific commands to verify interfaces, routes and server services.</p>
-          </div>
-          <span className="lab-console__tag">{windows ? "Simulated Windows CMD" : "Simulated Cisco IOS"}</span>
-        </header>
-
-        <div className="lab-console__workbench">
-          <aside className="lab-console__devices" aria-label="Lab devices">
-            <div className="lab-console__devices-title"><FaNetworkWired aria-hidden="true" /> Devices</div>
-            {consoleGroups.map((group) => (
-              <div className="lab-console__group" key={group.name}>
-                <h3>{group.name}</h3>
-                <ul>
-                  {group.nodes.map(([name, role]) => (
-                    <li key={name}>
-                      <button type="button" aria-pressed={host === name} onClick={() => selectDevice(name)}>
-                        <span className="lab-console__device-name">{name}</span>
-                        <span className="lab-console__role">{role}</span>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </aside>
-
-          <div className="lab-console__session">
-            <div className="cli-terminal-card lab-terminal">
-              <header className="lab-terminal__bar">
-                <div className="lab-terminal__port">
-                  <FaTerminal aria-hidden="true" />
-                  <div>
-                    <h3>{host}</h3>
-                    <p>{consoleDevices[host]}</p>
-                  </div>
-                </div>
-                <span className="lab-terminal__connection"><i aria-hidden="true" /> Console connected</span>
-              </header>
-
-              <div className="lab-terminal__viewport" ref={screen} tabIndex={0} role="region" aria-label={`${host} transcript`}>
-                {current.length === 0 && (
-                  <p className="lab-terminal__welcome">Press Enter to run a command. Type <kbd>?</kbd> for available options.</p>
-                )}
-                {current.map((entry) => {
-                  const streaming = running && reveal.id === entry.id;
-                  return (
-                    <div className="lab-terminal__entry" key={entry.id} data-receiving={streaming || undefined}>
-                      <pre className="lab-terminal__echo"><span>{prompt}</span>{entry.command}</pre>
-                      {entry.output && (
-                        <pre className="lab-terminal__output" aria-hidden={streaming || undefined}>
-                          {streaming ? entry.output.slice(0, reveal.count) : entry.output}
-                          {streaming && <span className="lab-terminal__cursor" aria-hidden="true" />}
-                        </pre>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-
-              <form className="lab-terminal__prompt" data-platform={windows ? "windows" : "ios"} onSubmit={(event) => {
-                event.preventDefault();
-                run(draft);
-              }}>
-                <label htmlFor="lab-cli-input">{prompt}</label>
-                <input
-                  ref={input}
-                  id="lab-cli-input"
-                  aria-label={`Command on ${host}`}
-                  value={draft}
-                  onChange={(event) => {
-                    setDraft(event.target.value);
-                    setHistoryIndex(null);
-                  }}
-                  onKeyDown={onInputKey}
-                  autoComplete="off"
-                  autoCapitalize="none"
-                  spellCheck={false}
-                  enterKeyHint="go"
-                  maxLength={128}
-                  placeholder="Type a command"
-                />
-                <button
-                  type="submit"
-                  disabled={!draft.trim()}
-                  onPointerDown={(event) => {
-                    // Keep the dock from returning over Run when a tap would blur the input.
-                    if (event.pointerType === "touch" && document.activeElement === input.current) {
-                      event.preventDefault();
-                    }
-                  }}
-                >
-                  Run
-                </button>
-              </form>
-            </div>
-
-            <div className="lab-console__tools">
-              <div className="lab-console__keyboard">
-                <button type="button" onClick={() => details(draft)}><kbd>?</kbd> Help</button>
-                <span><kbd>Tab</kbd> Complete</span>
-                <span><kbd>↑</kbd> <kbd>↓</kbd> History</span>
-              </div>
-              <div className="lab-console__actions">
-                {running && <button type="button" onClick={() => stopReveal("Output complete.")}>Show full output</button>}
-                <button type="button" onClick={clearSession} disabled={!current.length}>Clear</button>
-              </div>
-            </div>
-            {current.some((entry) => entry.output) && (
-              <p className="lab-console__swipe-hint">Swipe the transcript sideways to see all columns.</p>
-            )}
-            <span className="lab-console__sr" role="status">{status}</span>
-
-            <div className="lab-console__commands">
-              <div className="lab-console__commands-header">
-                <h3>Try a command</h3>
-                {commands.length > 4 && (
-                  <button
-                    type="button"
-                    aria-expanded={showAllCommands}
-                    aria-controls="lab-command-options"
-                    onClick={() => setShowAllCommands((open) => !open)}
-                  >
-                    {showAllCommands ? "Show fewer" : `All ${commands.length} commands`}
-                  </button>
-                )}
-              </div>
-              <div id="lab-command-options" className="lab-console__suggestions">
-                {(showAllCommands ? commands : commands.slice(0, 4)).map((command) => (
-                  <button type="button" key={command.name} title={command.description} onClick={() => runSuggestion(command.name)}>
-                    <FaAngleRight aria-hidden="true" /> <code>{command.name}</code>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
+    <section className="rack-console" data-open={open} aria-hidden={!open} inert={!open || undefined}
+      aria-labelledby="lab-console-heading" role={modal ? "dialog" : undefined} aria-modal={modal && open || undefined}
+      onKeyDown={(event) => {
+        if (!modal || event.key !== "Tab" || event.defaultPrevented) return;
+        const controls = [...event.currentTarget.querySelectorAll('button:not(:disabled), select, input, [tabindex="0"]')]
+          .filter((element) => element.tabIndex >= 0 && !element.closest("[hidden]"));
+        const first = controls[0];
+        const last = controls.at(-1);
+        if (event.shiftKey && (document.activeElement === first || document.activeElement === heading.current)) {
+          event.preventDefault();
+          last?.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first?.focus();
+        }
+      }}>
+      <header className="rack-console__header">
+        <div className="rack-console__icon"><FaTerminal aria-hidden="true" /></div>
+        <div className="rack-console__identity">
+          <h2 id="lab-console-heading" tabIndex={-1} ref={heading}>{host}</h2>
+          <p>{consoleDevices[host]} · {windows ? "Windows CMD" : "Cisco IOS"}</p>
         </div>
+        <button type="button" className="rack-console__close" aria-label="Close console" onClick={onClose}><FaTimes aria-hidden="true" /></button>
+      </header>
 
-        <p className="lab-console__note">{windows
-            ? "The console uses a simulated Windows Server snapshot based on the lab baseline."
-            : <>The console uses a read-only lab snapshot. Pipe filters match literal text, for example <code>show ip route | include 10.255.101.2</code>.</>}</p>
-      </section>
+      <div className="rack-console__toolbar">
+        <div className="rack-console__tabs" role="tablist" aria-label="Device details">
+          {tabs.map(([id, label], index) => (
+            <button type="button" role="tab" key={id} id={"lab-tab-" + id} aria-controls={"lab-panel-" + id}
+              tabIndex={tab === id ? 0 : -1} aria-selected={tab === id} onClick={() => setTab(id)} onKeyDown={(event) => onTabKey(event, index)}>
+              {label}
+            </button>
+          ))}
+        </div>
+        <select value={host} onChange={(event) => { setTab("terminal"); onSelect(event.target.value); }} aria-label="Switch device">
+          {consoleGroups.map(({ name, nodes }) => (
+            <optgroup key={name} label={name}>{nodes.map(([name]) => <option key={name} value={name}>{name}</option>)}</optgroup>
+          ))}
+        </select>
+      </div>
 
-      <ProjectLabChapters onOpen={openDevice} />
-
-      <section id="runbook" className="section-block lab-verification" aria-labelledby="lab-verification-heading">
-        <h2 id="lab-verification-heading">Verify the network</h2>
-        <p>Follow the checks in order, or jump straight to the part of the topology you want to inspect.</p>
-        <ol>
-          {verificationSteps.map((step, index) => (
-            <li key={step.host + step.command}>
-              <div className="lab-verification__number" aria-hidden="true">
-                {verified.has(step.command + step.host) ? <FaCheck /> : String(index + 1).padStart(2, "0")}
+      <div id="lab-panel-terminal" className="rack-console__panel rack-console__panel--terminal" role="tabpanel" aria-labelledby="lab-tab-terminal" hidden={tab !== "terminal"}>
+        <div className="rack-terminal__viewport" ref={screen} tabIndex={0} role="region" aria-label={host + " transcript"}>
+          {current.length === 0 && (
+            <div className="rack-terminal__welcome">
+              <p><span aria-hidden="true" /> Simulated session ready</p>
+              <button type="button" onClick={() => runSuggestion(commands[0].name)}><FaTerminal aria-hidden="true" /><span>{commands[0].name}</span></button>
+            </div>
+          )}
+          {current.map((entry) => {
+            const streaming = running && reveal.id === entry.id;
+            return (
+              <div className="rack-terminal__entry" key={entry.id}>
+                <pre className="rack-terminal__echo"><span>{prompt} </span>{entry.command}</pre>
+                {entry.output && (
+                  <pre aria-hidden={streaming || undefined}>
+                    {streaming ? entry.output.slice(0, reveal.count) : entry.output}
+                    {streaming && <i className="rack-terminal__cursor" aria-hidden="true" />}
+                  </pre>
+                )}
               </div>
-              <div>
-                <h3>{step.label}</h3>
-                <p>{step.finding}</p>
-                {verified.has(step.command + step.host) && <span className="lab-console__sr">Command run</span>}
-              </div>
-              <button type="button" onClick={() => runStep(step)} aria-label={`Run ${step.command} on ${step.host}`}>
-                <code>{showCommand(step.host, step.command)}</code><FaAngleRight aria-hidden="true" />
-              </button>
+            );
+          })}
+        </div>
+        <form className="rack-terminal__form" data-platform={windows ? "windows" : "ios"} onSubmit={(event) => {
+          event.preventDefault();
+          run(draft);
+        }}>
+          <label htmlFor="lab-cli-input">{prompt}</label>
+          <input id="lab-cli-input" aria-label={"Command on " + host} value={draft}
+            onChange={(event) => { setDraft(event.target.value); setHistoryIndex(null); }} onKeyDown={onInputKey}
+            autoComplete="off" autoCapitalize="none" spellCheck={false} enterKeyHint="go" maxLength={128} placeholder="Type a command" />
+          <button type="submit" disabled={!draft.trim()} onPointerDown={(event) => {
+            if (event.pointerType === "touch" && document.activeElement === input.current) event.preventDefault();
+          }}>Run</button>
+        </form>
+        <footer className="rack-terminal__status">
+          <span>{windows ? "Simulated Windows session" : "Read-only lab snapshot"}</span>
+          <div>
+            <button type="button" onClick={() => details(draft)}>Help</button>
+            {running ? <button type="button" onClick={() => stopReveal("Output complete.")}>Show output</button>
+              : <button type="button" onClick={clearSession} disabled={!current.length}>Clear</button>}
+          </div>
+          <span className="lab-console__sr" role="status">{status}</span>
+        </footer>
+      </div>
+
+      <div id="lab-panel-ports" className="rack-console__panel rack-console__panel--scroll" role="tabpanel" aria-labelledby="lab-tab-ports" hidden={tab !== "ports"} tabIndex={0}>
+        <ul className="rack-console__ports">
+          {links.map(({ from, fromIf, to, toIf, type, notes }) => (
+            <li key={from + "-" + fromIf}>
+              <code>{from === host ? fromIf : toIf}</code>
+              <span>{from === host ? to : from} <small>{from === host ? toIf : fromIf}</small></span>
+              <b>{type}</b>
+              <p>{notes}</p>
             </li>
           ))}
-        </ol>
-      </section>
-    </>
+        </ul>
+      </div>
+
+      <div id="lab-panel-commands" className="rack-console__panel rack-console__panel--scroll" role="tabpanel" aria-labelledby="lab-tab-commands" hidden={tab !== "commands"} tabIndex={0}>
+        <ul className="rack-console__commands">
+          {commands.map(({ name, description }) => (
+            <li key={name}><button type="button" onClick={() => runSuggestion(name)}><code>{name}</code><span>{description}</span></button></li>
+          ))}
+        </ul>
+      </div>
+    </section>
   );
 }
