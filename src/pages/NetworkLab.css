@@ -6,7 +6,6 @@
 
 .project-page--lab .project-container { max-width: 1350px; }
 .project-page--lab :is(section, details, .lab-stage__anchor)[id] { scroll-margin-top: 105px; }
-.project-page--lab .projpager__btn--disabled { display: none; }
 .lab-kicker { color: var(--accent); font: 600 .78rem/1.4 var(--lab-mono); letter-spacing: .1em; text-transform: uppercase; }
 
 .lab-story {

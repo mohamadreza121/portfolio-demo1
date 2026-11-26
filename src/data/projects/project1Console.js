@@ -82,7 +82,7 @@ export const rackDevices = [
   { host: "HQ-EDGE", kind: "edge", ports: 4 },
   { host: "ISP1-RTR", kind: "router", ports: 3 },
   { host: "ISP2-RTR", kind: "router", ports: 3 },
-  { host: "INET-RTR", kind: "router", ports: 3 },
+  { host: "INET-RTR", kind: "router", ports: 4 },
   { host: "R2", kind: "gateway", ports: 4 },
   { host: "SW2", kind: "switch", ports: 8 },
   { host: "SRV1", kind: "server", ports: 0 },
@@ -390,28 +390,30 @@ export const verificationSteps = [
 ];
 
 export const topologyPositions = {
-  SRV1: [11, 22],
-  SW1: [11, 57],
-  "HQ-GW1": [29, 29],
-  "HQ-GW2": [29, 64],
-  "HQ-EDGE": [48, 47],
-  "ISP1-RTR": [66, 20],
-  "ISP2-RTR": [66, 52],
-  "INET-RTR": [87, 36],
-  R2: [87, 75],
-  SW2: [66, 76],
+  SRV1: [8.5, 31],
+  SW1: [8.5, 61],
+  "HQ-GW1": [23.5, 27],
+  "HQ-GW2": [23.5, 66],
+  "HQ-EDGE": [38, 46],
+  "ISP1-RTR": [52.5, 26],
+  "ISP2-RTR": [52.5, 66],
+  "INET-RTR": [67.5, 46],
+  R2: [87, 46],
+  SW2: [87, 70],
 };
 
 export function linkWaypoints({ from, to, type, fromIf }) {
   const start = topologyPositions[from];
   const end = topologyPositions[to];
   if (type === "IPSEC") {
-    const bottom = fromIf === "Tunnel20" ? 93 : 87;
-    return [start, [52, bottom], [84, bottom], end];
+    const level = fromIf === "Tunnel20" ? 94 : 85;
+    const entry = fromIf === "Tunnel20" ? 79 : 76.5;
+    const exit = fromIf === "Tunnel20" ? 37 : 39;
+    return [start, [exit, level], [entry, level], [entry, 57], end];
   }
   if (from === "INET-RTR" && to === "R2") {
-    const side = fromIf === "Gi4/0" ? 95 : 89;
-    return [start, [side, 51], [side, 60], end];
+    const level = fromIf === "Gi4/0" ? 50 : 34;
+    return [start, [74, level], [80, level], end];
   }
   return [start, end];
 }

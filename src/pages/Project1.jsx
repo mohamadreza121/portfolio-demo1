@@ -4,7 +4,6 @@ import { project1 } from "../data/projects/project1";
 import { consolePrompt, verificationSteps } from "../data/projects/project1Console";
 import NetworkLabStage from "../components/NetworkLabStage";
 import ProjectLabChapters from "../components/ProjectLabChapters";
-import ProjectPager from "../components/ProjectPager";
 import "./ProjectDetail.css";
 import "./ProjectCli.css";
 import "./NetworkLab.css";
@@ -65,7 +64,6 @@ export default function Project1({ ready = true, theme }) {
             </details>
           </div>
         </section>
-        <ProjectPager prev={null} next={null} />
       </div>
     </main>
   );

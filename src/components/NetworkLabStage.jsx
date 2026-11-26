@@ -136,13 +136,10 @@ export default function NetworkLabStage({ theme, ready }) {
           ? <NetworkRack active={open ? host : null} onOpen={openDevice} obscured={open && narrow} />
           : <div className="lab-stage__topology" inert={open || undefined}>
               <ProjectTopology active={open ? host : null} onOpen={openDevice} theme={theme} />
-              <ul className="lab-stage__legend" aria-label="Topology legend">
-                <li><i /> Physical</li><li><i /> IPsec</li><li><i /> Standby</li>
-              </ul>
             </div>}
       </div>
 
-      <p className="lab-stage__hint" aria-hidden={open || undefined}>{view === "rack" ? "Select a faceplate to connect" : "Select a device to connect"}</p>
+      {view === "rack" && <p className="lab-stage__hint" aria-hidden={open || undefined}>Select a faceplate to connect</p>}
       {narrow ? createPortal(
         <div className="lab-mobile-console" data-open={open} ref={mobilePanel}>
           <div className="lab-mobile-console__backdrop" aria-hidden="true" onClick={close} />
