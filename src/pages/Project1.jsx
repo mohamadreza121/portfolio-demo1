@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { project1 } from "../data/projects/project1";
 import { consolePrompt, verificationSteps } from "../data/projects/project1Console";
@@ -11,27 +11,24 @@ import "./NetworkLab.css";
 const storyAnchors = ["switching", "routing", "wan", "branch", "windows"];
 
 export default function Project1({ ready = true, theme }) {
-  const { hash, key, state } = useLocation();
+  const { hash, key } = useLocation();
   const hasScrolled = useRef(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!ready) return;
-    const frame = requestAnimationFrame(() => {
-      const id = hash.slice(1);
-      const section = document.getElementById(storyAnchors.includes(id) ? "story" : id);
-      const smooth = hasScrolled.current && !window.matchMedia("(prefers-reduced-motion: reduce), (pointer: coarse)").matches;
-      hasScrolled.current = true;
-      if (section?.closest(".project-page--lab")) {
-        section.scrollIntoView({ block: "start", behavior: smooth ? "smooth" : "instant" });
-      } else {
-        window.scrollTo({ top: 0, behavior: "instant" });
-      }
-    });
-    return () => cancelAnimationFrame(frame);
+    const id = hash.slice(1);
+    const section = document.getElementById(storyAnchors.includes(id) ? "story" : id);
+    const smooth = hasScrolled.current && !window.matchMedia("(prefers-reduced-motion: reduce), (pointer: coarse)").matches;
+    hasScrolled.current = true;
+    if (section?.closest(".project-page--lab")) {
+      section.scrollIntoView({ block: "start", behavior: smooth ? "smooth" : "instant" });
+    } else {
+      window.scrollTo({ top: 0, behavior: "instant" });
+    }
   }, [hash, key, ready]);
 
   return (
-    <main className="project-page project-page--lab" data-rack-morph={state?.rackMorph || undefined}>
+    <main className="project-page project-page--lab">
       <div className="project-container">
         <NetworkLabStage theme={theme} ready={ready} />
         <ProjectLabChapters hash={hash} />

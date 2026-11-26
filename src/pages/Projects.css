@@ -133,29 +133,7 @@
 .project-story__focus { min-height: 2.8em; animation: story-focus-in 450ms ease both; }
 .project-story__progress { height: 1px; width: 100%; background: var(--accent-border); overflow: hidden; }
 .project-story__progress i { display: block; height: 100%; background: var(--accent); transform-origin: left; transform: scaleX(calc(.08 + var(--story-progress) * .92)); box-shadow: 0 0 12px var(--accent); }
-.project-story__error { grid-column: 1 / -1; color: var(--text-color); }
 @keyframes story-focus-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-
-/* The browser carries the same rack between its two real layouts. */
-.project-page--lab[data-rack-morph="true"] .lab-stage[data-view="rack"] .rack-model { view-transition-name: network-rack; }
-.rack-morphing .main-page { visibility: hidden; }
-.rack-morphing::view-transition-group(network-rack) { animation-duration: 850ms; animation-timing-function: cubic-bezier(.22, 1, .36, 1); }
-.rack-morphing::view-transition-old(network-rack),
-.rack-morphing::view-transition-new(network-rack) { height: 100%; object-fit: fill; mix-blend-mode: normal; }
-.rack-morphing::view-transition-old(network-rack) { animation: rack-morph-out 850ms both; }
-.rack-morphing::view-transition-new(network-rack) { animation: rack-morph-in 850ms both; }
-.rack-morphing::view-transition-old(root) { animation: rack-scene-out 400ms ease both; }
-.rack-morphing::view-transition-new(root) { animation: rack-scene-in 650ms ease both; }
-@keyframes rack-morph-out { 0%, 22% { opacity: 1; filter: blur(0); } 75%, 100% { opacity: 0; filter: blur(3px); } }
-@keyframes rack-morph-in { 0% { opacity: 0; filter: blur(3px); } 40% { opacity: .65; } 100% { opacity: 1; filter: blur(0); } }
-@keyframes rack-scene-out { to { opacity: 0; filter: blur(4px); } }
-@keyframes rack-scene-in { from { opacity: 0; filter: blur(4px); } to { opacity: 1; filter: blur(0); } }
-
-.project-launch { --lab-mono: "JetBrains Mono", ui-monospace, monospace; position: fixed; z-index: 10020; inset: 0; overflow: hidden; pointer-events: none; }
-.project-launch::before { content: ""; position: absolute; inset: 0; background: var(--bg-color); animation: rack-scene-in 420ms both; }
-.project-launch__screen { position: absolute; display: grid; place-items: center; perspective: 1500px; animation: project-rack-zoom 420ms cubic-bezier(.22, .75, .23, 1) both; }
-.project-launch__screen .rack-model { --rack-width: clamp(340px, 34vw, 490px); transform: var(--launch-rack-pose); }
-@keyframes project-rack-zoom { to { transform: translate(var(--launch-x), var(--launch-y)) scale(1.18); filter: blur(4px); opacity: 0; } }
 
 @media (max-width: 1050px) and (min-width: 761px) {
   .project-story { gap: 28px; width: calc(100% - 60px); }
@@ -176,7 +154,6 @@
   .project-story__focus, .project-story__progress { display: none; }
   .project-story__scroll { margin-top: 22px; }
   .project-story__terminal pre { font-size: .72rem; }
-  .project-launch__screen .rack-model { --rack-width: 345px; }
 }
 @media (max-width: 359px) {
   .project-rack-link .rack-model { transform: rotateX(7deg) rotateY(-17deg) scale(.65); }

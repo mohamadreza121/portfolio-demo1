@@ -14,6 +14,7 @@ export default function Main({
   setActive,
   revealKey,
   onRequestQuote,
+  onEnterLab,
   isQuoteOpen,
   compact = false,
   ready = Boolean(revealKey),
@@ -29,7 +30,7 @@ export default function Main({
   const pages = [
     <Home key="home" revealKey={revealKey} />,
     <About key="about" />,
-    <Projects key="projects" />,
+    <Projects key="projects" onEnterLab={onEnterLab} />,
     <Certifications key="certifications" />,
     <div key="services">
       <Services onRequestQuote={onRequestQuote} />

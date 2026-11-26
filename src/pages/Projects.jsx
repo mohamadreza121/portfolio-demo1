@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { createPortal, flushSync } from "react-dom";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { FaExpand } from "react-icons/fa6";
 import DecryptedText from "../components/DecryptedText";
 import NetworkRack from "../components/NetworkRack";
@@ -20,15 +19,11 @@ function warmProject() {
   loadProjectLab().catch(() => {});
 }
 
-export default function Projects() {
+export default function Projects({ onEnterLab }) {
   const { key } = useLocation();
-  const navigate = useNavigate();
   const story = useRef(null);
   const screen = useRef(null);
-  const departing = useRef(false);
   const [chapter, setChapter] = useState(0);
-  const [launch, setLaunch] = useState(null);
-  const [error, setError] = useState("");
 
   useEffect(() => {
     const element = story.current;
@@ -36,10 +31,15 @@ export default function Projects() {
     const scroller = panel || window;
     const chapters = [...element.querySelectorAll(".project-story__chapter")];
     let frame = 0;
+    let warmed = false;
 
     function update() {
       frame = 0;
       if (panel?.getAttribute("aria-hidden") === "true") return;
+      if (!warmed && element.getBoundingClientRect().top < window.innerHeight) {
+        warmed = true;
+        warmProject();
+      }
       const top = panel?.getBoundingClientRect().top || 0;
       const height = panel?.clientHeight || window.innerHeight;
       const marker = top + height * .54;
@@ -72,72 +72,20 @@ export default function Projects() {
     };
   }, []);
 
-  const finishLaunch = useCallback(() => {
-    if (!departing.current) return;
-    departing.current = false;
-    setLaunch(null);
-    navigate(projectPath, { state: { projectsBack: 1, fromRackPreview: true } });
-  }, [navigate]);
-
-  useEffect(() => {
-    if (!launch) return;
-    const timer = window.setTimeout(finishLaunch, 560);
-    return () => window.clearTimeout(timer);
-  }, [launch, finishLaunch]);
-
-  async function openProject(event) {
+  function openProject(event) {
     if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-    if (departing.current) { event.preventDefault(); return; }
     rememberProjectPosition(key, 1, event.currentTarget);
     const rack = screen.current?.querySelector(".rack-model");
     const rect = screen.current?.getBoundingClientRect();
-    if (!rect?.width || !rect.height || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!onEnterLab || !rack || !rect?.width || !rect.height || window.matchMedia("(prefers-reduced-motion: reduce), (max-width: 760px), (pointer: coarse)").matches) return;
+    if (rect.bottom <= 0 || rect.top >= window.innerHeight) return;
 
     event.preventDefault();
-    departing.current = true;
-    setError("");
-
-    if (document.startViewTransition) {
-      try {
-        await loadProjectLab();
-      } catch {
-        departing.current = false;
-        setError("The lab couldn’t load. Please try again.");
-        return;
-      }
-      if (!rack?.isConnected) return;
-      rack.style.viewTransitionName = "network-rack";
-      const transition = document.startViewTransition(async () => {
-        rack.style.viewTransitionName = "none";
-        document.documentElement.classList.add("rack-morphing");
-        flushSync(() => navigate(projectPath, {
-          state: { projectsBack: 1, fromRackPreview: true, rackMorph: true },
-        }));
-        // Let the preloaded route mount before capturing the destination rack.
-        await new Promise((resolve) => {
-          let attempts = 0;
-          function waitForRack() {
-            if (document.querySelector('.project-page--lab .rack-model') || ++attempts > 60) resolve();
-            else requestAnimationFrame(waitForRack);
-          }
-          requestAnimationFrame(waitForRack);
-        });
-        window.scrollTo({ top: 0, behavior: "instant" });
-      });
-      transition.finished.catch(() => {}).finally(() => {
-        rack.style.removeProperty("view-transition-name");
-        document.documentElement.classList.remove("rack-morphing");
-        departing.current = false;
-      });
-      return;
-    }
-
-    warmProject();
-    setLaunch({
+    onEnterLab({
       left: rect.left, top: rect.top, width: rect.width, height: rect.height,
-      "--launch-x": window.innerWidth * .7 - (rect.left + rect.width / 2) + "px",
-      "--launch-y": window.innerHeight * .48 - (rect.top + rect.height / 2) + "px",
-      "--launch-rack-pose": getComputedStyle(rack).transform,
+      rackWidth: rack.offsetWidth, pose: getComputedStyle(rack).transform,
+      perspective: getComputedStyle(screen.current).perspective,
+      host: rackFocus[chapter].host,
     });
   }
 
@@ -190,15 +138,7 @@ export default function Projects() {
             <span className="project-story__progress" aria-hidden="true"><i /></span>
           </figcaption>
         </figure>
-        {error && <p className="project-story__error" role="alert">{error}</p>}
       </article>
-      {launch && createPortal(
-        <div className="project-launch" aria-hidden="true">
-          <div className="project-launch__screen" style={launch} onAnimationEnd={finishLaunch}>
-            <NetworkRack active={rackFocus[chapter].host} />
-          </div>
-        </div>, document.body,
-      )}
     </section>
   );
 }

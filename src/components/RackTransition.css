@@ -1,0 +1,41 @@
+.rack-transition {
+  --lab-mono: "JetBrains Mono", ui-monospace, monospace;
+  position: fixed;
+  z-index: 10020;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.rack-transition__veil {
+  position: absolute;
+  inset: 0;
+  background: var(--bg-color);
+  opacity: 0;
+  animation: rack-flight-veil 300ms ease forwards;
+}
+@keyframes rack-flight-veil { to { opacity: .28; } }
+.rack-transition__flight { position: absolute; display: grid; place-items: center; transform-origin: center; }
+.rack-transition__flight .rack-model { width: var(--flight-rack-width); transform: var(--flight-rack-pose); transition: none; }
+.rack-transition__flight .rack-module[data-active="true"] { border-color: var(--accent); box-shadow: inset 0 0 19px var(--accent-shadow-soft), 0 0 13px var(--accent-shadow-soft); }
+html[data-rack-transition="true"] .project-rack-link .rack-model,
+html[data-rack-transition="true"] .project-page--lab .lab-stage__hardware { visibility: hidden; }
+.rack-transition__status {
+  position: absolute;
+  bottom: max(100px, 10vh);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 10px 16px;
+  background: var(--bg-color);
+  color: var(--text-color);
+  font: .85rem/1.5 var(--lab-mono);
+  border: 1px solid var(--accent-border);
+  pointer-events: auto;
+  visibility: hidden;
+  animation: rack-flight-status 0s 900ms forwards;
+}
+.rack-transition__status button { min-height: 38px; color: var(--accent); }
+.rack-transition__status[data-failed="true"] { visibility: visible; animation: none; }
+@keyframes rack-flight-status { to { visibility: visible; } }
