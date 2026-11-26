@@ -1,3 +1,4 @@
+import DecryptedText from "../components/DecryptedText";
 import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { FaArrowLeft, FaArrowRight, FaArrowUpRightFromSquare, FaExpand, FaXmark } from "react-icons/fa6";
 import LightboxPortal from "../components/LightboxPortal";
@@ -237,7 +238,7 @@ export default function Certifications() {
       <div className="credential-gallery">
         <header className="credential-header">
           <div>
-            <h1 id="credentials-heading">Professional <span>Certifications</span></h1>
+            <h1 id="credentials-heading"><DecryptedText text="Professional" animateOn="view" sequential speed={45} revealDirection="center" />{" "}<span className="credential-title-accent"><DecryptedText text="Certifications" animateOn="view" sequential speed={45} revealDirection="center" revealDelay={100} /></span></h1>
             <p>Networking, security, hardware, and programming credentials.</p>
           </div>
           <a className="credential-credly cursor-target" href="https://www.credly.com/users/mohammadreza-heidarpoor" target="_blank" rel="noreferrer">

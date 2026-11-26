@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, useMemo, useCallback } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
+import useCompactLayout from "../hooks/useCompactLayout";
 
 const styles = {
   wrapper: { display: "inline-block", whiteSpace: "pre-wrap" },
@@ -38,6 +39,9 @@ export default function DecryptedText({
   revealKey,
   ...props
 }) {
+  const compact = useCompactLayout();
+  const reducedMotion = useReducedMotion();
+  const simpleReveal = compact || reducedMotion;
   const [displayText, setDisplayText] = useState(text);
   const [isHovering, setIsHovering] = useState(false);
   const [isScrambling, setIsScrambling] = useState(false);
@@ -77,7 +81,7 @@ export default function DecryptedText({
 
   const scrambleOnce = useCallback(
     (originalText, currentRevealed) =>
-      originalText
+      simpleReveal ? originalText : originalText
         .split("")
         .map((char, i) => {
           if (char === " ") return " ";
@@ -85,7 +89,7 @@ export default function DecryptedText({
           return availableChars[Math.floor(Math.random() * availableChars.length)];
         })
         .join(""),
-    [availableChars]
+    [availableChars, simpleReveal]
   );
 
   // Scramble / reveal engine
@@ -93,6 +97,23 @@ export default function DecryptedText({
     let interval;
     let currentIteration = 0;
     let cancelled = false;
+
+    if (simpleReveal) {
+      if (!isHovering) return;
+      const animation = !reducedMotion && containerRef.current?.animate?.([
+        { opacity: .25, transform: "translateY(6px)" },
+        { opacity: 1, transform: "translateY(0)" },
+      ], { duration: 360, easing: "cubic-bezier(.22, .75, .23, 1)" });
+      defer(() => {
+        if (cancelled) return;
+        setDisplayText(text);
+        setIsScrambling(false);
+      });
+      return () => {
+        cancelled = true;
+        animation?.cancel();
+      };
+    }
 
     const getNextIndex = (revealedSet) => {
       const L = text.length;
@@ -176,7 +197,7 @@ export default function DecryptedText({
       cancelled = true;
       if (interval) clearInterval(interval);
     };
-  }, [isHovering, text, speed, maxIterations, sequential, revealDirection, scrambleOnce]);
+  }, [isHovering, text, speed, maxIterations, sequential, revealDirection, scrambleOnce, simpleReveal, reducedMotion]);
 
   // Explicit reveal (revealKey): pre-scramble immediately, then start
   useEffect(() => {
@@ -208,6 +229,8 @@ export default function DecryptedText({
     const root = panel || null;
 
     const panelIsActive = () => {
+      const phase = document.documentElement.dataset.phase;
+      if (phase && phase !== "ready") return false;
       if (!panel) return true;
       return panel.getAttribute("aria-hidden") !== "true";
     };
@@ -223,7 +246,7 @@ export default function DecryptedText({
       setDisplayText(scrambleOnce(text, empty));
 
       if (viewTimerRef.current) clearTimeout(viewTimerRef.current);
-      viewTimerRef.current = setTimeout(() => setIsHovering(true), revealDelay);
+      viewTimerRef.current = setTimeout(() => setIsHovering(true), revealDelay + (panel ? 280 : 0));
     };
 
     const manualCheck = () => {
@@ -250,6 +273,8 @@ export default function DecryptedText({
     observer.observe(el);
 
     const onDeckState = () => requestAnimationFrame(manualCheck);
+    const phaseObserver = new MutationObserver(onDeckState);
+    phaseObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["data-phase"] });
     window.addEventListener("deck:state", onDeckState);
     window.addEventListener("deck:active", onDeckState);
     window.addEventListener("resize", onDeckState);
@@ -259,6 +284,7 @@ export default function DecryptedText({
 
     return () => {
       observer.disconnect();
+      phaseObserver.disconnect();
       window.removeEventListener("deck:state", onDeckState);
       window.removeEventListener("deck:active", onDeckState);
       window.removeEventListener("resize", onDeckState);
@@ -269,7 +295,7 @@ export default function DecryptedText({
 
   // Hover support: pre-scramble immediately (no jump)
   const hoverProps =
-    animateOn === "hover" || animateOn === "both"
+    !simpleReveal && (animateOn === "hover" || animateOn === "both")
       ? {
           onMouseEnter: () => {
             const empty = new Set();
@@ -289,10 +315,10 @@ export default function DecryptedText({
       {...hoverProps}
       {...props}
     >
-      <span style={styles.srOnly}>{displayText}</span>
+      <span style={styles.srOnly}>{text}</span>
 
       <span aria-hidden="true">
-        {displayText.split("").map((char, index) => {
+        {simpleReveal ? text : displayText.split("").map((char, index) => {
           const isRevealedOrDone =
             revealedIndices.has(index) || !isScrambling || !isHovering;
 

@@ -1,3 +1,4 @@
+import DecryptedText from "./DecryptedText";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Link, useLocation } from "react-router-dom";
@@ -116,7 +117,7 @@ export default function NetworkLabStage({ theme, ready }) {
       <div className="lab-stage__ambient" aria-hidden="true" />
       <header className="lab-stage__intro" inert={open || view === "topology" || undefined}>
         <p className="lab-kicker">Enterprise network lab</p>
-        <h1 id="lab-hero-title">Two sites.<br />One network.</h1>
+        <h1 id="lab-hero-title"><DecryptedText text="Two sites." animateOn="view" sequential speed={55} revealDirection="center" /><br /><DecryptedText text="One network." animateOn="view" sequential speed={55} revealDirection="center" revealDelay={140} /></h1>
         <p>Open a device and follow the path from HQ, across two providers, to the branch.</p>
         <div className="lab-stage__actions">
           <button type="button" onClick={(event) => openDevice(defaultConsole, event.currentTarget)}>

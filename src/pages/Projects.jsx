@@ -1,3 +1,4 @@
+import DecryptedText from "../components/DecryptedText";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -75,7 +76,7 @@ export default function Projects() {
     <section id="projects" className="projects-page" aria-labelledby="projects-heading">
       <span className="spy-marker" />
       <div className="project-showcase">
-        <h1 id="projects-heading">Projects</h1>
+        <h1 id="projects-heading"><DecryptedText text="Projects" animateOn="view" sequential speed={65} revealDirection="center" /></h1>
         <article>
           <Link id="open-project-1" className="project-feature" to={projectPath} state={{ projectsBack: 1 }}
             aria-labelledby="featured-lab-title" aria-describedby="featured-lab-summary"

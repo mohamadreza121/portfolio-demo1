@@ -8,7 +8,12 @@ function Lab() {
 }
 
 function renderProjects(reduced) {
-  const query = vi.spyOn(window, "matchMedia").mockReturnValue({ matches: reduced });
+  const query = vi.spyOn(window, "matchMedia").mockImplementation((media) => ({
+    matches: media.includes("prefers-reduced-motion") && reduced,
+    media,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+  }));
   const view = render(
     <MemoryRouter initialEntries={["/#projects"]}>
       <Routes>

@@ -1,3 +1,4 @@
+import DecryptedText from "../components/DecryptedText";
 import { FaDownload, FaEnvelope } from "react-icons/fa6";
 import profile from "../data/professionalProfile.json";
 import "./AboutModern.css";
@@ -33,8 +34,8 @@ export default function About() {
           <div className="about-intro__copy">
             <h1 id="about-heading">
               <span className="about-kicker">About me</span>
-              <span className="about-name">Mohammadreza</span>{" "}
-              <span className="about-name about-name--surname">Heidarpoor</span>
+              <span className="about-name"><DecryptedText text="Mohammadreza" animateOn="view" sequential speed={45} revealDirection="center" /></span>{" "}
+              <span className="about-name about-name--surname"><DecryptedText text="Heidarpoor" animateOn="view" sequential speed={45} revealDirection="center" revealDelay={120} /></span>
             </h1>
             <p className="about-intro__headline">IT, from the venue floor to the back office.</p>
             <p>I study information technology at York and work on the Athletics &amp; Recreation facilities team. I support events and build tools that help the office track repairs and equipment.</p>

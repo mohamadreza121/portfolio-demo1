@@ -35,7 +35,7 @@ html[data-theme="day"] .certifications-page {
   line-height: .95;
 }
 
-.credential-header h1 span { color: var(--credential-accent); }
+.credential-header h1 > .credential-title-accent { color: var(--credential-accent); }
 .credential-header p { margin-top: 12px; color: var(--credential-copy); line-height: 1.5; }
 .credential-credly {
   display: inline-flex;
@@ -232,7 +232,7 @@ html[data-theme="day"] .credential-spotlight::before {
   .credential-gallery { width: min(100% - 28px, 560px); padding: 45px 0 55px; }
   .credential-header { align-items: start; flex-direction: column; gap: 6px; }
   .credential-header h1 { font-size: clamp(2.2rem, 8.8vw, 4.2rem); }
-  .credential-header h1 span { display: block; }
+  .credential-header h1 > .credential-title-accent { display: block; }
   .credential-spotlight { --step: clamp(68px, 20vw, 122px); height: clamp(241px, 75vw, 415px); overflow: visible; }
   .credential-deck { overflow: clip; }
   .credential-slide { width: 80%; }
