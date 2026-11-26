@@ -31,13 +31,23 @@ export default function App() {
   /* =====================================================
      PHASE STATE
   ===================================================== */
-  const [phase, setPhase] = useState("preloader");
-  // preloader → curtains → ready
+  const [homeEntry] = useState(() => location.pathname === "/" &&
+    (!location.hash || location.hash === "#home") &&
+    (!location.state?.scrollTo || location.state.scrollTo === "home"));
+  const [phase, setPhase] = useState(homeEntry ? "ready" : "preloader");
+  const [homeOpening, setHomeOpening] = useState(homeEntry);
+
+  // Release the opening state while leaving all controls usable from the first frame.
+  useEffect(() => {
+    if (!homeOpening) return;
+    const timeout = window.setTimeout(() => setHomeOpening(false), 1300);
+    return () => window.clearTimeout(timeout);
+  }, [homeOpening]);
 
   /* =====================================================
      REVEAL KEY
   ===================================================== */
-  const [revealKey, setRevealKey] = useState(0);
+  const [revealKey, setRevealKey] = useState(homeEntry ? 1 : 0);
 
   /* =====================================================
      INTERNAL GUARDS
@@ -171,7 +181,7 @@ export default function App() {
      RENDER
   ===================================================== */
   return (
-    <div className="app-root" data-compact={compact}>
+    <div className="app-root" data-compact={compact} data-home-opening={homeOpening || undefined}>
       {(phase === "preloader" || phase === "curtains") && (
         <CurtainOverlay
           phase={phase}

@@ -31,7 +31,7 @@ export default function Router({
 
   return (
     <>
-    <AnimatePresence mode={compact ? "wait" : "sync"}>
+    <AnimatePresence initial={location.pathname !== "/"} mode={compact ? "wait" : "sync"}>
       <Routes location={location} key={location.pathname}>
         <Route
           path="/"

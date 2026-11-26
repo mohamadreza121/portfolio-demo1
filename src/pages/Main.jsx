@@ -28,7 +28,7 @@ export default function Main({
   }, [key, hash, state]);
 
   const pages = [
-    <Home key="home" revealKey={revealKey} />,
+    <Home key="home" />,
     <About key="about" />,
     <Projects key="projects" onEnterLab={onEnterLab} />,
     <Certifications key="certifications" />,

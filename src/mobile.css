@@ -97,33 +97,6 @@ html:has(:is(input, textarea, select, [contenteditable="true"]):focus) .mobile-d
   padding-top: env(safe-area-inset-top);
 }
 
-.mobile-portfolio .home-container {
-  padding: 20px 18px 22px;
-}
-
-.mobile-portfolio .home-hero { min-height: auto; padding: 0; }
-
-.mobile-portfolio .hero-right {
-  gap: 0.85rem;
-  padding: 20px 0;
-}
-
-.mobile-portfolio .home-title {
-  font-size: clamp(1.9rem, 7.6vw, 3.4rem);
-  overflow-wrap: anywhere;
-}
-
-.mobile-portfolio .home-cta-row { margin-top: 10px; }
-
-@media (max-width: 460px) {
-  .mobile-portfolio .home-cta-row {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-    width: min(100%, 300px);
-  }
-}
-
 .mobile-portfolio :is(#about, #projects, #certifications, #services) {
   position: relative;
   min-height: auto;

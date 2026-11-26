@@ -1,148 +1,191 @@
-/* ======================================================
-   HOME — CINEMATIC INTRO (MATCHES ABOUT / PROJECTS)
-   ====================================================== */
-
 .home-page {
-  width: 100%;
-  min-height: 100vh;
-  position: relative;
-  font-family: 'JetBrains Mono', monospace;
+  --home-signal: var(--accent);
+  --home-edge: color-mix(in srgb, var(--accent) 47%, var(--bg-color));
+  --home-relief: color-mix(in srgb, var(--text-color) 25%, var(--bg-color));
+  display: grid;
+  align-items: center;
+  min-height: 100svh;
+  padding: clamp(112px, 15vh, 168px) 0 clamp(48px, 8vh, 100px);
   color: var(--text-color);
-  margin-top: 64px;
-  display: flex;
-  justify-content: center;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
-/* Grid background (same language as About / Projects) */
-.home-page::before {
+html[data-theme="day"] .home-page {
+  --home-signal: #a43d1d;
+  --home-edge: #ae7b69;
+  --home-relief: #b0a49f;
+}
+
+.home-page > .spy-marker { position: absolute; inset: 0 auto auto 0; }
+.home-opening { position: relative; isolation: isolate; width: min(86%, 1340px); margin-inline: auto; }
+.home-opening::before {
   content: "";
   position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(var(--grid-line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-  background-size: 48px 48px;
+  z-index: -1;
+  inset: -16% -6%;
+  background: radial-gradient(ellipse at 45% 55%, color-mix(in srgb, var(--bg-color) 79%, transparent), transparent 76%);
   pointer-events: none;
-  z-index: 0;
 }
-
-/* ======================================================
-   CONTAINER
-   ====================================================== */
-
-.home-container {
-  position: relative;
-  z-index: 2;
-  max-width: 1100px;
-  width: 100%;
-  padding: 0 24px 80px;
-  display: flex;
-  align-items: center;
-}
-
-/* ======================================================
-   HERO — CENTERED CHAPTER INTRO
-   ====================================================== */
-
-.home-hero {
-  width: 100%;
-  min-height: calc(100vh - 120px);
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-
-/* Structural hook for future visuals (kept empty by design) */
-.hero-left {
-  display: none;
-}
-
-/* Content column */
-.hero-right {
-  max-width: 880px;
-  width: 100%;
-  padding: clamp(2rem, 6vw, 4rem) 1rem;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.2rem;
-}
-
-/* ======================================================
-   TITLE / SUBTITLE
-   ====================================================== */
-
-.home-title {
-  font-size: clamp(2.4rem, 5.5vw, 4rem);
-  font-weight: 800;
-  line-height: 1.1;
-  color: var(--accent);
-  text-shadow: 0 0 12px var(--accent-glow);
-}
-
-.home-subtitle {
-  font-size: clamp(1rem, 1.6vw, 1.25rem);
-  max-width: 760px;
-  line-height: 1.6;
+.home-location {
   color: var(--muted);
-  opacity: 0.9;
+  font: 500 .8rem/1.5 "JetBrains Mono", monospace;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin: 0 0 clamp(16px, 2.8vh, 34px);
+}
+.home-signature { position: relative; isolation: isolate; padding-bottom: clamp(16px, 2.2vw, 32px); }
+.home-wordmark {
+  position: relative;
+  z-index: 1;
+  width: max-content;
+  max-width: 100%;
+  margin: 0;
+  font-size: clamp(4.1rem, min(9.8vw, 17vh), 10.4rem);
+  font-weight: 710;
+  line-height: .94;
+  letter-spacing: -.069em;
+  text-shadow: 0 1px 0 var(--home-relief),
+    var(--relief-x, 0px) 3px 0 var(--home-relief),
+    var(--relief-x, 0px) 9px 18px color-mix(in srgb, var(--bg-color) 86%, transparent);
+}
+.home-word { display: block; white-space: nowrap; }
+.home-word + .home-word { margin: .025em 0 0 .64em; color: var(--home-signal); }
+.home-letter { position: relative; display: inline-block; }
+.home-cipher {
+  display: none;
+  position: absolute;
+  inset: .05em auto auto 0;
+  color: var(--home-signal);
+  font: 500 .64em/1 monospace;
+  text-shadow: 0 0 9px var(--accent-glow);
+  pointer-events: none;
 }
 
-/* Minimal value line */
-.home-tagline {
-  margin-top: 6px;
-  font-size: 0.98rem;
-  line-height: 1.55;
+/* The trace turns below the name and finishes at the project link. */
+.home-trace {
+  --bend: 12%;
+  position: absolute;
+  inset: 6% 0 0;
+  color: var(--home-signal);
+  pointer-events: none;
+}
+.home-trace i { position: absolute; display: block; }
+.home-trace__lamp {
+  z-index: 1;
+  right: 0;
+  top: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  transform: translate(50%, -50%);
+  background: currentColor;
+  box-shadow: 0 0 0 4px var(--bg-color), 0 0 0 5px var(--home-edge), 0 0 14px var(--accent-glow);
+}
+.home-trace__lead, .home-trace__drop, .home-trace__baseline { background: var(--home-edge); }
+.home-trace__lead { inset: 0 0 auto auto; width: var(--bend); height: 1px; }
+.home-trace__drop { inset: 0 var(--bend) 0 auto; width: 1px; }
+.home-trace__baseline { inset: auto var(--bend) 0 0; height: 1px; }
+
+.home-details {
+  --home-gap: clamp(20px, 3vh, 36px);
+  display: grid;
+  grid-template-columns: minmax(245px, .8fr) minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(30px, 7vw, 112px);
+  padding-top: var(--home-gap);
+}
+.home-statement { grid-column: 2; grid-row: 1; }
+.home-statement h2 {
   color: var(--text-color);
-  opacity: 0.78;
-  max-width: 720px;
+  font-size: clamp(1.12rem, 1.64vw, 1.65rem);
+  font-weight: 620;
+  line-height: 1.18;
+  letter-spacing: -.035em;
 }
-
-
-/* ======================================================
-   CTA ROW
-   ====================================================== */
-
-.home-cta-row {
-  margin-top: 18px;
-  display: flex;
-  gap: 14px;
-  flex-wrap: wrap;
-  justify-content: center;
+.home-statement p {
+  max-width: 41ch;
+  margin: .52em 0 0;
+  color: var(--muted);
+  font-size: clamp(1rem, 1.12vw, 1.12rem);
+  line-height: 1.55;
+  text-wrap: pretty;
 }
-
-/* ======================================================
-   RESPONSIVE
-   ====================================================== */
-
-@media (max-width: 900px) {
-  .home-title {
-    font-size: clamp(2.2rem, 7vw, 3.4rem);
-  }
-
-  .home-subtitle {
-    font-size: 1rem;
-  }
+.home-actions { grid-column: 1; grid-row: 1; }
+.home-work {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 46px;
+  padding-inline: .85em;
+  color: var(--text-color);
+  font-family: inherit;
+  font-size: clamp(1.05rem, 1.5vw, 1.4rem);
+  font-weight: 650;
+  line-height: 1.15;
 }
+.home-work:hover, .home-work:focus-visible { color: var(--home-signal); }
+.home-work::before, .home-work::after { content: ""; position: absolute; left: 0; pointer-events: none; }
+.home-work::before {
+  top: calc(0px - var(--home-gap));
+  height: calc(100% + var(--home-gap));
+  width: 1px;
+  background: var(--home-edge);
+}
+.home-work::after { bottom: 0; width: 100%; height: 1px; background: var(--home-signal); }
+.home-quicklinks { display: flex; flex-wrap: wrap; gap: 0 1.15rem; margin-top: .5rem; }
+.home-quicklinks :is(a, button) {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--muted);
+  text-decoration: none;
+  font: 500 .875rem/1.4 "JetBrains Mono", monospace;
+}
+.home-quicklinks :is(a, button):hover { color: var(--home-signal); }
+.home-page :is(a, button):focus-visible { outline: 2px solid var(--home-signal); outline-offset: 4px; }
 
-@media (max-width: 520px) {
-  .home-hero {
-    min-height: auto;
-    padding-top: 40px;
-  }
+@keyframes home-run-x { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes home-run-y { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes home-signal { 0% { opacity: .3; } 60% { box-shadow: 0 0 18px var(--accent); } }
+@keyframes home-glyph { 0%, 70% { opacity: .94; } 100% { opacity: 0; } }
+@keyframes home-decode {
+  0%, 40% { opacity: .2; }
+  68% { opacity: 1; color: var(--text-color); text-shadow: 0 -1px 1px var(--text-color), 0 0 .085em var(--accent-glow); }
+  100% { opacity: 1; }
+}
+@keyframes home-copy-in { from { opacity: .4; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 
-  .home-title {
-    font-size: 2.1rem;
+@media (prefers-reduced-motion: no-preference) and (min-width: 721px) and (pointer: fine) {
+  [data-home-opening] .home-trace__lamp { animation: home-signal 320ms ease-out; }
+  [data-home-opening] .home-trace__lead { transform-origin: right; animation: home-run-x 140ms 40ms linear backwards; }
+  [data-home-opening] .home-trace__drop { transform-origin: top; animation: home-run-y 180ms 180ms linear backwards; }
+  [data-home-opening] .home-trace__baseline { transform-origin: right; animation: home-run-x 420ms 360ms ease-out backwards; }
+  [data-home-opening] .home-work::before { transform-origin: top; animation: home-run-y 95ms 780ms linear backwards; }
+  [data-home-opening] .home-work::after { transform-origin: left; animation: home-run-x 160ms 875ms ease-out backwards; }
+  [data-home-opening] .home-ink { animation: home-decode 160ms calc(340ms + var(--order) * 28ms) ease-out; }
+  [data-home-opening] .home-cipher { display: block; opacity: 0; animation: home-glyph 110ms calc(340ms + var(--order) * 28ms) ease-out; }
+  [data-home-opening] .home-statement { animation: home-copy-in 250ms 620ms ease-out backwards; }
+}
+@media (max-width: 720px), (pointer: coarse) {
+  .home-page {
+    min-height: calc(100svh - var(--mobile-dock-clearance, 84px));
+    padding: max(44px, env(safe-area-inset-top)) 0 30px;
   }
-
-  .home-subtitle {
-    font-size: 0.95rem;
-  }
-
-  .home-cta-row {
-    gap: 10px;
-  }
+  .home-opening { width: min(100% - 36px, 740px); }
+  .home-location { margin-bottom: 19px; }
+  .home-signature { padding-bottom: 18px; }
+  .home-wordmark { font-size: clamp(2rem, 10.45vw, 5.6rem); }
+  .home-word + .home-word { margin-left: .35em; }
+  .home-trace { inset: auto auto 0 0; width: 62px; height: 1px; }
+  .home-trace .home-trace__lead, .home-trace .home-trace__drop { display: none; }
+  .home-trace__baseline { inset: 0; }
+  .home-trace__lamp { width: 4px; height: 4px; }
+  .home-details { display: flex; flex-direction: column; gap: 16px; padding-top: 20px; }
+  .home-statement p { max-width: 35ch; }
+  .home-work { padding-inline-start: 0; }
+  .home-work::before { content: none; }
+}
+@media (prefers-reduced-motion: no-preference) and (max-width: 720px), (prefers-reduced-motion: no-preference) and (pointer: coarse) {
+  [data-home-opening] .home-trace__baseline { transform-origin: left; animation: home-run-x 280ms ease-out both; }
+  [data-home-opening] .home-wordmark { animation: home-copy-in 240ms ease-out; }
 }
