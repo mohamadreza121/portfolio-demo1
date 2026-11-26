@@ -1,0 +1,46 @@
+{
+  "name": "Mohammadreza Heidarpoor",
+  "location": "Toronto, ON",
+  "email": "mrheidarpoor7@gmail.com",
+  "linkedin": "https://www.linkedin.com/in/mohammadreza-heidarpoor/",
+  "employer": "York University",
+  "department": "Athletics & Recreation",
+  "role": "Facilities Operations Events",
+  "period": "January 2026 to present",
+  "degree": "Bachelor of Information Technology",
+  "graduation": "Expected 2029",
+  "credential": "Cisco Certified Specialist – Enterprise Core",
+  "cabling": ["Ethernet", "microphone", "XLR audio"],
+  "otherExperience": [
+    {
+      "role": "IT Support Specialist",
+      "employer": "Boosting Market",
+      "period": "September 2025 to present",
+      "summary": "Troubleshoot device, software, and account issues and write setup instructions for clients.",
+      "details": [
+        "Troubleshoot hardware, software, system performance, and account issues for clients.",
+        "Document fixes and guide clients through setup and configuration."
+      ]
+    },
+    {
+      "role": "Networking Tutor",
+      "employer": "Freelance",
+      "period": "2022 to present",
+      "summary": "Teach networking fundamentals and guide learners through Cisco Packet Tracer labs.",
+      "details": [
+        "Teach CCNA topics such as subnetting, switching, routing, and VLANs through Cisco Packet Tracer labs.",
+        "Prepare and grade assessments and coach learners through configuration exercises."
+      ]
+    },
+    {
+      "role": "Network Support",
+      "employer": "Technology Services",
+      "period": "February 2022 to August 2023",
+      "summary": "Installed office cabling and switches and helped customers resolve connectivity issues.",
+      "details": [
+        "Installed network cabling, switches, and networked devices in small and midsize offices.",
+        "Diagnosed connectivity issues and provided Level 1 and Level 2 support, including remote configuration."
+      ]
+    }
+  ]
+}

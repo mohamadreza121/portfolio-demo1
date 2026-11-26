@@ -1,167 +1,120 @@
-import { useState } from "react";
-import DecryptedText from "../components/DecryptedText";
-import ProfileCard from "../components/ProfileCard";
+import { FaDatabase, FaDownload, FaEnvelope, FaNetworkWired, FaScrewdriverWrench, FaTicket } from "react-icons/fa6";
+import profile from "../data/professionalProfile.json";
 import "./AboutModern.css";
 
+const cables = new Intl.ListFormat("en-CA").format(profile.cabling);
+
+const chapters = [
+  {
+    label: "Facilities operations",
+    title: "Start with what the crew needs.",
+    copy: "Working in Athletics & Recreation has taught me to look at systems from the crew’s side. During an event, that means setting up spaces and helping with AV checks. Back in the office, it means making sure people can report a problem and see who’s handling it.",
+    icon: FaScrewdriverWrench,
+  },
+  {
+    label: "Service desk",
+    title: "Give each repair a clear path.",
+    copy: "I built a Microsoft 365 ticketing workflow for equipment repairs. Staff can report an issue and attach photos in Microsoft Forms. SharePoint tracks each ticket, while Power Automate logs it in Excel and sends assignment notifications.",
+    tools: "Microsoft Forms · SharePoint · Power Automate · Excel",
+    icon: FaTicket,
+  },
+  {
+    label: "Inventory and databases",
+    title: "Make equipment records easier to keep current.",
+    copy: "I set up a Microsoft Access database for the office and built an inventory workflow that uses asset IDs to match staff submissions to equipment records. The team can review updates in SharePoint, and Power Automate keeps the Excel log in sync.",
+    tools: "Microsoft Access · SharePoint · Excel",
+    icon: FaDatabase,
+  },
+];
+
 export default function About() {
-  const [activePanel, setActivePanel] = useState(0);
-
   return (
-    <div id="about" className="about-page">
+    <section id="about" className="about-page" aria-labelledby="about-heading">
       <span className="spy-marker" />
-
-      <div className="about-container">
-        {/* HEADER — CENTERED */}
-        <div className="about-header centered">
-          <h1 className="about-title-center">
-            <DecryptedText
-              text="About Me"
-              animateOn="view"
-              sequential
-              speed={100}
-              encryptedClassName="encrypted"
-              className="revealed"
-            />
-          </h1>
-
-          <p className="about-subtitle">
-            Networking & IT Security student focused on designing, securing, and
-            operating enterprise-grade infrastructure.
-          </p>
-        </div>
-
-        {/* MAIN CONTENT ROW */}
-        <div className="about-main-row">
-          {/* LEFT — PROFILE CARD */}
-          <div className="about-left">
-            <ProfileCard
-              name="Mohammadreza Heidarpoor"
-              title="Networking & IT Security Student"
-              handle="mammadcodes"
-              status="busy"
-              contactText="Contact Me"
-              avatarUrl="/my-avatar.jpg"
-              miniAvatarUrl="/my-avatar.jpg"
-              enableTilt={false}
-              enableMobileTilt={false}
-            />
-          </div>
-
-          {/* RIGHT — CHASSIS PANEL */}
-          <div className="about-right">
-            <div className="about-stack-card chassis">
-              {/* PANEL CONTENT */}
-              <div className="about-panel">
-                {activePanel === 0 && (
-                  <>
-                    <h2 className="section-title">Technical Skills</h2>
-
-                    <div className="about-grid">
-                      <div className="about-card chassis">
-                        <h3>Networking</h3>
-                        <p>
-                          VLANs • Inter-VLAN Routing • OSPF • BGP • NAT • ACLs •
-                          DHCP • DNS • STP • WAN • Troubleshooting
-                        </p>
-                      </div>
-
-                      <div className="about-card chassis">
-                        <h3>Security</h3>
-                        <p>
-                          Firewall Configuration • VPN (Site-to-Site & Remote) •
-                          Cisco AnyConnect • Layer 2 Defense • Access Control
-                        </p>
-                      </div>
-
-                      <div className="about-card chassis">
-                        <h3>Systems & Tools</h3>
-                        <p>
-                          Windows Server • Active Directory • GPO • Hyper-V •
-                          GNS3 • Packet Tracer • Visio • Draw.io
-                        </p>
-                      </div>
-                    </div>
-                  </>
-                )}
-
-                {activePanel === 1 && (
-                  <>
-                    <h2 className="section-title">Experience</h2>
-
-                    <div className="about-wide-card chassis">
-                      <p>
-                        • Designed and deployed enterprise-style network
-                        topologies
-                        <br />
-                        • Configured PoE, QoS, VoIP (Cisco & Yealink)
-                        <br />
-                        • Installed and managed Windows Server (AD, DNS, DHCP)
-                        <br />
-                        • Built secure Remote-Access & Site-to-Site VPNs
-                        <br />
-                        • Taught networking using Packet Tracer & GNS3
-                        <br />• Built and deployed lab & client workstations
-                      </p>
-                    </div>
-                  </>
-                )}
-
-                {activePanel === 2 && (
-                  <>
-                    <h2 className="section-title">Education</h2>
-
-                    <div className="about-wide-card chassis">
-                      <p>
-                        <strong>
-                          Bachelor of Information Technology (Networking & IT
-                          Security)
-                        </strong>
-                        <br />
-                        Ontario Tech University — Expected 2027
-                      </p>
-
-                      <p className="about-edu-block">
-                        <strong>
-                          High School Diploma (Mathematics & Physics)
-                        </strong>
-                        <br />
-                        Samen High School — Tehran, Iran
-                      </p>
-                    </div>
-                  </>
-                )}
-              </div>
-
-              {/* PANEL NAV */}
-              <div className="about-panel-nav">
-                <button
-                  className="btn-pill cursor-target"
-                  onClick={() => setActivePanel((prev) => (prev + 2) % 3)}
-                  aria-label="Previous panel"
-                >
-                  ◀
-                </button>
-
-                <button
-                  className="btn-pill cursor-target"
-                  onClick={() => setActivePanel(0)}
-                  aria-label="Technical skills"
-                >
-                  ●
-                </button>
-
-                <button
-                  className="btn-pill cursor-target"
-                  onClick={() => setActivePanel((prev) => (prev + 1) % 3)}
-                  aria-label="Next panel"
-                >
-                  ▶
-                </button>
-              </div>
+      <div className="about-story-container">
+        <header className="about-intro">
+          <div className="about-intro__copy">
+            <h1 id="about-heading">
+              <span className="about-kicker">About me</span>
+              Mohammadreza<br />Heidarpoor
+            </h1>
+            <p className="about-intro__headline">IT, from the venue floor to the back office.</p>
+            <p>I study information technology at York and work on the Athletics &amp; Recreation facilities team. I support events and build tools that help the office track repairs and equipment.</p>
+            <div className="about-actions">
+              <a className="about-action about-action--primary cursor-target" href="/Mohammadreza-Heidarpoor-Resume.pdf" download>
+                <FaDownload aria-hidden="true" /> Download résumé
+              </a>
+              <a className="about-action cursor-target" href={"mailto:" + profile.email}>
+                <FaEnvelope aria-hidden="true" /> Get in touch
+              </a>
             </div>
           </div>
-        </div>
+          <figure className="about-portrait">
+            <div className="about-portrait__image">
+              <img src="/my-avatar.jpg" alt={profile.name} width="1200" height="1600" decoding="async" />
+            </div>
+            <figcaption><span>{profile.employer}</span><span>{profile.location}</span></figcaption>
+          </figure>
+        </header>
+
+        <section className="about-experience" aria-labelledby="about-work">
+          <header className="about-experience__intro">
+            <p className="about-kicker">Experience</p>
+            <h2 id="about-work">How the work came together.</h2>
+            <p className="about-experience__role">{profile.role}</p>
+            <p>{profile.employer} · {profile.department}</p>
+            <p className="about-experience__date">{profile.period}</p>
+          </header>
+          <ol className="about-chapters">
+            {chapters.map(({ label, title, copy, tools, icon: Icon }) => (
+              <li key={label}>
+                <span className="about-chapter-icon" aria-hidden="true"><Icon /></span>
+                <div>
+                  <p className="about-kicker">{label}</p>
+                  <h3>{title}</h3>
+                  <p>{copy}</p>
+                  {tools && <p className="about-chapter-tools">{tools}</p>}
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <section className="about-career" aria-labelledby="about-career">
+          <header>
+            <p className="about-kicker">Career history</p>
+            <h2 id="about-career">Support, networking, and teaching.</h2>
+          </header>
+          <ul>
+            {profile.otherExperience.map(({ role, employer, period, summary }) => (
+              <li key={employer}>
+                <p className="about-career__period">{period}</p>
+                <h3>{role}</h3>
+                <p className="about-career__employer">{employer}</p>
+                <p>{summary}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section className="about-foundations" aria-labelledby="about-foundations">
+          <div>
+            <p className="about-kicker">Technical foundation</p>
+            <h2 id="about-foundations">From patch cables to routing tables.</h2>
+            <p>I work with routing, switching, and VPNs, and I make {cables} cables. I also help with AV checks and equipment setup for events.</p>
+          </div>
+          <dl>
+            <div>
+              <dt>Education</dt>
+              <dd>{profile.degree}<small>{profile.employer} · {profile.graduation}</small></dd>
+            </div>
+            <div>
+              <dt>Credential</dt>
+              <dd><FaNetworkWired aria-hidden="true" /> {profile.credential}</dd>
+            </div>
+          </dl>
+        </section>
       </div>
-    </div>
+    </section>
   );
 }
