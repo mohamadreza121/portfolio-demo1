@@ -19,18 +19,6 @@
   mask-image: linear-gradient(transparent, #000 120px, #000 calc(100% - 65px), transparent);
 }
 
-html[data-theme="day"] .about-page {
-  --about-soft: #464c49;
-  --about-accent: color-mix(in srgb, var(--accent-dark) 72%, #1b1008);
-  --about-rule: #42494347;
-}
-
-html[data-theme="day"] .about-page::before {
-  background:
-    radial-gradient(ellipse at 70% 12%, #eac5a968, transparent 38rem),
-    linear-gradient(90deg, transparent, #fff9f2dd 16% 84%, transparent);
-}
-
 .about-story-container {
   width: min(100% - clamp(32px, 11vw, 174px), 1230px);
   margin-inline: auto;
@@ -242,7 +230,6 @@ html[data-theme="day"] .about-page::before {
 
 @media (max-width: 760px) {
   .about-page::before { background: linear-gradient(90deg, transparent, #050b08cc 8% 92%, transparent); }
-  html[data-theme="day"] .about-page::before { background: linear-gradient(90deg, transparent, #fff9f2e3 8% 92%, transparent); }
 
   .about-story-container { width: min(100% - 34px, 600px); padding: 47px 0 42px; }
   .about-intro,

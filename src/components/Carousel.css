@@ -100,16 +100,6 @@
     inset 0 0 0 1px rgba(255, 255, 255, 0.04);
 }
 
-html[data-theme="day"] .carousel.cert-carousel-large .carousel__viewport {
-  background:
-    radial-gradient(1200px 520px at 50% 20%, rgba(0, 0, 0, 0.06), transparent 70%),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.68));
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow:
-    0 14px 38px rgba(0, 0, 0, 0.14),
-    inset 0 0 0 1px rgba(0, 0, 0, 0.05);
-}
-
 /* ============================================================================
    Track
    ========================================================================== */
@@ -191,34 +181,11 @@ html[data-theme="day"] .carousel.cert-carousel-large .carousel__viewport {
   border-color: rgba(97, 220, 163, 0.40);
 }
 
-/* Day mode: remove green cast from link glow */
-html[data-theme="day"] .carousel-card__link {
-  background:
-    linear-gradient(135deg, rgba(255,255,255,0.92), rgba(255,255,255,0.72));
-  border: 1px solid rgba(0, 0, 0, 0.10);
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.14);
-}
-
-html[data-theme="day"] .carousel-card__link::after {
-  background: radial-gradient(circle at 20% 15%, rgba(0,0,0,0.10), transparent 55%);
-  opacity: calc(0.05 + (var(--focus) * 0.04));
-}
-
-html[data-theme="day"] .carousel-card[style*="--focus: 1"] .carousel-card__link {
-  box-shadow: 0 22px 64px rgba(0, 0, 0, 0.18);
-  border-color: rgba(0, 0, 0, 0.18);
-}
-
 /* Hover polish */
 .carousel-card__link:hover {
   transform: translateY(-2px);
   box-shadow: 0 16px 52px var(--card-shadow);
   border-color: rgba(97, 220, 163, 0.38);
-}
-
-html[data-theme="day"] .carousel-card__link:hover {
-  box-shadow: 0 18px 58px rgba(0, 0, 0, 0.18);
-  border-color: rgba(0, 0, 0, 0.18);
 }
 
 /* ============================================================================
@@ -233,10 +200,6 @@ html[data-theme="day"] .carousel-card__link:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-html[data-theme="day"] .carousel-card__media {
-  background: rgba(0, 0, 0, 0.05);
 }
 
 .carousel-card__media img {
@@ -264,11 +227,6 @@ html[data-theme="day"] .carousel-card__media {
   backdrop-filter: blur(8px);
 }
 
-:root[data-theme="day"] .carousel-card__play {
-  background: rgba(255, 255, 255, 0.78);
-  border: 1px solid rgba(0, 0, 0, 0.10);
-}
-
 .carousel-card__play span {
   width: 0;
   height: 0;
@@ -277,11 +235,6 @@ html[data-theme="day"] .carousel-card__media {
   border-bottom: 7px solid transparent;
   transform: translateX(1px);
   filter: drop-shadow(0 0 8px var(--accent-glow));
-}
-
-html[data-theme="day"] .carousel-card__play span {
-  border-left-color: rgba(0, 0, 0, 0.65);
-  filter: none;
 }
 
 /* Badge */
@@ -302,23 +255,12 @@ html[data-theme="day"] .carousel-card__play span {
   backdrop-filter: blur(8px);
 }
 
-:root[data-theme="day"] .carousel-card__badge {
-  background: rgba(255, 255, 255, 0.78);
-  border: 1px solid rgba(0, 0, 0, 0.10);
-  color: rgba(0, 0, 0, 0.75);
-}
-
 .carousel-card__badge .dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
   background: var(--accent);
   box-shadow: 0 0 10px var(--accent-glow);
-}
-
-:root[data-theme="day"] .carousel-card__badge .dot {
-  background: rgba(0, 0, 0, 0.65);
-  box-shadow: none;
 }
 
 /* ============================================================================
@@ -410,11 +352,6 @@ html[data-theme="day"] .carousel-card__play span {
 .carousel__dots .dot.active {
   background: var(--accent);
   box-shadow: 0 0 10px var(--accent-glow);
-}
-
-html[data-theme="day"] .carousel__dots .dot.active {
-  background: rgba(0, 0, 0, 0.70);
-  box-shadow: none;
 }
 
 /* ============================================================================

@@ -102,7 +102,7 @@ function drawLinks(canvas, stage, active, pulse) {
   }
 }
 
-function ProjectTopology({ active, onOpen, theme }) {
+function ProjectTopology({ active, onOpen }) {
   const stage = useRef(null);
   const canvas = useRef(null);
   const [hovered, setHovered] = useState(null);
@@ -134,7 +134,7 @@ function ProjectTopology({ active, onOpen, theme }) {
       observer?.disconnect();
       if (!observer) window.removeEventListener("resize", resize);
     };
-  }, [inspected, theme]);
+  }, [inspected]);
 
   return (
     <>

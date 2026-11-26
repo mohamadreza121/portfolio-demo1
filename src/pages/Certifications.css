@@ -7,12 +7,6 @@
   color: var(--text-color);
 }
 
-html[data-theme="day"] .certifications-page {
-  --credential-accent: color-mix(in srgb, var(--accent-dark) 72%, #1b1008);
-  --credential-copy: #404942;
-  --credential-line: #6454475c;
-}
-
 .credential-gallery {
   width: min(100% - clamp(28px, 9vw, 150px), 1350px);
   margin: 0 auto;
@@ -72,10 +66,6 @@ html[data-theme="day"] .certifications-page {
   height: 18%;
   background: radial-gradient(ellipse, #000a, #0004 38%, transparent 72%);
   pointer-events: none;
-}
-
-html[data-theme="day"] .credential-spotlight::before {
-  background: radial-gradient(ellipse, #654c354f, transparent 70%);
 }
 
 .credential-deck { position: absolute; inset: 0; perspective: 1050px; transform-style: preserve-3d; }

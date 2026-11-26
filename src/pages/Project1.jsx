@@ -10,7 +10,7 @@ import "./NetworkLab.css";
 
 const storyAnchors = ["switching", "routing", "wan", "branch", "windows"];
 
-export default function Project1({ ready = true, theme }) {
+export default function Project1({ ready = true }) {
   const { hash, key } = useLocation();
   const hasScrolled = useRef(false);
 
@@ -30,7 +30,7 @@ export default function Project1({ ready = true, theme }) {
   return (
     <main className="project-page project-page--lab">
       <div className="project-container">
-        <NetworkLabStage theme={theme} ready={ready} />
+        <NetworkLabStage ready={ready} />
         <ProjectLabChapters hash={hash} />
 
         <section className="lab-archive" aria-labelledby="lab-archive-title">

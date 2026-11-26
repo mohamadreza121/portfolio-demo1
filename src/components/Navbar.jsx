@@ -4,8 +4,6 @@ import {
   FaProjectDiagram,
   FaCertificate,
   FaTools,
-  FaMoon,
-  FaSun,
 } from "react-icons/fa";
 
 import { useNavigate } from "react-router-dom";
@@ -16,7 +14,7 @@ import "./Navbar.css";
 import "./Dock.css";
 import "./TargetCursor.css";
 
-export default function Navbar({ active, theme, onToggleTheme, compact = false, hidden = false }) {
+export default function Navbar({ active, compact = false, hidden = false }) {
   const navigate = useNavigate();
 
   const navItems = [
@@ -67,23 +65,14 @@ export default function Navbar({ active, theme, onToggleTheme, compact = false, 
     },
   ];
 
-  const themeToggle = {
-    key: "Theme",
-    icon: theme === "night" ? <FaSun /> : <FaMoon />,
-    label: "Theme",
-    onClick: onToggleTheme,
-    isActive: false,
-  };
-
   if (compact) {
     return (
       <nav className="mobile-dock" aria-label="Primary navigation" hidden={hidden}>
-        {[...navItems, themeToggle].map((item) => (
+        {navItems.map((item) => (
           <button
             key={item.key}
             type="button"
             aria-current={item.isActive ? "location" : undefined}
-            aria-label={item.key === "Theme" ? `Switch to ${theme === "night" ? "light" : "dark"} theme` : undefined}
             onClick={item.onClick}
           >
             <span className="mobile-dock__icon" aria-hidden="true">{item.icon}</span>
@@ -97,7 +86,7 @@ export default function Navbar({ active, theme, onToggleTheme, compact = false, 
   return (
     <nav className="navbar-shell" aria-label="Primary navigation">
       <Dock
-        items={[...navItems, themeToggle]}
+        items={navItems}
         panelHeight={64}
         baseItemSize={44}
         magnification={72}

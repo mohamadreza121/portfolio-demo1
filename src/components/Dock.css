@@ -58,8 +58,6 @@
   inset: 0;
   border-radius: 10px;
   z-index: 0;
-
-  /* Uses your theme variables so it matches night/day automatically */
   background: color-mix(in srgb, var(--accent) 12%, transparent);
   border: 1px solid var(--accent-border);
   box-shadow:

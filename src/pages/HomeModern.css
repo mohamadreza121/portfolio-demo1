@@ -10,12 +10,6 @@
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
-html[data-theme="day"] .home-page {
-  --home-signal: #a43d1d;
-  --home-edge: #ae7b69;
-  --home-relief: #b0a49f;
-}
-
 .home-page > .spy-marker { position: absolute; inset: 0 auto auto 0; }
 .home-opening { position: relative; isolation: isolate; width: min(86%, 1340px); margin-inline: auto; }
 .home-opening::before {

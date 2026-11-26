@@ -11,7 +11,7 @@ import "./NetworkLabStage.css";
 
 const narrowScreen = "(max-width: 760px)";
 
-export default function NetworkLabStage({ theme, ready }) {
+export default function NetworkLabStage({ ready }) {
   const { hash, key, state } = useLocation();
   const [view, setView] = useState("rack");
   const [host, setHost] = useState(defaultConsole);
@@ -136,7 +136,7 @@ export default function NetworkLabStage({ theme, ready }) {
         {view === "rack"
           ? <NetworkRack active={open ? host : null} onOpen={openDevice} obscured={open && narrow} />
           : <div className="lab-stage__topology" inert={open || undefined}>
-              <ProjectTopology active={open ? host : null} onOpen={openDevice} theme={theme} />
+              <ProjectTopology active={open ? host : null} onOpen={openDevice} />
             </div>}
       </div>
 

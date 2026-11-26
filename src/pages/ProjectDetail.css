@@ -328,15 +328,6 @@
   );
 }
 
-:root[data-theme="day"] .hardware-card {
-  --hc-screw-hi: rgba(0, 0, 0, 0.10);
-  --hc-screw-core: rgba(0, 0, 0, 0.22);
-  --hc-screw-ring: rgba(0, 0, 0, 0.12);
-  --hc-screw-glow: rgba(0, 0, 0, 0.08);
-  --hc-bevel-top: rgba(255, 255, 255, 0.70);
-  --hc-bevel-bot: rgba(0, 0, 0, 0.08);
-}
-
 /* inner bevel */
 .hardware-card::after {
   content: "";

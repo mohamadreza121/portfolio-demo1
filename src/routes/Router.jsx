@@ -12,7 +12,6 @@ const legacyProjectSections = ["switching", "routing", "wan", "branch", "windows
 const Project1 = lazy(loadProjectLab);
 
 export default function Router({
-  theme,
   compact = false,
   ready,
   setActive,
@@ -59,7 +58,7 @@ export default function Router({
                   <div style={{ minHeight: "100vh" }} aria-busy="true" />
                 }
               >
-                <Project1 ready={ready} theme={theme} />
+                <Project1 ready={ready} />
               </Suspense>
             </PageTransition>
           }

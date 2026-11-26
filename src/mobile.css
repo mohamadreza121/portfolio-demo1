@@ -17,7 +17,7 @@
   max-width: 420px;
   margin-inline: auto;
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 2px;
   padding: 5px;
   border: 1px solid var(--dock-border);
@@ -125,8 +125,6 @@ html:has(:is(input, textarea, select, [contenteditable="true"]):focus) .mobile-d
 .mobile-portfolio .project-card { scroll-margin-bottom: var(--mobile-dock-clearance); }
 
 .mobile-portfolio .project-cta { margin-top: 12px; }
-
-.mobile-portfolio .footer-section { min-width: 0; }
 
 .app-root[data-compact="true"] .project-page {
   min-height: 100svh;

@@ -25,7 +25,6 @@ export default function App() {
   /* =====================================================
      GLOBAL STATE
   ===================================================== */
-  const [theme, setTheme] = useState("night");
   const [active, setActive] = useState("Home");
 
   /* =====================================================
@@ -100,17 +99,6 @@ export default function App() {
   useEffect(() => {
     document.documentElement.setAttribute("data-phase", phase);
   }, [phase]);
-
-  /* =====================================================
-     THEME ATTRIBUTE
-  ===================================================== */
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "night" ? "day" : "night"));
-  };
 
   /* =====================================================
      PRELOADER → CURTAINS
@@ -200,8 +188,6 @@ export default function App() {
             active={location.pathname.startsWith("/projects/") ? "Projects" : active}
             compact={compact}
             hidden={quoteOpen}
-            theme={theme}
-            onToggleTheme={toggleTheme}
           />
 
           {!compact && showScrollTop && (
@@ -226,7 +212,6 @@ export default function App() {
       )}
 
       <LetterGlitch
-        theme={theme}
         glitchSpeed={compact ? 190 : 120}
         maxFps={compact ? 18 : 30}
         centerVignette={compact}
@@ -244,7 +229,6 @@ export default function App() {
         ].join(" ")}
       >
         <Router
-          theme={theme}
           compact={compact}
           ready={phase === "ready"}
           setActive={setActive}

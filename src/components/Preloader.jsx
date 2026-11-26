@@ -18,12 +18,6 @@ export default function Preloader({ onComplete }) {
     const container = containerRef.current;
     if (!container) return;
 
-    /* =========================================
-       PRELOADER-ONLY THEME (ISOLATED)
-       ========================================= */
-    let currentTheme = "night";
-    container.setAttribute("data-preloader-theme", currentTheme);
-
     const progress = { value: 0 };
 
     const tl = gsap.timeline({
@@ -37,7 +31,7 @@ export default function Preloader({ onComplete }) {
     gsap.set(titleRef.current, { opacity: 0, scale: 0.95 });
 
     /* =========================================
-       TITLE PULSES (LOCAL THEME TOGGLE)
+       TITLE PULSES
        ========================================= */
     for (let i = 0; i < TOTAL_PULSES; i++) {
       tl.to(titleRef.current, {
@@ -51,13 +45,6 @@ export default function Preloader({ onComplete }) {
         scale: 0.95,
         duration: PULSE_DURATION,
       });
-
-      if (i < TOTAL_PULSES - 1) {
-        tl.call(() => {
-          currentTheme = currentTheme === "night" ? "day" : "night";
-          container.setAttribute("data-preloader-theme", currentTheme);
-        });
-      }
     }
 
     /* =========================================

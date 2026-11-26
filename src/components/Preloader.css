@@ -1,7 +1,7 @@
 .preloader {
   position: fixed;
   inset: 0;
-  background: var(--pl-bg);
+  background: #0a0a0a;
   z-index: 2000;
   display: flex;
   align-items: center;
@@ -10,14 +10,14 @@
   pointer-events: auto;
 }
 
-/* Cyber grid background — SAME AS FOOTER */
+/* Preloader grid */
 .preloader::before {
   content: "";
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(var(--pl-grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--pl-grid) 1px, transparent 1px);
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
   background-size: 40px 40px;
   pointer-events: none;
   z-index: 0;
@@ -29,8 +29,8 @@
   font-family: "JetBrains Mono", monospace;
   font-size: clamp(2.6rem, 5vw, 4.2rem);
   letter-spacing: 0.06em;
-  color: var(--pl-accent);
-  text-shadow: 0 0 12px var(--pl-accent-glow);
+  color: var(--accent);
+  text-shadow: 0 0 12px var(--accent-glow);
   text-align: center;
   user-select: none;
 }
@@ -43,7 +43,7 @@
   font-family: "JetBrains Mono", monospace;
   font-size: 0.85rem;
   letter-spacing: 0.12em;
-  color: var(--pl-muted);
+  color: var(--muted);
 }
 
 /* =========================================
@@ -62,29 +62,4 @@
 .preloader.hide-content .preloader-title,
 .preloader.hide-content .preloader-progress {
   opacity: 0 !important;
-}
-
-
-/* =========================================
-   PRELOADER THEME ISOLATION
-   ========================================= */
-
-/* =========================================
-   PRELOADER THEME — ISOLATED & SAFE
-   ========================================= */
-
-.preloader[data-preloader-theme="night"] {
-  --pl-bg: #0a0a0a;
-  --pl-accent: #61dca3;
-  --pl-accent-glow: rgba(97, 220, 163, 0.6);
-  --pl-muted: #9fb6a8;
-  --pl-grid: rgba(97, 220, 163, 0.05);
-}
-
-.preloader[data-preloader-theme="day"] {
-  --pl-bg: #fdfdfd;
-  --pl-accent: #ff7b54;
-  --pl-accent-glow: rgba(255, 123, 84, 0.6);
-  --pl-muted: #4b4b4b;
-  --pl-grid: rgba(255, 123, 84, 0.08);
 }
