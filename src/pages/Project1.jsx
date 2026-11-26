@@ -1,147 +1,60 @@
-import { useEffect, useMemo } from "react";
-import CliTerminalCard from "../components/CliTerminalCard";
+import { useEffect } from "react";
+import { Link } from "react-router-dom";
 import { project1 } from "../data/projects/project1";
+import Project1Console from "../components/Project1Console";
 import ProjectPager from "../components/ProjectPager";
 import "./ProjectDetail.css";
 import "./ProjectCli.css";
-
-function pad(value, width) {
-  const s = String(value ?? "");
-  return s.length >= width ? s.slice(0, width - 1) + "…" : s.padEnd(width, " ");
-}
-
-function formatKV(rows = []) {
-  const header = pad("KEY", 22) + "VALUE";
-  const body = rows.map((r) => pad(r.k, 22) + (r.v || "")).join("\n");
-  return `${header}\n${"-".repeat(78)}\n${body}`;
-}
-
-function formatConnections(rows = []) {
-  const header =
-    pad("FROM", 16) +
-    pad("IF", 10) +
-    pad("TO", 16) +
-    pad("IF", 10) +
-    pad("TYPE", 10) +
-    "NOTES";
-
-  const body = rows
-    .map(
-      (r) =>
-        pad(r.from, 16) +
-        pad(r.fromIf, 10) +
-        pad(r.to, 16) +
-        pad(r.toIf, 10) +
-        pad(r.type, 10) +
-        (r.notes || "")
-    )
-    .join("\n");
-
-  return `${header}\n${"-".repeat(92)}\n${body}`;
-}
-
-function formatChecklist(rows = []) {
-  const header = pad("CHECK", 24) + pad("COMMAND", 30) + "EXPECTED";
-  const body = rows
-    .map((r) => pad(r.check, 24) + pad(r.command, 30) + (r.expected || ""))
-    .join("\n");
-  return `${header}\n${"-".repeat(92)}\n${body}`;
-}
 
 export default function Project1() {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" });
   }, []);
 
-  const kvText = useMemo(() => formatKV(project1.topologyAtAGlance || []), []);
-  const connText = useMemo(
-    () => formatConnections(project1.connections || []),
-    []
-  );
-  const checklistText = useMemo(
-    () => formatChecklist(project1.validationChecklist || []),
-    []
-  );
-
-  const outcomesText = useMemo(() => {
-    const header = "OUTCOMES";
-    const body = (project1.keyOutcomes || [])
-      .map((x, i) => `${String(i + 1).padStart(2, "0")}. ${x}`)
-      .join("\n");
-    return `${header}\n${"-".repeat(78)}\n${body}`;
-  }, []);
-
   return (
-    <main className="project-page">
+    <main className="project-page project-page--lab">
       <div className="project-container">
-        <section className="section-block">
-          <div className="hero-grid">
-            <div className="hero-copy">
-              <h1 className="project-title">{project1.title}</h1>
-              <p className="muted">{project1.subtitle}</p>
+        <header className="section-block lab-intro">
+          <h1 className="project-title">{project1.title}</h1>
+          <p className="project-subtitle">{project1.subtitle}</p>
+          <p className="lab-intro__stack">{project1.badges.join(" · ")}</p>
+          <nav className="cta-row" aria-label="Case study sections">
+            <a className="btn btn-primary cursor-target" href="#console">Open console</a>
+            <a className="btn btn-ghost cursor-target" href="#linkmap">Link map</a>
+            <a className="btn btn-ghost cursor-target" href="#runbook">Validation</a>
+          </nav>
+        </header>
 
-              <div className="pill-row">
-                {(project1.badges || []).map((b) => (
-                  <span className="pill" key={b}>
-                    {b}
-                  </span>
-                ))}
-              </div>
+        <Project1Console />
 
-              <div className="cta-row">
-                <a className="btn btn-primary cursor-target" href="#linkmap">
-                  Link Map
-                </a>
-                <a className="btn btn-ghost cursor-target" href="#runbook">
-                  Validation
-                </a>
-              </div>
-            </div>
-
-            <div className="hero-media">
-              <img
-                src={project1.media?.heroImage}
-                alt="Full network topology"
-                className="hero-img"
-              />
-            </div>
-          </div>
+        <section id="linkmap" className="section-block lab-links" aria-labelledby="lab-links-heading">
+          <h2 id="lab-links-heading">Topology and link map</h2>
+          <p>Trace the physical uplinks, ISP peering, and the primary and standby VPN tunnels.</p>
+          <details className="lab-topology">
+            <summary>View lab topology diagram</summary>
+            <img src={project1.media.heroImage} alt="Enterprise network topology showing HQ, the two ISPs, and the branch" loading="lazy" width="1606" height="885" />
+          </details>
+          <ul className="lab-links__list">
+            {project1.connections.map((link) => (
+              <li key={`${link.from}-${link.fromIf}`}>
+                <div className="lab-links__ports">
+                  <span><strong>{link.from}</strong><code>{link.fromIf}</code></span>
+                  <span className="lab-links__join" aria-hidden="true">↔</span>
+                  <span><strong>{link.to}</strong><code>{link.toIf}</code></span>
+                </div>
+                <span className="lab-links__type">{link.type}</span>
+                <span className="lab-links__description">{link.notes}</span>
+              </li>
+            ))}
+          </ul>
         </section>
 
-        <section className="section-block">
-          <h2>Topology at a Glance (CLI)</h2>
-          <CliTerminalCard
-            title="Design Summary"
-            subtitle="High-level inventory and roles"
-            content={kvText}
-          />
-        </section>
-
-        <section id="linkmap" className="section-block">
-          <h2>Physical / Logical Link Map (CLI)</h2>
-          <CliTerminalCard
-            title="Connections"
-            subtitle="Documentation-ready interconnect list"
-            content={connText}
-          />
-        </section>
-
-        <section className="section-block">
-          <h2>Key Outcomes (CLI)</h2>
-          <CliTerminalCard
-            title="Outcomes"
-            subtitle="What the lab proves in a portfolio review"
-            content={outcomesText}
-          />
-        </section>
-
-        <section id="runbook" className="section-block">
-          <h2>Representative Validation Checklist (CLI)</h2>
-          <CliTerminalCard
-            title="Runbook"
-            subtitle="Commands + expected outcomes"
-            content={checklistText}
-          />
+        <section className="section-block lab-summary">
+          <h2>What the lab demonstrates</h2>
+          <ul className="list">
+            {project1.keyOutcomes.map((outcome) => <li key={outcome}>{outcome}</li>)}
+          </ul>
+          <Link className="lab-summary__runbook" to="/projects/6">SRV1 DHCP and DNS validation →</Link>
         </section>
 
         <ProjectPager
