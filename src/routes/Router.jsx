@@ -4,10 +4,11 @@ import { AnimatePresence } from "framer-motion";
 
 import Main from "../pages/Main";
 import PageTransition from "../components/PageTransition";
+import { loadProjectLab } from "./loadProjectLab";
 
 const legacyProjectSections = ["switching", "routing", "wan", "branch", "windows"];
 
-const Project1 = lazy(() => import("../pages/Project1.jsx"));
+const Project1 = lazy(loadProjectLab);
 
 export default function Router({
   theme,
@@ -42,7 +43,7 @@ export default function Router({
         <Route
           path="/projects/1"
           element={
-            <PageTransition compact={compact}>
+            <PageTransition compact={compact} rackPreview={location.state?.fromRackPreview}>
               <Suspense
                 fallback={
                   <div style={{ minHeight: "100vh" }} aria-busy="true" />

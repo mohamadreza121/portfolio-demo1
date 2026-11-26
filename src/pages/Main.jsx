@@ -29,7 +29,7 @@ export default function Main({
   const pages = [
     <Home key="home" revealKey={revealKey} />,
     <About key="about" />,
-    <Projects key="projects" compact={compact} />,
+    <Projects key="projects" />,
     <Certifications key="certifications" />,
     <div key="services">
       <Services onRequestQuote={onRequestQuote} />

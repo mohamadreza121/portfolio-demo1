@@ -1,6 +1,8 @@
 import { memo } from "react";
 import { project1 } from "../data/projects/project1";
-import { rackDevices, consoleGroups } from "../data/projects/project1Console";
+import { rackDevices, consoleGroups } from "../data/projects/project1Hardware";
+
+import "./NetworkRack.css";
 
 const roles = Object.fromEntries(consoleGroups.flatMap(({ nodes }) => nodes));
 const chassisLabels = {
@@ -48,23 +50,28 @@ function Faceplate({ kind, host }) {
 }
 
 function NetworkRack({ active, onOpen, obscured }) {
+  const Device = onOpen ? "button" : "span";
+
   return (
-    <div className="rack-model" aria-label="Interactive equipment rack" inert={obscured || undefined}>
+    <div className="rack-model" aria-hidden={!onOpen || undefined} aria-label={onOpen ? "Interactive equipment rack" : undefined} inert={obscured || undefined}>
       <div className="rack-model__top" aria-hidden="true"><i /><i /></div>
       <div className="rack-model__side" aria-hidden="true"><i /></div>
       <div className="rack-model__front">
         <div className="rack-model__toprail" aria-hidden="true"><i /><i /><i /><i /></div>
         <div className="rack-devices">
           {rackDevices.map(({ host, kind }) => (
-            <button
+            <Device
               key={host}
-              type="button"
               className="rack-module"
               data-kind={kind}
-              aria-label={"Open " + host + " console"}
-              aria-pressed={active === host}
-              title={roles[host]}
-              onClick={(event) => onOpen(host, event.currentTarget)}
+              {...(onOpen ? {
+                type: "button",
+                "aria-label": "Open " + host + " console",
+                "aria-pressed": active === host,
+                title: roles[host],
+                onClick: (event) => onOpen(host, event.currentTarget),
+              } : {})}
+              data-active={active === host}
             >
               <span className="rack-screw" aria-hidden="true" />
               <span className="rack-module__name">
@@ -73,7 +80,7 @@ function NetworkRack({ active, onOpen, obscured }) {
               </span>
               <Faceplate kind={kind} host={host} />
               <span className="rack-screw" aria-hidden="true" />
-            </button>
+            </Device>
           ))}
         </div>
         <div className="rack-model__foot" aria-hidden="true"><i /><span /><i /></div>

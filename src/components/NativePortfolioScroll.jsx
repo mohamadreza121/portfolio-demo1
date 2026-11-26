@@ -21,16 +21,20 @@ export default function NativePortfolioScroll({ children, ready, request, setAct
     const target = container.current.querySelector(`#${id}`);
     if (!target) return;
 
-    if (request.projectPosition) {
-      restoreProjectPosition(request.projectPosition);
-    } else {
-      target.scrollIntoView({ block: "start", behavior: "instant" });
-    }
+    // Wait for the intro to unlock document scrolling before landing on the anchor.
+    const frame = requestAnimationFrame(() => {
+      if (request.projectPosition) {
+        restoreProjectPosition(request.projectPosition);
+      } else {
+        target.scrollIntoView({ block: "start", behavior: "instant" });
+      }
 
-    const section = portfolioSections.find((item) => item.id === id);
-    currentSection.current = id;
-    setActive?.(section.name);
-    updateHash(id);
+      const section = portfolioSections.find((item) => item.id === id);
+      currentSection.current = id;
+      setActive?.(section.name);
+      updateHash(id);
+    });
+    return () => cancelAnimationFrame(frame);
   }, [ready, request, setActive]);
 
   useEffect(() => {

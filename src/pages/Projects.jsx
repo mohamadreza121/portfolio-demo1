@@ -1,397 +1,104 @@
-import React, { useEffect, useMemo, useRef, useCallback } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { FaExpand } from "react-icons/fa6";
+import NetworkRack from "../components/NetworkRack";
+import { project1 } from "../data/projects/project1";
+import { loadProjectLab } from "../routes/loadProjectLab";
 import { rememberProjectPosition } from "../utils/scrollToSection";
-import DecryptedText from "../components/DecryptedText";
 import "./Projects.css";
 
-/**
- * Notes:
- * - Add actual MP4 files under /public/projects/ and update `video` paths.
- * - If a project has no video, the card gracefully stays image-only.
- */
+const projectPath = "/projects/1";
 
-const projects = [
-  {
-    id: 1,
-    title: "Enterprise Multi-Site Network Lab",
-    summary:
-      "Explore the full HQ-to-branch lab, from access VLANs and VRRP to dual-ISP routing, IPsec, and Windows Server.",
-    tech: ["VLANs", "VRRP", "OSPF", "BGP", "IPsec", "DHCP/DNS"],
-    // These exist in src/assets/projects/ in this repo
-    image: new URL("../assets/projects/Topology.png", import.meta.url).href,
-    video: new URL("../assets/projects/vid1.mp4", import.meta.url).href,
-  },
-];
-
-function usePrefersReducedMotion() {
-  const reducedRef = useRef(false);
-
-  useEffect(() => {
-    const mq = window.matchMedia?.("(prefers-reduced-motion: reduce)");
-    if (!mq) return;
-
-    const apply = () => {
-      reducedRef.current = !!mq.matches;
-    };
-    apply();
-
-    if (mq.addEventListener) mq.addEventListener("change", apply);
-    else mq.addListener(apply);
-
-    return () => {
-      if (mq.removeEventListener) mq.removeEventListener("change", apply);
-      else mq.removeListener(apply);
-    };
-  }, []);
-
-  return reducedRef;
+function RackPreview({ screen }) {
+  return (
+    <div className="project-viewfinder" ref={screen} aria-hidden="true">
+      <div className="project-viewfinder__header"><i /> Rack preview</div>
+      <div className="project-viewfinder__rack"><NetworkRack active="HQ-EDGE" /></div>
+      <div className="project-viewfinder__signal">
+        <span><i /> HQ</span><span><i /> Dual ISP</span><span><i /> Branch</span>
+      </div>
+    </div>
+  );
 }
 
-export default function Projects({ compact = false }) {
-  const navigate = useNavigate();
+function warmProject() {
+  loadProjectLab().catch(() => {});
+}
+
+export default function Projects() {
   const { key } = useLocation();
+  const navigate = useNavigate();
+  const screen = useRef(null);
+  const departing = useRef(false);
+  const [launch, setLaunch] = useState(null);
 
-  const reducedMotionRef = usePrefersReducedMotion();
-  const cardsRef = useRef([]);
-  const rafMagnetRef = useRef(new Map());
-  const rafParallaxRef = useRef(0);
+  const finishLaunch = useCallback(() => {
+    if (!departing.current) return;
+    departing.current = false;
+    setLaunch(null);
+    navigate(projectPath, { state: { projectsBack: 1, fromRackPreview: true } });
+  }, [navigate]);
 
-  const projectsList = useMemo(() => projects, []);
-
-  /* =====================================================
-     Magnetic hover (subtle translate, no 3D tilt)
-  ===================================================== */
-  const setCardOffset = useCallback((el, x, y) => {
-    el.style.setProperty("--mx", `${x}px`);
-    el.style.setProperty("--my", `${y}px`);
-  }, []);
-
-  const onCardPointerMove = useCallback(
-    (e, idx) => {
-      const el = cardsRef.current[idx];
-      if (!el) return;
-
-      // Disable on reduced-motion
-      if (reducedMotionRef.current) return;
-
-      // Disable on coarse pointers (mobile/touch)
-      if (window.matchMedia && window.matchMedia("(pointer: coarse)").matches)
-        return;
-
-      const rect = el.getBoundingClientRect();
-      const px = (e.clientX - rect.left) / rect.width; // 0..1
-      const py = (e.clientY - rect.top) / rect.height; // 0..1
-
-      // Calm magnetic strength (in px)
-      const strength = 8;
-      const tx = (px - 0.5) * strength * 2;
-      const ty = (py - 0.5) * strength * 2;
-
-      // rAF throttle per-card
-      const map = rafMagnetRef.current;
-      if (map.get(idx)) return;
-
-      map.set(
-        idx,
-        requestAnimationFrame(() => {
-          setCardOffset(el, tx, ty);
-          map.delete(idx);
-        }),
-      );
-    },
-    [reducedMotionRef, setCardOffset],
-  );
-
-  const onCardPointerLeave = useCallback(
-    (idx) => {
-      const el = cardsRef.current[idx];
-      if (!el) return;
-
-      setCardOffset(el, 0, 0);
-      el.classList.remove("is-media-active");
-
-      const vid = el.querySelector("video");
-      if (vid) {
-        try {
-          vid.pause();
-          vid.currentTime = 0;
-        } catch {
-          // ignore
-        }
-      }
-    },
-    [setCardOffset],
-  );
-
-  const onCardPointerEnter = useCallback(
-    (idx) => {
-      const el = cardsRef.current[idx];
-      if (!el) return;
-
-      // Start preview on hover (if video exists and not reduced motion)
-      if (!reducedMotionRef.current) {
-        const vid = el.querySelector("video");
-        if (vid) {
-          el.classList.add("is-media-active");
-          try {
-            vid.currentTime = 0;
-            const p = vid.play();
-            if (p && typeof p.catch === "function") p.catch(() => {});
-          } catch {
-            // ignore
-          }
-        }
-      }
-    },
-    [reducedMotionRef],
-  );
-
-  const onCardFocus = useCallback(
-    (idx) => {
-      const el = cardsRef.current[idx];
-      if (!el) return;
-
-      // Keyboard focus should also preview (if video exists)
-      if (!reducedMotionRef.current) {
-        const vid = el.querySelector("video");
-        if (vid) {
-          el.classList.add("is-media-active");
-          try {
-            vid.currentTime = 0;
-            const p = vid.play();
-            if (p && typeof p.catch === "function") p.catch(() => {});
-          } catch {
-            // ignore
-          }
-        }
-      }
-    },
-    [reducedMotionRef],
-  );
-
-  const onCardBlur = useCallback(
-    (idx) => {
-      // When focus leaves the card, stop preview
-      onCardPointerLeave(idx);
-    },
-    [onCardPointerLeave],
-  );
-
-  /* =====================================================
-     Scroll parallax (media drifts as the panel scrolls)
-  ===================================================== */
   useEffect(() => {
-    if (compact) return;
-    const root = document.getElementById("projects");
-    if (!root) return;
+    if (!launch) return;
+    const timer = window.setTimeout(finishLaunch, 650);
+    return () => window.clearTimeout(timer);
+  }, [launch, finishLaunch]);
 
-    // In your ScrollDeck setup, the scroll container is the nearest .scroll-deck__panel
-    const scrollContainer =
-      root.closest(".scroll-deck__panel") ||
-      root.closest(".scroll-deck") ||
-      window;
-
-    const maxShift = 18; // px (keep calm)
-
-    const update = () => {
-      rafParallaxRef.current = 0;
-
-      // Disable parallax on reduced motion
-      if (reducedMotionRef.current) {
-        cardsRef.current.forEach((card) => {
-          if (!card) return;
-          card.style.setProperty("--media-y", `0px`);
-        });
-        return;
-      }
-
-      const viewportH =
-        scrollContainer === window
-          ? window.innerHeight
-          : scrollContainer.clientHeight;
-
-      const viewportMid =
-        scrollContainer === window
-          ? window.innerHeight / 2
-          : scrollContainer.getBoundingClientRect().height / 2;
-
-      cardsRef.current.forEach((card) => {
-        if (!card) return;
-
-        const r = card.getBoundingClientRect();
-
-        // cardMid relative to viewport
-        const cardMid = r.top + r.height / 2;
-
-        // Normalize -1..1 based on distance from center
-        const t = (cardMid - viewportMid) / viewportH;
-
-        // Clamp and invert slightly for "cinematic" drift
-        const clamped = Math.max(-1, Math.min(1, t));
-        const y = -clamped * maxShift;
-
-        card.style.setProperty("--media-y", `${y}px`);
-      });
-    };
-
-    const schedule = () => {
-      if (rafParallaxRef.current) return;
-      rafParallaxRef.current = requestAnimationFrame(update);
-    };
-
-    // Initial
-    schedule();
-
-    if (scrollContainer === window) {
-      window.addEventListener("scroll", schedule, { passive: true });
-      window.addEventListener("resize", schedule);
-      return () => {
-        window.removeEventListener("scroll", schedule);
-        window.removeEventListener("resize", schedule);
-      };
+  function openProject(event) {
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    if (departing.current) {
+      event.preventDefault();
+      return;
     }
 
-    scrollContainer.addEventListener("scroll", schedule, { passive: true });
-    window.addEventListener("resize", schedule);
+    rememberProjectPosition(key, 1, event.currentTarget);
+    const rect = screen.current?.getBoundingClientRect();
+    if (!rect?.width || !rect.height || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    return () => {
-      scrollContainer.removeEventListener("scroll", schedule);
-      window.removeEventListener("resize", schedule);
-    };
-  }, [compact, reducedMotionRef]);
+    event.preventDefault();
+    departing.current = true;
+    warmProject();
+    const x = window.innerWidth / 2 - (rect.left + rect.width / 2);
+    const y = window.innerHeight / 2 - (rect.top + rect.height / 2);
+    const scale = Math.max(window.innerWidth / rect.width, window.innerHeight / rect.height) * 1.13;
+    const rack = screen.current.querySelector(".rack-model");
+    setLaunch({
+      left: rect.left, top: rect.top, width: rect.width, height: rect.height,
+      "--launch-x": x + "px", "--launch-y": y + "px", "--launch-scale": scale,
+      "--launch-rack-pose": getComputedStyle(rack).transform,
+    });
+  }
 
-  /* =====================================================
-     Render
-  ===================================================== */
   return (
-    <section id="projects" className="projects-page">
+    <section id="projects" className="projects-page" aria-labelledby="projects-heading">
       <span className="spy-marker" />
-
-      <div
-        className="projects-container"
-        aria-label="Enterprise Network Architecture Portfolio"
-      >
-        {/* ==============================
-           HEADER
-        ============================== */}
-        <header className="projects-hero">
-          <h1 className="projects-title">
-            <DecryptedText
-              text="Enterprise Network Architecture"
-              animateOn="view"
-              sequential
-              speed={80}
-              revealDirection="center"
-              encryptedClassName="encrypted"
-              className="revealed"
-            />
-          </h1>
-
-          <p className="projects-subtitle">
-            A progressive, real-world enterprise infrastructure — designed,
-            secured, routed, and operated as a unified system.
-          </p>
-        </header>
-
-        {/* ==============================
-           GRID
-        ============================== */}
-        <div className="projects-grid projects-grid--network-lab" role="list">
-          {projectsList.map((project, idx) => (
-            <article
-              key={project.id}
-              ref={(node) => {
-                cardsRef.current[idx] = node;
-              }}
-              className="project-card"
-              role="listitem"
-              tabIndex={-1}
-              onPointerEnter={compact ? undefined : () => onCardPointerEnter(idx)}
-              onPointerLeave={() => onCardPointerLeave(idx)}
-              onPointerMove={compact ? undefined : (e) => onCardPointerMove(e, idx)}
-              onFocusCapture={compact ? undefined : () => onCardFocus(idx)}
-              onBlurCapture={() => onCardBlur(idx)}
-            >
-              {/* Media */}
-              <div className="project-media" aria-hidden="true">
-                <img
-                  src={project.image}
-                  alt=""
-                  loading="lazy"
-                  className="project-img"
-                  draggable="false"
-                />
-
-                {project.video && !compact ? (
-                  <video
-                    className="project-video"
-                    muted
-                    loop
-                    playsInline
-                    preload="none"
-                  >
-                    <source src={project.video} type="video/mp4" />
-                  </video>
-                ) : null}
-
-                <div className="project-vignette" />
-              </div>
-
-              {/* Terminal Bar */}
-              <div className="project-terminalbar" aria-hidden="true">
-                <div className="term-dots">
-                  <span className="term-dot dot-red" />
-                  <span className="term-dot dot-yellow" />
-                  <span className="term-dot dot-green" />
-                </div>
-
-                <div className="term-label">
-                  {`netops@lab:~/projects$ open p${String(project.id).padStart(2, "0")}`}
-                </div>
-
-                <div className="term-spacer" />
-
-                <div className="term-badge">{project.tech?.[0] || "LAB"}</div>
-              </div>
-
-              {/* Content */}
-              <div className="project-body">
-                <div className="project-top">
-                  <h2 className="project-title">{project.title}</h2>
-                  <p className="project-summary">{project.summary}</p>
-                </div>
-
-                <div className="project-bottom">
-                  <div className="project-tech" aria-label="Technologies used">
-                    {project.tech.map((t, i) => (
-                      <span key={i} className="tech-pill">
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-
-                  <div className="project-cta">
-                    <button
-                      className="btn-pill primary cursor-target"
-                      id={`open-project-${project.id}`}
-                      onClick={(event) => {
-                        rememberProjectPosition(key, project.id, event.currentTarget);
-                        navigate(`/projects/${project.id}`, { state: { projectsBack: 1 } });
-                      }}
-                      aria-label={`View architecture for ${project.title}`}
-                    >
-                      Explore case study →
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Focus ring helper */}
-              <span className="project-focus-ring" aria-hidden="true" />
-            </article>
-          ))}
-        </div>
+      <div className="project-showcase">
+        <h1 id="projects-heading">Projects</h1>
+        <article>
+          <Link id="open-project-1" className="project-feature" to={projectPath} state={{ projectsBack: 1 }}
+            aria-labelledby="featured-lab-title" aria-describedby="featured-lab-summary"
+            onClick={openProject} onPointerEnter={warmProject} onFocus={warmProject}>
+            <RackPreview screen={screen} />
+            <div className="project-feature__copy">
+              <p className="project-feature__type">Interactive network lab</p>
+              <h2 id="featured-lab-title">{project1.title}</h2>
+              <p id="featured-lab-summary">See how two offices stay connected across two internet providers. Open a device, trace its links, or run a command in the simulated console.</p>
+              <ul className="project-feature__highlights" aria-label="What you can explore">
+                <li>10 rack devices</li><li>Live topology</li><li>Cisco &amp; Windows CLI</li>
+              </ul>
+              <span className="project-feature__cta">Enter the lab <FaExpand aria-hidden="true" /></span>
+            </div>
+          </Link>
+        </article>
       </div>
+      {launch && createPortal(
+        <div className="project-launch" aria-hidden="true">
+          <div className="project-launch__screen" style={launch} onAnimationEnd={finishLaunch}><RackPreview /></div>
+        </div>,
+        document.body,
+      )}
     </section>
   );
 }
