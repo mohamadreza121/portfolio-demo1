@@ -499,3 +499,82 @@
     max-width: 86vw;
   }
 }
+
+/* Case studies share the portfolio's type and surfaces. */
+.project-page {
+  padding: clamp(1rem, 4vw, 3.2rem) var(--portfolio-gutter) 4rem;
+}
+
+.project-page .project-container { max-width: 73.5rem; }
+
+.project-page .section-block {
+  border-color: var(--portfolio-line);
+  border-radius: .35rem;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.project-page .project-title {
+  color: var(--text-color);
+  font: 700 clamp(2rem, 4.5vw, 4rem)/1.04 var(--portfolio-display);
+  letter-spacing: -.057em;
+  text-align: left;
+}
+
+.project-page .hero-copy,
+.project-page--rack .project-container > .section-block:first-child {
+  padding: clamp(.5rem, 2vw, 1.45rem);
+}
+
+.project-page .hero-copy > p,
+.project-page--rack .project-subtitle {
+  max-width: 74ch;
+  margin: .75rem 0;
+  line-height: 1.65;
+}
+
+.project-page .pill-row,
+.project-page .badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .45rem;
+  justify-content: flex-start;
+  margin-top: 1rem;
+}
+
+.project-page .pill,
+.project-page .badge {
+  color: var(--muted);
+  background: var(--portfolio-raised);
+  border: 1px solid var(--portfolio-line);
+  border-radius: .25rem;
+  padding: .28rem .55rem;
+  font: .75rem/1.45 var(--portfolio-mono);
+}
+
+.project-page .hero-media {
+  overflow: hidden;
+  border-radius: .25rem;
+}
+
+.project-page .hero-img {
+  width: 100%;
+  height: auto;
+}
+
+.project-page h2,
+.project-page h3 {
+  font-family: var(--portfolio-display);
+  font-weight: 700;
+}
+
+.project-page [id] { scroll-margin-top: calc(var(--portfolio-header-height) + .9rem); }
+
+[data-theme="day"] .project-page .kv__item {
+  background: var(--portfolio-surface);
+  border-color: var(--portfolio-line);
+}
+
+@media (max-width: 540px) {
+  .project-page .section-block { padding: .85rem; }
+}

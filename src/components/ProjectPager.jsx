@@ -1,37 +1,20 @@
-import { Link, useNavigate } from "react-router-dom";
-import { navigateAndScroll } from "../utils/scrollToSection";
+import { Link } from "react-router-dom";
 import "./ProjectPager.css";
 
 export default function ProjectPager({ prev, next, className = "" }) {
-  const navigate = useNavigate();
-
   return (
     <nav className={`projpager ${className}`} aria-label="Project navigation">
-      {/* All Projects — SPA navigate + smooth scroll (no full refresh) */}
-      <button
-        type="button"
-        className="projpager__btn projpager__btn--ghost cursor-target"
-        onClick={() => navigateAndScroll(navigate, "projects")}
-      >
-        All Projects
-      </button>
-
+      <Link className="projpager__btn projpager__btn--ghost" to="/#projects">All Projects</Link>
       <div className="projpager__spacer" />
 
       {prev ? (
-        <Link className="projpager__btn cursor-target" to={prev.href}>
-          ← {prev.label}
-        </Link>
+        <Link className="projpager__btn" to={prev.href}>← {prev.label}</Link>
       ) : (
-        <span className="projpager__btn projpager__btn--disabled">
-          ← Previous
-        </span>
+        <span className="projpager__btn projpager__btn--disabled">← Previous</span>
       )}
 
       {next ? (
-        <Link className="projpager__btn cursor-target" to={next.href}>
-          {next.label} →
-        </Link>
+        <Link className="projpager__btn" to={next.href}>{next.label} →</Link>
       ) : (
         <span className="projpager__btn projpager__btn--disabled">Next →</span>
       )}

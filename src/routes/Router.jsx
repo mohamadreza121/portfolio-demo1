@@ -1,138 +1,40 @@
 import { Suspense, lazy } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
-import { AnimatePresence } from "framer-motion";
-
+import { Link, Route, Routes } from "react-router-dom";
 import Main from "../pages/Main";
-import PageTransition from "../components/PageTransition";
 
-const Project1 = lazy(() => import("../pages/Project1.jsx"));
-const Project2 = lazy(() => import("../pages/Project2.jsx"));
-const Project3 = lazy(() => import("../pages/Project3.jsx"));
-const Project4 = lazy(() => import("../pages/Project4.jsx"));
-const Project5 = lazy(() => import("../pages/Project5.jsx"));
-const Project6 = lazy(() => import("../pages/Project6.jsx"));
+const projects = [
+  lazy(() => import("../pages/Project1.jsx")),
+  lazy(() => import("../pages/Project2.jsx")),
+  lazy(() => import("../pages/Project3.jsx")),
+  lazy(() => import("../pages/Project4.jsx")),
+  lazy(() => import("../pages/Project5.jsx")),
+  lazy(() => import("../pages/Project6.jsx")),
+];
 
-export default function Router({
-  theme,
-  toggleTheme,
-  active,
-  setActive,
-  revealKey,
-  onRequestQuote,
-  isQuoteOpen,
-}) {
-  const location = useLocation();
-
+export default function Router({ onRequestQuote }) {
   return (
-    <AnimatePresence mode="sync">
-      <Routes location={location} key={location.pathname}>
+    <Routes>
+      <Route path="/" element={<Main onRequestQuote={onRequestQuote} />} />
+      {projects.map((Project, index) => (
         <Route
-          path="/"
+          key={index}
+          path={`/projects/${index + 1}`}
           element={
-            <PageTransition>
-              <Main
-                theme={theme}
-                toggleTheme={toggleTheme}
-                active={active}
-                setActive={setActive}
-                revealKey={revealKey}
-                onRequestQuote={onRequestQuote}
-                isQuoteOpen={isQuoteOpen}
-              />
-            </PageTransition>
+            <Suspense fallback={<p className="portfolio-width portfolio-route-message" role="status">Loading case study…</p>}>
+              <Project />
+            </Suspense>
           }
         />
-
-        <Route
-          path="/projects/1"
-          element={
-            <PageTransition>
-              <Suspense
-                fallback={
-                  <div style={{ minHeight: "100vh" }} aria-busy="true" />
-                }
-              >
-                <Project1 theme={theme} />
-              </Suspense>
-            </PageTransition>
-          }
-        />
-
-        <Route
-          path="/projects/2"
-          element={
-            <PageTransition>
-              <Suspense
-                fallback={
-                  <div style={{ minHeight: "100vh" }} aria-busy="true" />
-                }
-              >
-                <Project2 theme={theme} />
-              </Suspense>
-            </PageTransition>
-          }
-        />
-
-        <Route
-          path="/projects/3"
-          element={
-            <PageTransition>
-              <Suspense
-                fallback={
-                  <div style={{ minHeight: "100vh" }} aria-busy="true" />
-                }
-              >
-                <Project3 theme={theme} />
-              </Suspense>
-            </PageTransition>
-          }
-        />
-
-        <Route
-          path="/projects/4"
-          element={
-            <PageTransition>
-              <Suspense
-                fallback={
-                  <div style={{ minHeight: "100vh" }} aria-busy="true" />
-                }
-              >
-                <Project4 theme={theme} />
-              </Suspense>
-            </PageTransition>
-          }
-        />
-
-        <Route
-          path="/projects/5"
-          element={
-            <PageTransition>
-              <Suspense
-                fallback={
-                  <div style={{ minHeight: "100vh" }} aria-busy="true" />
-                }
-              >
-                <Project5 theme={theme} />
-              </Suspense>
-            </PageTransition>
-          }
-        />
-
-        <Route
-          path="/projects/6"
-          element={
-            <PageTransition>
-              <Suspense
-                fallback={
-                  <div style={{ minHeight: "100vh" }} aria-busy="true" />
-                }
-              >
-                <Project6 theme={theme} />
-              </Suspense>
-            </PageTransition>
-          }
-        />
-      </Routes>
-    </AnimatePresence>
+      ))}
+      <Route
+        path="*"
+        element={
+          <main className="portfolio-width portfolio-route-message">
+            <h1>Page not found</h1>
+            <Link className="portfolio-text-link" to="/#projects">Browse the portfolio</Link>
+          </main>
+        }
+      />
+    </Routes>
   );
 }

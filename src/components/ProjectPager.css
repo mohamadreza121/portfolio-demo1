@@ -1,11 +1,12 @@
 .projpager {
   margin-top: 18px;
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   align-items: center;
   padding: 12px;
   border: 1px solid var(--accent-border);
-  border-radius: 16px;
+  border-radius: .35rem;
   background: var(--card-bg);
 }
 
@@ -23,11 +24,12 @@ html[data-theme="day"] .projpager {
   justify-content: center;
   gap: 8px;
   padding: 10px 12px;
-  border-radius: 12px;
+  border-radius: .25rem;
   border: 1px solid var(--accent-border);
   color: var(--text-color);
   text-decoration: none;
-  font-family: "JetBrains Mono", monospace;
+  min-height: 2.75rem;
+  font-family: var(--portfolio-sans);
   font-size: 0.9rem;
   background: var(--accent-bg-softer);
   transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
@@ -50,4 +52,9 @@ html[data-theme="day"] .projpager__btn {
 .projpager__btn--disabled {
   opacity: 0.45;
   pointer-events: none;
+}
+
+@media (max-width: 480px) {
+  .projpager__spacer,
+  .projpager__btn--disabled { display: none; }
 }

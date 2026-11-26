@@ -4,7 +4,11 @@ import { sendWithMailto } from "./providers/mailto";
 import { sendWithEmailJS } from "./providers/emailjs";
 
 function getProvider() {
-  return (import.meta.env.VITE_CONTACT_PROVIDER || "mock").toLowerCase();
+  return (import.meta.env.VITE_CONTACT_PROVIDER || "mailto").toLowerCase();
+}
+
+export function contactUsesEmailClient() {
+  return !["emailjs", "mock"].includes(getProvider());
 }
 
 function getSiteMeta() {
@@ -36,13 +40,6 @@ export async function sendMessage(payload) {
 
   const clean = normalizePayload(payload);
 
-  console.log("[messaging] provider:", provider);
-  console.log("[messaging] VITE_CONTACT_PROVIDER:", import.meta.env.VITE_CONTACT_PROVIDER);
-  console.log("[messaging] has serviceId:", !!import.meta.env.VITE_EMAILJS_SERVICE_ID);
-  console.log("[messaging] has templateId:", !!import.meta.env.VITE_EMAILJS_TEMPLATE_ID);
-  console.log("[messaging] has publicKey:", !!import.meta.env.VITE_EMAILJS_PUBLIC_KEY);
-
-
   const enriched = {
     ...clean,
     pagePath: clean.pagePath || window.location.pathname + window.location.hash,
@@ -53,13 +50,12 @@ export async function sendMessage(payload) {
   };
 
   switch (provider) {
-    case "mailto":
-      return sendWithMailto(enriched);
     case "emailjs":
       return sendWithEmailJS(enriched);
     case "mock":
-    default:
       return sendWithMock(enriched);
+    default:
+      return sendWithMailto(enriched);
   }
 }
 
@@ -67,7 +63,6 @@ export async function sendContactMessage(formState) {
   return sendMessage({ kind: "contact", ...formState });
 }
 
-// ⚠️ minor ordering fix below (section 2)
 export async function sendQuoteMessage(formState, selectedServiceLabel = "") {
   return sendMessage({
     kind: "quote",

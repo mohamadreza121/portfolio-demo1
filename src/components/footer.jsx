@@ -1,161 +1,37 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import { navigateAndScroll } from "../utils/scrollToSection";
+import { Link } from "react-router-dom";
+import { FiArrowUp, FiArrowUpRight, FiGithub, FiLinkedin, FiMail, FiPhone } from "react-icons/fi";
 import { sendContactMessage } from "../services/messaging";
-
-import {
-  FaMapMarkerAlt,
-  FaEnvelope,
-  FaLinkedin,
-  FaPhone,
-} from "react-icons/fa";
-
 import ContactForm from "./ContactForm";
 
-import "./footer.css";
-import "./TargetCursor.css";
-
 export default function Footer({ onRequestQuote }) {
-  const navigate = useNavigate();
-
   return (
-    <>
-      <footer id="footer" className="footer">
-        <div className="footer-container">
-          {/* CONTACT / LEAD SECTION */}
-          <div className="footer-section">
-            <h3 className="footer-title">Get in Touch</h3>
-
-            <p>
-              <FaMapMarkerAlt
-                size={14}
-                style={{ color: "var(--accent)", marginRight: "8px" }}
-              />
-              <span>Toronto, Canada</span>
-            </p>
-
-            <p>
-              <FaPhone
-                size={14}
-                style={{ color: "var(--accent)", marginRight: "8px" }}
-              />
-              <span>+1(647)802-3224</span>
-            </p>
-
-            <p>
-              <FaEnvelope
-                size={14}
-                style={{ color: "var(--accent)", marginRight: "8px" }}
-              />
-              <a
-                href="mailto:your.email@example.com"
-                className="footer-link cursor-target"
-              >
-                mrheidarpoor7@gmail.com
-              </a>
-            </p>
-
-            <p>
-              <FaLinkedin
-                size={14}
-                style={{ color: "var(--accent)", marginRight: "8px" }}
-              />
-              <a
-                href="https://www.linkedin.com/in/mohammadreza-heidarpoor/"
-                target="_blank"
-                rel="noreferrer"
-                className="footer-link cursor-target"
-              >
-                LinkedIn
-              </a>
-            </p>
-
-            <button
-              type="button"
-              className="footer-link cursor-target footer-cta-btn"
-              onClick={() => onRequestQuote?.()}
-            >
-              Request a Quote
-            </button>
+    <footer id="footer" className="portfolio-footer" aria-labelledby="contact-heading">
+      <div className="portfolio-width">
+        <div className="portfolio-contact">
+          <div>
+            <h2 id="contact-heading">Get in touch<span>.</span></h2>
+            <p>Have a network project, web app or role you’d like to discuss?</p>
+            <a className="portfolio-email" href="mailto:mrheidarpoor7@gmail.com"><FiMail aria-hidden="true" /> mrheidarpoor7@gmail.com</a>
+            <a className="portfolio-phone" href="tel:+16478023224"><FiPhone aria-hidden="true" /> +1 (647) 802-3224</a>
+            <div className="portfolio-contact-links">
+              <a className="portfolio-text-link" href="https://www.linkedin.com/in/mohammadreza-heidarpoor/" target="_blank" rel="noreferrer"><FiLinkedin aria-hidden="true" /> LinkedIn</a>
+              <a className="portfolio-text-link" href="https://github.com/mohamadreza121" target="_blank" rel="noreferrer"><FiGithub aria-hidden="true" /> GitHub</a>
+              <button type="button" className="portfolio-text-link" onClick={() => onRequestQuote?.()}>Request a quote <FiArrowUpRight aria-hidden="true" /></button>
+            </div>
           </div>
 
-          {/* QUICK LINKS */}
-          <div className="footer-section">
-            <h3 className="footer-title">Quick Links</h3>
-
-            <nav aria-label="Footer navigation">
-              <ul className="footer-links">
-                <li>
-                  <button
-                    type="button"
-                    className="footer-link cursor-target"
-                    onClick={() => navigateAndScroll(navigate, "home")}
-                  >
-                    Home
-                  </button>
-                </li>
-
-                <li>
-                  <button
-                    type="button"
-                    className="footer-link cursor-target"
-                    onClick={() => navigateAndScroll(navigate, "about")}
-                  >
-                    About
-                  </button>
-                </li>
-
-                <li>
-                  <button
-                    type="button"
-                    className="footer-link cursor-target"
-                    onClick={() => navigateAndScroll(navigate, "projects")}
-                  >
-                    Projects
-                  </button>
-                </li>
-
-                <li>
-                  <button
-                    type="button"
-                    className="footer-link cursor-target"
-                    onClick={() => navigateAndScroll(navigate, "certifications")}
-                  >
-                    Certifications
-                  </button>
-                </li>
-
-                <li>
-                  <button
-                    type="button"
-                    className="footer-link cursor-target"
-                    onClick={() => navigateAndScroll(navigate, "services")}
-                  >
-                    Services
-                  </button>
-                </li>
-              </ul>
-            </nav>
-          </div>
-
-          {/* INLINE CONTACT FORM (OPTIONAL BUT PREMIUM) */}
-          <div className="footer-section footer-form-section">
-            <ContactForm
-              title="Start a Project"
-              subtitle="Tell me about your idea and I’ll get back to you."
-              showServiceSelect
-              onSubmit={(data) => sendContactMessage(data)}
-            />
-          </div>
+          <ContactForm
+            title="Send an inquiry"
+            subtitle=""
+            onSubmit={sendContactMessage}
+          />
         </div>
 
-        {/* BOTTOM BAR */}
-        <div className="footer-bottom">
-          <p>
-            © {new Date().getFullYear()} Mohammadreza Heidarpoor — Portfolio Template
-          </p>
+        <div className="portfolio-footer-bottom">
+          <p>© {new Date().getFullYear()} Mohammadreza Heidarpoor</p>
+          <Link className="portfolio-text-link" to="/#home">Back to top <FiArrowUp aria-hidden="true" /></Link>
         </div>
-      </footer>
-    </>
+      </div>
+    </footer>
   );
 }

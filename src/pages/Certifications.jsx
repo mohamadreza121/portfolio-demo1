@@ -1,187 +1,57 @@
-// src/pages/Certifications.jsx
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLink } from "@fortawesome/free-solid-svg-icons";
-import {
-  useState,
-  useEffect,
-  useMemo,
-  lazy,
-  Suspense,
-  useCallback,
-} from "react";
+import { FiArrowUpRight, FiAward } from "react-icons/fi";
 
-import DecryptedText from "../components/DecryptedText";
-import LightboxPortal from "../components/LightboxPortal";
-import Carousel from "../components/Carousel";
+const credentials = [
+  ["Cisco Certified Specialist – Enterprise Core", 1],
+  ["CCNA", 2],
+];
 
-import "./Certifications.css";
-
-const PdfViewerLightbox = lazy(() => import("../components/PdfViewerLightbox"));
-
-/* Thumbnails */
-import cert1 from "../assets/cert1.png";
-import cert2 from "../assets/cert2.png";
-import cert3 from "../assets/cert3.png";
-import cert4 from "../assets/cert4.png";
-import cert5 from "../assets/cert5.png";
-import cert6 from "../assets/cert6.png";
-import cert7 from "../assets/cert7.png";
-import cert8 from "../assets/cert8.png";
-import cert9 from "../assets/cert9.png";
-import cert10 from "../assets/cert10.png";
-
-/* Certificates */
-const certs = [
-  {
-    title: "Cisco Certified Specialist – Enterprise Core",
-    thumb: cert1,
-    pdf: "/assets/cert1.pdf",
-  },
-  {
-    title: "CCNA – Routing & Switching",
-    thumb: cert2,
-    pdf: "/assets/cert2.pdf",
-  },
-  { title: "Computer Hardware Basics", thumb: cert3, pdf: "/assets/cert3.pdf" },
-  { title: "Endpoint Security", thumb: cert4, pdf: "/assets/cert4.pdf" },
-  {
-    title: "Introduction to Cybersecurity",
-    thumb: cert5,
-    pdf: "/assets/cert5.pdf",
-  },
-  { title: "Introduction to Java", thumb: cert6, pdf: "/assets/cert6.pdf" },
-  {
-    title: "Network Support & Security",
-    thumb: cert7,
-    pdf: "/assets/cert7.pdf",
-  },
-  { title: "Networking Basics", thumb: cert8, pdf: "/assets/cert8.pdf" },
-  {
-    title: "Networking Devices and Initial Configuration",
-    thumb: cert9,
-    pdf: "/assets/cert9.pdf",
-  },
-  { title: "Python Essentials 1", thumb: cert10, pdf: "/assets/cert10.pdf" },
+const courses = [
+  ["Computer Hardware Basics", 3],
+  ["Endpoint Security", 4],
+  ["Introduction to Cybersecurity", 5],
+  ["Introduction to Java", 6],
+  ["Network Support & Security", 7],
+  ["Networking Basics", 8],
+  ["Networking Devices and Initial Configuration", 9],
+  ["Python Essentials 1", 10],
 ];
 
 export default function Certifications() {
-  const [lightboxPdf, setLightboxPdf] = useState(null);
-
-  // Lock scroll while the lightbox is open (restores prior values on close)
-  useEffect(() => {
-    if (!lightboxPdf) return;
-
-    const prevHtml = document.documentElement.style.overflow;
-    const prevBody = document.body.style.overflow;
-
-    document.documentElement.style.overflow = "hidden";
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      document.documentElement.style.overflow = prevHtml;
-      document.body.style.overflow = prevBody;
-    };
-  }, [lightboxPdf]);
-
-  // ✅ Optional improvement: force a small layout refresh after closing
-  const closeLightbox = useCallback(() => {
-    setLightboxPdf(null);
-
-    // iOS/Safari can keep scroll containers in a stale state after heavy overlays.
-    // This nudge helps ScrollDeck + Carousel re-measure and restores smoothness.
-    requestAnimationFrame(() => {
-      window.dispatchEvent(new Event("resize"));
-      window.dispatchEvent(new Event("scroll"));
-    });
-  }, []);
-
-  /* Convert certs to carousel items */
-  const carouselItems = useMemo(
-    () =>
-      certs.map((cert, i) => ({
-        id: `cert-${i}`,
-        title: cert.title,
-        caption: "Click to view certificate",
-        mediaSrc: cert.thumb,
-        badge: "Certificate",
-        href: undefined,
-        onClick: () => setLightboxPdf(cert.pdf),
-      })),
-    []
-  );
-
   return (
-    <div id="certifications" className="certifications-page">
-      <span className="spy-marker" />
-
-      <div className="certifications-container">
-        {/* ===============================
-            CENTERED HERO (MATCH PROJECTS)
-        =============================== */}
-        <section className="certifications-hero-center">
-          <h1 className="certifications-title">
-            <DecryptedText
-              text="Professional Certifications"
-              animateOn="view"
-              sequential
-              speed={80}
-              revealDirection="center"
-              encryptedClassName="encrypted"
-              className="revealed"
-            />
-          </h1>
-
-          <p className="certifications-subtitle">
-            Industry-recognized credentials validating enterprise networking,
-            security, and systems expertise.
-          </p>
-
-          <a
-            href="https://www.credly.com/users/mohammadreza-heidarpoor"
-            target="_blank"
-            rel="noreferrer"
-            className="btn-pill primary credly-btn cursor-target"
-          >
-            <FontAwesomeIcon icon={faLink} />
-            <span>Verify on Credly</span>
+    <section id="certifications" className="portfolio-section portfolio-credentials" aria-labelledby="credentials-heading">
+      <div className="portfolio-width">
+        <header className="portfolio-section-header">
+          <h2 id="credentials-heading">Professional credentials<span>.</span></h2>
+          <a className="portfolio-text-link" href="https://www.credly.com/users/mohammadreza-heidarpoor" target="_blank" rel="noreferrer">
+            Verify on Credly <FiArrowUpRight aria-hidden="true" />
           </a>
-        </section>
+        </header>
 
-        {/* ===============================
-            CERTIFICATIONS CAROUSEL
-        =============================== */}
-        <section className="certifications-carousel">
-          <Carousel
-            items={carouselItems.map((item) => ({
-              ...item,
-              href: item.href,
-              onClick: item.onClick,
-            }))}
-            ariaLabel="Certifications carousel"
-            className="cert-carousel-large"
-          />
-        </section>
+        <ul className="portfolio-credentials-grid">
+          {credentials.map(([title, id]) => (
+            <li key={id}>
+              <a href={`/assets/cert${id}.pdf`} target="_blank" rel="noreferrer" aria-label={`View ${title} certificate (PDF)`}>
+                <FiAward className="portfolio-credential-icon" aria-hidden="true" />
+                <span><span className="portfolio-eyebrow">Cisco certification</span><strong>{title}</strong></span>
+                <FiArrowUpRight aria-hidden="true" />
+              </a>
+            </li>
+          ))}
+        </ul>
+
+        <details className="portfolio-disclosure">
+          <summary>Course certificates</summary>
+          <ul className="portfolio-course-list">
+            {courses.map(([title, id]) => (
+              <li key={id}>
+                <a href={`/assets/cert${id}.pdf`} target="_blank" rel="noreferrer" aria-label={`View ${title} certificate (PDF)`}>
+                  {title} <FiArrowUpRight aria-hidden="true" />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </details>
       </div>
-
-      {/* ===============================
-          LIGHTBOX
-      =============================== */}
-      {lightboxPdf && (
-        <LightboxPortal>
-          <div className="lightbox" onClick={closeLightbox}>
-            <div
-              className="lightbox-inner"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Suspense
-                fallback={<div className="lightbox-loading" aria-busy="true" />}
-              >
-                <PdfViewerLightbox fileUrl={lightboxPdf} />
-              </Suspense>
-            </div>
-          </div>
-        </LightboxPortal>
-      )}
-    </div>
+    </section>
   );
 }
