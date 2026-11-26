@@ -7,29 +7,16 @@
   color: var(--text-color);
 }
 
-.certifications-page::before {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(ellipse at 46% 38%, #091510cf, transparent 74%);
-}
-
 html[data-theme="day"] .certifications-page {
   --credential-accent: color-mix(in srgb, var(--accent-dark) 72%, #1b1008);
   --credential-copy: #404942;
   --credential-line: #6454475c;
 }
 
-html[data-theme="day"] .certifications-page::before {
-  background: radial-gradient(ellipse at 46% 37%, #fff7e9ee, transparent 74%);
-}
-
 .credential-gallery {
-  width: min(100% - clamp(32px, 10vw, 155px), 1250px);
+  width: min(100% - clamp(28px, 9vw, 150px), 1350px);
   margin: 0 auto;
-  padding: clamp(126px, 15vh, 172px) 0 clamp(65px, 10vh, 112px);
+  padding: clamp(126px, 15vh, 172px) 0 clamp(50px, 7vh, 80px);
 }
 
 .credential-header {
@@ -37,13 +24,13 @@ html[data-theme="day"] .certifications-page::before {
   justify-content: space-between;
   align-items: end;
   gap: 16px 26px;
-  margin-bottom: clamp(19px, 3vw, 35px);
+  margin-bottom: 3px;
 }
 
 .credential-header h1 {
   margin: 0;
   font-weight: 690;
-  font-size: clamp(2.45rem, 5.7vw, 5.55rem);
+  font-size: clamp(2.45rem, 5.3vw, 5.1rem);
   letter-spacing: -.075em;
   line-height: .95;
 }
@@ -63,53 +50,32 @@ html[data-theme="day"] .certifications-page::before {
 }
 .credential-credly:hover { color: var(--credential-accent); border-color: var(--credential-accent); }
 
-.credential-carousel {
-  position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 2.25fr) minmax(0, 1fr);
-  grid-template-areas: "stage details" "controls controls";
-  color: #ebf7f0;
-  background: linear-gradient(105deg, #0b1812 3%, #172720 70%, #101c17 100%);
-  border: 1px solid #64847778;
-  border-radius: 13px;
-  overflow: hidden;
-  box-shadow: 0 28px 65px #0009, 0 55px 120px -55px var(--accent-glow);
-}
+.credential-carousel { position: relative; }
+.credential-figure { margin: 0; }
 
 .credential-spotlight {
-  --step: clamp(90px, 13vw, 185px);
-  grid-area: stage;
+  --step: clamp(119px, 17vw, 252px);
   position: relative;
   min-width: 0;
-  height: clamp(347px, 32vw, 465px);
+  height: clamp(355px, 36vw, 560px);
   isolation: isolate;
-  overflow: hidden;
+  overflow: clip;
   touch-action: pan-y pinch-zoom;
   user-select: none;
-  background:
-    radial-gradient(ellipse at 51% 66%, var(--accent-shadow-soft), transparent 50%),
-    radial-gradient(ellipse at 50% 18%, #345a48 0%, #182c22 39%, #0b1611 79%);
 }
 
-.credential-floor {
-  position: absolute;
-  inset: 41% -15% -50%;
-  transform: perspective(380px) rotateX(51deg);
-  background:
-    linear-gradient(#abdec434 1px, transparent 1px) center / 40px 40px,
-    linear-gradient(90deg, #abdec434 1px, transparent 1px) center / 40px 40px;
-  mask-image: radial-gradient(ellipse, #000 8%, #0009, transparent 68%);
-  pointer-events: none;
-}
-.credential-spotlight::after {
+.credential-spotlight::before {
   content: "";
   position: absolute;
-  left: 14%;
-  right: 14%;
-  bottom: 12%;
-  height: 22%;
-  background: radial-gradient(ellipse, var(--accent-shadow-soft), transparent 70%);
+  z-index: -1;
+  inset: auto 20% 2%;
+  height: 18%;
+  background: radial-gradient(ellipse, #000a, #0004 38%, transparent 72%);
   pointer-events: none;
+}
+
+html[data-theme="day"] .credential-spotlight::before {
+  background: radial-gradient(ellipse, #654c354f, transparent 70%);
 }
 
 .credential-deck { position: absolute; inset: 0; perspective: 1050px; transform-style: preserve-3d; }
@@ -120,14 +86,14 @@ html[data-theme="day"] .certifications-page::before {
   --slot-angle: 0deg;
   position: absolute;
   z-index: 0;
-  top: 47%;
+  top: 49%;
   left: 50%;
-  width: min(58%, 438px);
+  width: min(60%, 593px);
   aspect-ratio: 1.36;
   padding: clamp(5px, .8vw, 10px);
   border: 1px solid #99bda380;
-  border-radius: 5px;
-  background: linear-gradient(148deg, #516a5e, #283f34 48%, #17251e);
+  border-radius: 4px;
+  background: linear-gradient(148deg, #75857c, #33453a 25%, #17251e 83%, #0e1c15);
   box-shadow: 0 23px 40px #020b07ac, inset 0 1px #e1f7ea33;
   transform: translate3d(calc(-50% + var(--slot-x) + var(--drag-offset, 0px)), calc(-50% + var(--slot-y)), var(--slot-z)) rotateY(var(--slot-angle));
   transition: transform .49s cubic-bezier(.23, 1, .31, 1), box-shadow .35s ease, opacity .35s ease, filter .35s ease;
@@ -147,7 +113,7 @@ html[data-theme="day"] .certifications-page::before {
 .credential-slide[data-slot="0"] {
   z-index: 1;
   border-color: #adc6b8;
-  box-shadow: 0 22px 52px #020a06d1, 0 0 47px var(--accent-shadow-soft), inset 0 1px #f3fff382;
+  box-shadow: 0 2px 0 #020e0a, 0 5px 0 #1b3326, 0 26px 44px #020a06c1, 0 0 37px var(--accent-shadow-soft), inset 0 1px #f3fff382;
 }
 .credential-slide:hover:not(:disabled) { filter: brightness(1.07) saturate(.92); }
 .credential-slide img { display: block; width: 100%; height: 100%; object-fit: contain; background: #f4f7f5; pointer-events: none; }
@@ -169,65 +135,68 @@ html[data-theme="day"] .certifications-page::before {
 .credential-slide:hover .credential-slide__expand { color: var(--accent); }
 
 .credential-info {
-  grid-area: details;
   position: relative;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: start;
-  gap: 22px;
-  padding: clamp(16px, 3.2vw, 43px);
-  border-left: 1px solid #8db6a13b;
-  background: radial-gradient(ellipse at 9% 35%, var(--accent-shadow-soft), transparent 74%), #101c16;
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  width: min(100%, 542px);
+  margin: 0 auto;
+  padding: clamp(13px, 1.9vw, 21px) clamp(15px, 3vw, 37px) 13px;
+  border: 1px solid #94aaaa78;
+  border-top-color: #afc0b6b5;
+  border-bottom-color: #1d3027;
+  border-radius: 4px;
+  background:
+    repeating-linear-gradient(0deg, #d4ead00a 0 1px, transparent 1px 3px),
+    linear-gradient(112deg, #15271f 0%, #23362d 49%, #121e18 100%);
+  color: #f0fbf4;
+  box-shadow: inset 0 1px #d6e6dd38, 0 3px 0 #08120d, 0 10px 20px #0006;
+  text-align: center;
 }
 .credential-info__body { width: 100%; animation: credential-info-in .32s ease both; }
-@keyframes credential-info-in { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: none; } }
-.credential-info__issuer { color: var(--accent); font: 600 .77rem/1.5 var(--credential-mono); }
+@keyframes credential-info-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+.credential-info__body p { margin: 0; }
+.credential-info__issuer { color: var(--accent); font: 600 .72rem/1.5 var(--credential-mono); }
 .credential-info h2 {
-  margin: 8px 0 15px;
-  font-size: clamp(1.7rem, 3vw, 3.2rem);
-  line-height: 1.04;
-  letter-spacing: -.055em;
-  font-weight: 680;
-  text-wrap: pretty;
+  margin: 5px 0 6px;
+  font-size: clamp(1.23rem, 2.65vw, 2.25rem);
+  line-height: 1.09;
+  letter-spacing: -.035em;
+  font-weight: 660;
+  text-wrap: balance;
 }
-.credential-info__date { color: #acbeb3; font: .74rem/1.6 var(--credential-mono); }
-.credential-info__date span { display: block; }
+.credential-info__date { display: flex; flex-wrap: wrap; justify-content: center; gap: 0 13px; color: #bdcdc3; font: .72rem/1.6 var(--credential-mono); }
 .credential-open {
   display: inline-flex;
   justify-content: center;
   align-items: center;
   gap: 7px;
   min-height: 44px;
-  max-width: 100%;
-  padding: 0 12px;
-  border: 1px solid #79988b;
-  border-radius: 6px;
-  color: #e8f6ee;
-  font-size: .86rem;
-  font-weight: 640;
+  padding: 0 5px;
+  color: #edf7f0;
+  font-size: .82rem;
+  font-weight: 600;
 }
-.credential-open:hover { border-color: var(--accent); color: var(--accent); }
+.credential-open:hover { color: var(--accent); }
 .credential-carousel :focus-visible, .credential-credly:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 
-.credential-control {
-  grid-area: controls;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 72px;
-  padding: 10px clamp(12px, 2vw, 23px);
-  background: #0d1914;
-  border-top: 1px solid #6e8c7c73;
+.credential-step {
+  position: absolute;
+  z-index: 2;
+  top: 48%;
+  translate: 0 -50%;
+  display: grid;
+  place-items: center;
+  width: 45px;
+  height: 45px;
+  border: 1px solid var(--credential-line);
+  border-radius: 50%;
+  color: var(--text-color);
+  background: color-mix(in srgb, var(--bg-color) 80%, transparent);
 }
-.credential-step { display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid #5b776a; border-radius: 6px; }
-.credential-index { display: flex; gap: 3px; }
-.credential-index button { width: clamp(32px, 4.2vw, 46px); min-height: 44px; border-bottom: 1px solid #41584d; color: #abc1b5; font: .73rem/1 var(--credential-mono); }
-.credential-index button:hover,
-.credential-step:hover { background: #1b3528; }
-.credential-index button[aria-current="true"] { border-bottom-color: var(--accent); background: var(--accent-bg-soft); color: var(--accent); }
-.credential-progress { margin-left: auto; color: #b8ccc0; white-space: nowrap; font: .76rem/1 var(--credential-mono); }
+.credential-step--prev { left: 5px; }
+.credential-step--next { right: 5px; }
+.credential-step:hover { border-color: var(--credential-accent); color: var(--credential-accent); }
 .credential-sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
 .credential-viewer {
@@ -246,7 +215,8 @@ html[data-theme="day"] .certifications-page::before {
   background: #102019;
   box-shadow: 0 35px 95px #000b;
 }
-.credential-viewer::backdrop { background: #030b07ba; backdrop-filter: blur(7px); }
+.credential-viewer::backdrop { background: #030b07ba; backdrop-filter: blur(7px); animation: credential-veil-in .48s ease both; }
+@keyframes credential-veil-in { from { opacity: 0; } to { opacity: 1; } }
 .credential-viewer__inner { display: flex; flex-direction: column; height: 100%; }
 .credential-viewer header { display: flex; align-items: center; gap: 8px 13px; padding: 8px 12px; background: #182921; }
 .credential-viewer header h2 { flex: 1; font-size: clamp(.86rem, 2vw, 1.05rem); font-weight: 650; }
@@ -254,24 +224,26 @@ html[data-theme="day"] .certifications-page::before {
 .credential-viewer header button { display: grid; place-items: center; min-width: 44px; min-height: 44px; border: 1px solid #638374; border-radius: 6px; }
 .credential-viewer header :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .credential-viewer__document { flex: 1; min-height: 0; overflow: auto; background: #e7ece9; color: #102019; }
-.credential-viewer__document > p { padding: 18px; }
+.credential-viewer__preview { min-height: 100%; display: grid; justify-items: center; align-content: center; gap: 7px; padding: 15px; }
+.credential-viewer__preview img { width: min(88%, 740px); max-height: 68dvh; object-fit: contain; }
+.credential-viewer__preview p { font: .75rem/1.5 "JetBrains Mono", ui-monospace, monospace; }
 
 @media (max-width: 780px) {
   .credential-gallery { width: min(100% - 28px, 560px); padding: 45px 0 55px; }
   .credential-header { align-items: start; flex-direction: column; gap: 6px; }
   .credential-header h1 { font-size: clamp(2.2rem, 8.8vw, 4.2rem); }
   .credential-header h1 span { display: block; }
-  .credential-carousel { grid-template-columns: minmax(0, 1fr); grid-template-areas: "stage" "controls" "details"; }
-  .credential-spotlight { --step: clamp(57px, 19vw, 106px); height: clamp(235px, 65vw, 366px); }
-  .credential-slide { width: 63%; }
+  .credential-spotlight { --step: clamp(68px, 20vw, 122px); height: clamp(241px, 75vw, 415px); overflow: visible; }
+  .credential-deck { overflow: clip; }
+  .credential-slide { width: 80%; }
+  .credential-step { top: auto; bottom: 0; translate: none; }
+  .credential-step--prev { left: 2px; }
+  .credential-step--next { right: 2px; }
   .credential-slide__expand { width: 31px; height: 31px; bottom: 8px; right: 8px; }
-  .credential-info { min-height: 169px; justify-content: space-between; gap: 13px; border-left: 0; border-top: 1px solid #8db6a13b; }
-  .credential-info h2 { font-size: clamp(1.45rem, 6vw, 2.4rem); margin-bottom: 8px; }
-  .credential-index { display: none; }
-  .credential-control { min-height: 62px; padding: 8px 12px; }
+  .credential-info { margin-top: 9px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .credential-slide { transition: none; }
-  .credential-info__body { animation: none; }
+  .credential-info__body, .credential-viewer::backdrop { animation: none; }
 }

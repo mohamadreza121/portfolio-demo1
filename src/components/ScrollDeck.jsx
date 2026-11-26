@@ -572,7 +572,7 @@ export default function ScrollDeck({
     if (!container) return;
 
     const onWheel = (e) => {
-      if (isQuoteOpen || e.ctrlKey || Math.abs(e.deltaX) >= Math.abs(e.deltaY)) return;
+      if (e.defaultPrevented || isQuoteOpen || e.ctrlKey || Math.abs(e.deltaX) >= Math.abs(e.deltaY)) return;
 
       const now = performance.now();
       if (now < boundaryCooldownUntilRef.current) {
