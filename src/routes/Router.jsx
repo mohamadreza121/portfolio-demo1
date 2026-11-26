@@ -43,7 +43,7 @@ export default function Router({
         <Route
           path="/projects/1"
           element={
-            <PageTransition compact={compact} rackPreview={location.state?.fromRackPreview}>
+            <PageTransition compact={compact} rackPreview={location.state?.fromRackPreview} rackMorph={location.state?.rackMorph}>
               <Suspense
                 fallback={
                   <div style={{ minHeight: "100vh" }} aria-busy="true" />

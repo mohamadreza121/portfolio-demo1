@@ -11,7 +11,7 @@ import "./NetworkLab.css";
 const storyAnchors = ["switching", "routing", "wan", "branch", "windows"];
 
 export default function Project1({ ready = true, theme }) {
-  const { hash, key } = useLocation();
+  const { hash, key, state } = useLocation();
   const hasScrolled = useRef(false);
 
   useEffect(() => {
@@ -31,7 +31,7 @@ export default function Project1({ ready = true, theme }) {
   }, [hash, key, ready]);
 
   return (
-    <main className="project-page project-page--lab">
+    <main className="project-page project-page--lab" data-rack-morph={state?.rackMorph || undefined}>
       <div className="project-container">
         <NetworkLabStage theme={theme} ready={ready} />
         <ProjectLabChapters hash={hash} />

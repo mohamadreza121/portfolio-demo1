@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import Projects from "../pages/Projects";
 
@@ -22,9 +22,9 @@ function renderProjects(reduced) {
       </Routes>
     </MemoryRouter>,
   );
-  vi.spyOn(view.container.querySelector(".project-viewfinder"), "getBoundingClientRect")
+  vi.spyOn(view.container.querySelector(".project-rack-link"), "getBoundingClientRect")
     .mockReturnValue({ left: 20, top: 100, width: 400, height: 340 });
-  return { ...view, query, link: screen.getByRole("link", { name: "Enterprise Multi-Site Network Lab" }) };
+  return { ...view, query, link: screen.getByRole("link", { name: "Enter the lab" }) };
 }
 
 test("opens the project after zooming the video-free rack preview", () => {
@@ -50,5 +50,31 @@ test("opens the lab immediately with reduced motion", () => {
     expect(document.querySelector(".project-launch__screen")).not.toBeInTheDocument();
   } finally {
     query.mockRestore();
+  }
+});
+
+
+test("carries the rack into the lab with a native view transition", async () => {
+  const originalTransition = document.startViewTransition;
+  let update;
+  let finish;
+  const finished = new Promise((resolve) => { finish = resolve; });
+  document.startViewTransition = vi.fn((callback) => {
+    update = callback;
+    return { finished };
+  });
+  const { link, query } = renderProjects(false);
+  try {
+    fireEvent.click(link);
+    await waitFor(() => expect(document.startViewTransition).toHaveBeenCalledOnce());
+    const navigation = update();
+    expect(await screen.findByRole("heading", { name: "Lab after zoom" })).toBeInTheDocument();
+    // This test route has no real rack. The bounded wait must still complete.
+    await navigation;
+    finish();
+    await waitFor(() => expect(document.documentElement).not.toHaveClass("rack-morphing"));
+  } finally {
+    query.mockRestore();
+    document.startViewTransition = originalTransition;
   }
 });

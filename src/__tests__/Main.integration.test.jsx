@@ -14,7 +14,7 @@ test("renders all major sections", async () => {
   expect(await screen.findByRole("heading", { name: /about me/i })).toBeInTheDocument();
 
   expect(
-    await screen.findByRole("heading", { name: "Projects" })
+    await screen.findByRole("heading", { name: "Enterprise Multi-Site Network Lab" })
   ).toBeInTheDocument();
 
   expect(
