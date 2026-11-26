@@ -6,7 +6,9 @@ import "./ProjectDetail.css";
 import "./ProjectCli.css";
 
 export default function Project5() {
-  useEffect(() => window.scrollTo({ top: 0, behavior: "auto" }), []);
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, []);
 
   return (
     <main className="project-page project-page--rack">

@@ -14,10 +14,6 @@
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
 
-  will-change: transform, opacity, filter;
-  backface-visibility: hidden;
-  transform: translateZ(0);
-
   /* Default off */
   opacity: 0;
   visibility: hidden;
@@ -44,12 +40,6 @@
 /* Content wrapper */
 .scroll-deck__panelInner {
   min-height: 100%;
-}
-
-/* Touch behavior */
-.scroll-deck,
-.scroll-deck__panel {
-  touch-action: pan-y;
 }
 
 /* =====================================================

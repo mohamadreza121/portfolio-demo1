@@ -49,7 +49,9 @@ function formatChecklist(rows = []) {
 }
 
 export default function Project1() {
-  useEffect(() => window.scrollTo({ top: 0, behavior: "auto" }), []);
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, []);
 
   const kvText = useMemo(() => formatKV(project1.topologyAtAGlance || []), []);
   const connText = useMemo(

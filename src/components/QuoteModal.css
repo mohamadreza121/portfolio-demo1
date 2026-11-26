@@ -312,3 +312,27 @@ html[data-theme="day"] .quote-chassis__close {
     padding: 0 14px 16px;
   }
 }
+
+.quote-modal-overlay--compact {
+  top: var(--quote-viewport-top, 0px);
+  bottom: auto;
+  height: var(--quote-viewport-height, 100dvh);
+  align-items: flex-start;
+  padding-block: max(10px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-bottom));
+  padding-inline: max(12px, env(safe-area-inset-left), env(safe-area-inset-right));
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.quote-modal-overlay--compact .quote-chassis {
+  max-height: none;
+  overflow: visible;
+  margin-block: auto;
+  flex: none;
+  background: var(--form-surface);
+}
+
+.quote-modal-overlay--compact .quote-chassis__close {
+  min-width: 44px;
+  min-height: 44px;
+}

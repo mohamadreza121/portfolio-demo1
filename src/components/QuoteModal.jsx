@@ -24,12 +24,14 @@ const EMPTY_FORM = {
 
 export default function QuoteModal({
   open = false,
+  compact = false,
   service = "",
   onClose,
   onSubmit,
 }) {
   const overlayRef = useRef(null);
   const firstInputRef = useRef(null);
+  const closeRef = useRef(null);
 
   const [formState, setFormState] = useState(EMPTY_FORM);
   const [status, setStatus] = useState("idle");
@@ -50,10 +52,35 @@ export default function QuoteModal({
       projectType: SERVICE_MAP[service] || "",
     });
 
-    firstInputRef.current?.focus({ preventScroll: true });
+    const overlay = overlayRef.current;
+    const trigger = document.activeElement;
+    const previousOverflow = document.body.style.overflow;
+    const viewport = compact ? window.visualViewport : null;
+    function fitToViewport() {
+      overlay.style.setProperty("--quote-viewport-top", `${viewport.offsetTop}px`);
+      overlay.style.setProperty("--quote-viewport-height", `${viewport.height}px`);
+    }
+    if (viewport) {
+      fitToViewport();
+      viewport.addEventListener("resize", fitToViewport);
+      viewport.addEventListener("scroll", fitToViewport);
+    }
+    (compact ? closeRef : firstInputRef).current?.focus({ preventScroll: true });
 
     const onKey = (e) => {
-      if (e.key === "Escape") onClose?.();
+      if (e.key === "Escape") {
+        e.preventDefault();
+        onClose?.();
+      }
+      if (e.key !== "Tab") return;
+      const controls = overlay.querySelectorAll("button:not(:disabled), input:not([tabindex='-1']), select, textarea");
+      const first = controls[0];
+      const last = controls[controls.length - 1];
+      const edge = e.shiftKey ? first : last;
+      if (document.activeElement === edge) {
+        e.preventDefault();
+        (e.shiftKey ? last : first)?.focus();
+      }
     };
 
     document.addEventListener("keydown", onKey);
@@ -61,9 +88,12 @@ export default function QuoteModal({
 
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
+      viewport?.removeEventListener("resize", fitToViewport);
+      viewport?.removeEventListener("scroll", fitToViewport);
+      document.body.style.overflow = previousOverflow;
+      trigger?.focus({ preventScroll: true });
     };
-  }, [open, onClose, service]);
+  }, [open, compact, onClose, service]);
 
   if (!open) return null;
 
@@ -103,17 +133,18 @@ export default function QuoteModal({
   return createPortal(
     <div
       ref={overlayRef}
-      className="quote-modal-overlay"
+      className={`quote-modal-overlay${compact ? " quote-modal-overlay--compact" : ""}`}
       onClick={(e) => {
         if (e.target === overlayRef.current) onClose?.();
       }}
       aria-modal="true"
+      aria-labelledby="quote-modal-title"
       role="dialog"
     >
       <div className="quote-modal quote-chassis" role="document">
         <header className="quote-chassis__header">
           <div className="quote-chassis__title">
-            <h3>Request a Quote</h3>
+            <h3 id="quote-modal-title">Request a Quote</h3>
             {service ? (
               <p className="quote-chassis__subtitle">
                 Service:{" "}
@@ -127,6 +158,7 @@ export default function QuoteModal({
           </div>
 
           <button
+            ref={closeRef}
             type="button"
             className="quote-chassis__close cursor-target"
             onClick={onClose}
@@ -176,6 +208,7 @@ export default function QuoteModal({
                 ref={firstInputRef}
                 id="q-name"
                 name="name"
+                autoComplete="name"
                 type="text"
                 placeholder="Name"
                 value={formState.name}
@@ -189,6 +222,7 @@ export default function QuoteModal({
               <input
                 id="q-email"
                 name="email"
+                autoComplete="email"
                 type="email"
                 placeholder="Email"
                 value={formState.email}

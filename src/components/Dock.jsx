@@ -16,6 +16,7 @@ function DockItem({
   magnification,
   baseItemSize,
   isActive,
+  label,
 }) {
   const ref = useRef(null);
   const isHovered = useMotionValue(0);
@@ -34,8 +35,9 @@ function DockItem({
   const size = useSpring(targetSize, spring);
 
   return (
-    <motion.div
+    <motion.button
       ref={ref}
+      type="button"
       style={{
         width: size,
         height: size,
@@ -53,14 +55,12 @@ function DockItem({
         onClick?.();
       }}
       className={`dock-item cursor-target ${className}`}
-      tabIndex={0}
-      role="button"
-      aria-haspopup="true"
+      aria-label={label}
       aria-current={isActive ? "page" : undefined}
     >
       {/* Smooth “moving active” indicator */}
       {isActive && (
-        <motion.div
+        <motion.span
           layoutId="dock-active-pill"
           className="dock-active-pill"
           transition={{
@@ -73,7 +73,7 @@ function DockItem({
       )}
 
       {Children.map(children, (child) => cloneElement(child, { isHovered }))}
-    </motion.div>
+    </motion.button>
   );
 }
 
@@ -92,7 +92,7 @@ function DockLabel({ children, className = '', ...rest }) {
   return (
     <AnimatePresence>
       {isVisible && (
-        <motion.div
+        <motion.span
           initial={{ opacity: 0, y: 0 }}
           animate={{ opacity: 1, y: -10 }}
           exit={{ opacity: 0, y: 0 }}
@@ -101,14 +101,14 @@ function DockLabel({ children, className = '', ...rest }) {
           role="tooltip"
         >
           {children}
-        </motion.div>
+        </motion.span>
       )}
     </AnimatePresence>
   );
 }
 
 function DockIcon({ children, className = '' }) {
-  return <div className={`dock-icon ${className}`}>{children}</div>;
+  return <span aria-hidden="true" className={`dock-icon ${className}`}>{children}</span>;
 }
 
 export default function Dock({
@@ -179,7 +179,8 @@ export default function Dock({
     >
       {items.map((item, index) => (
         <DockItem
-          key={index}
+          key={item.key || index}
+          label={item.label}
           onClick={item.onClick}
           isActive={item.isActive}
           className={item.isActive ? "active" : ""}

@@ -85,7 +85,9 @@ function buildCmdBlock() {
 }
 
 export default function Project6() {
-  useEffect(() => window.scrollTo({ top: 0, behavior: "auto" }), []);
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, []);
 
   const [lightboxItem, setLightboxItem] = useState(null);
   const isLightboxOpen = Boolean(lightboxItem);

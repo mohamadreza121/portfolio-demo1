@@ -10,14 +10,17 @@ import Preloader from "./components/Preloader";
 import Navbar from "./components/Navbar";
 import CurtainOverlay from "./components/CurtainOverlay";
 import QuoteModal from "./components/QuoteModal";
+import useCompactLayout from "./hooks/useCompactLayout";
 
 import "./index.css";
+import "./mobile.css";
 
 export default function App() {
   /* =====================================================
      ROUTING
   ===================================================== */
   const location = useLocation();
+  const compact = useCompactLayout();
 
   /* =====================================================
      GLOBAL STATE
@@ -51,6 +54,7 @@ export default function App() {
   ===================================================== */
   const [quoteOpen, setQuoteOpen] = useState(false);
   const [quoteService, setQuoteService] = useState("");
+  const closeQuote = useCallback(() => setQuoteOpen(false), []);
 
   useEffect(() => {
     const onOpen = (e) => {
@@ -123,19 +127,6 @@ export default function App() {
   }, []);
 
   /* =====================================================
-     ENSURE HOME IS ACTIVE AFTER BOOT
-  ===================================================== */
-  useEffect(() => {
-    if (phase !== "ready") return;
-
-    requestAnimationFrame(() => {
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
-      setActive("Home");
-    });
-  }, [phase]);
-
-  /* =====================================================
      RE-TRIGGER REVEAL WHEN RETURNING TO "/"
   ===================================================== */
   useEffect(() => {
@@ -169,7 +160,8 @@ export default function App() {
      SCROLL-TOP VISIBILITY
   ===================================================== */
   useEffect(() => {
-    // Main uses ScrollDeck (internal scroller). Project pages use window.
+    // The compact dock already includes a Home control.
+    if (compact) return;
     if (location.pathname === "/") {
       const onDeckState = (e) => {
         const d = e?.detail || {};
@@ -186,13 +178,13 @@ export default function App() {
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
-  }, [location.pathname, location.search]); // keep both if you reference both
+  }, [location.pathname, compact]);
 
   /* =====================================================
      RENDER
   ===================================================== */
   return (
-    <div className="app-root">
+    <div className="app-root" data-compact={compact}>
       {(phase === "preloader" || phase === "curtains") && (
         <CurtainOverlay
           phase={phase}
@@ -208,15 +200,17 @@ export default function App() {
       {(phase === "curtains" || phase === "ready") && (
         <>
           <Navbar
-            active={active}
-            onSetActive={setActive}
+            active={location.pathname.startsWith("/projects/") ? "Projects" : active}
+            compact={compact}
+            hidden={quoteOpen}
             theme={theme}
             onToggleTheme={toggleTheme}
           />
 
-          {showScrollTop && (
+          {!compact && showScrollTop && (
             <button
               className="scroll-top-btn cursor-target"
+              aria-label="Scroll to top"
               onClick={() => {
                 if (location.pathname === "/") {
                   window.dispatchEvent(new Event("deck:scrollToTop"));
@@ -236,13 +230,14 @@ export default function App() {
 
       <LetterGlitch
         theme={theme}
-        glitchSpeed={120}
-        centerVignette={false}
+        glitchSpeed={compact ? 190 : 120}
+        maxFps={compact ? 18 : 30}
+        centerVignette={compact}
         outerVignette
-        smooth
+        smooth={!compact}
       />
 
-      <TargetCursor spinDuration={2.2} hideDefaultCursor parallaxOn />
+      {!compact && <TargetCursor spinDuration={2.2} hideDefaultCursor parallaxOn />}
 
       <div
         className={[
@@ -253,8 +248,8 @@ export default function App() {
       >
         <Router
           theme={theme}
-          toggleTheme={toggleTheme}
-          active={active}
+          compact={compact}
+          ready={phase === "ready"}
           setActive={setActive}
           revealKey={revealKey}
           onRequestQuote={(service) => {
@@ -266,8 +261,9 @@ export default function App() {
 
         <QuoteModal
           open={quoteOpen}
+          compact={compact}
           service={quoteService}
-          onClose={() => setQuoteOpen(false)}
+          onClose={closeQuote}
           onSubmit={(data) => sendQuoteMessage(data, quoteService)}
         />
       </div>

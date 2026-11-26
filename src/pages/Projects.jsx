@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { rememberProjectPosition } from "../utils/scrollToSection";
 import DecryptedText from "../components/DecryptedText";
 import "./Projects.css";
 
@@ -87,8 +88,9 @@ function usePrefersReducedMotion() {
   return reducedRef;
 }
 
-export default function Projects() {
+export default function Projects({ compact = false }) {
   const navigate = useNavigate();
+  const { key } = useLocation();
 
   const reducedMotionRef = usePrefersReducedMotion();
   const cardsRef = useRef([]);
@@ -220,6 +222,7 @@ export default function Projects() {
      Scroll parallax (media drifts as the panel scrolls)
   ===================================================== */
   useEffect(() => {
+    if (compact) return;
     const root = document.getElementById("projects");
     if (!root) return;
 
@@ -296,7 +299,7 @@ export default function Projects() {
       scrollContainer.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
     };
-  }, [reducedMotionRef]);
+  }, [compact, reducedMotionRef]);
 
   /* =====================================================
      Render
@@ -344,10 +347,10 @@ export default function Projects() {
               className="project-card"
               role="listitem"
               tabIndex={-1}
-              onPointerEnter={() => onCardPointerEnter(idx)}
+              onPointerEnter={compact ? undefined : () => onCardPointerEnter(idx)}
               onPointerLeave={() => onCardPointerLeave(idx)}
-              onPointerMove={(e) => onCardPointerMove(e, idx)}
-              onFocusCapture={() => onCardFocus(idx)}
+              onPointerMove={compact ? undefined : (e) => onCardPointerMove(e, idx)}
+              onFocusCapture={compact ? undefined : () => onCardFocus(idx)}
               onBlurCapture={() => onCardBlur(idx)}
             >
               {/* Media */}
@@ -360,13 +363,13 @@ export default function Projects() {
                   draggable="false"
                 />
 
-                {project.video ? (
+                {project.video && !compact ? (
                   <video
                     className="project-video"
                     muted
                     loop
                     playsInline
-                    preload="metadata"
+                    preload="none"
                   >
                     <source src={project.video} type="video/mp4" />
                   </video>
@@ -411,7 +414,11 @@ export default function Projects() {
                   <div className="project-cta">
                     <button
                       className="btn-pill primary cursor-target"
-                      onClick={() => navigate(`/projects/${project.id}`)}
+                      id={`open-project-${project.id}`}
+                      onClick={(event) => {
+                        rememberProjectPosition(key, project.id, event.currentTarget);
+                        navigate(`/projects/${project.id}`, { state: { projectsBack: 1 } });
+                      }}
                       aria-label={`View architecture for ${project.title}`}
                     >
                       View Architecture →

@@ -16,7 +16,7 @@ import "./Navbar.css";
 import "./Dock.css";
 import "./TargetCursor.css";
 
-export default function Navbar({ active, theme, onToggleTheme }) {
+export default function Navbar({ active, theme, onToggleTheme, compact = false, hidden = false }) {
   const navigate = useNavigate();
 
   const navItems = [
@@ -74,6 +74,25 @@ export default function Navbar({ active, theme, onToggleTheme }) {
     onClick: onToggleTheme,
     isActive: false,
   };
+
+  if (compact) {
+    return (
+      <nav className="mobile-dock" aria-label="Primary navigation" hidden={hidden}>
+        {[...navItems, themeToggle].map((item) => (
+          <button
+            key={item.key}
+            type="button"
+            aria-current={item.isActive ? "location" : undefined}
+            aria-label={item.key === "Theme" ? `Switch to ${theme === "night" ? "light" : "dark"} theme` : undefined}
+            onClick={item.onClick}
+          >
+            <span className="mobile-dock__icon" aria-hidden="true">{item.icon}</span>
+            <span>{item.label}</span>
+          </button>
+        ))}
+      </nav>
+    );
+  }
 
   return (
     <nav className="navbar-shell" aria-label="Primary navigation">

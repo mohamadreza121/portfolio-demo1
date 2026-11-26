@@ -14,8 +14,8 @@ const Project6 = lazy(() => import("../pages/Project6.jsx"));
 
 export default function Router({
   theme,
-  toggleTheme,
-  active,
+  compact = false,
+  ready,
   setActive,
   revealKey,
   onRequestQuote,
@@ -24,16 +24,15 @@ export default function Router({
   const location = useLocation();
 
   return (
-    <AnimatePresence mode="sync">
+    <AnimatePresence mode={compact ? "wait" : "sync"}>
       <Routes location={location} key={location.pathname}>
         <Route
           path="/"
           element={
-            <PageTransition>
+            <PageTransition compact={compact}>
               <Main
-                theme={theme}
-                toggleTheme={toggleTheme}
-                active={active}
+                compact={compact}
+                ready={ready}
                 setActive={setActive}
                 revealKey={revealKey}
                 onRequestQuote={onRequestQuote}
@@ -46,7 +45,7 @@ export default function Router({
         <Route
           path="/projects/1"
           element={
-            <PageTransition>
+            <PageTransition compact={compact}>
               <Suspense
                 fallback={
                   <div style={{ minHeight: "100vh" }} aria-busy="true" />
@@ -61,7 +60,7 @@ export default function Router({
         <Route
           path="/projects/2"
           element={
-            <PageTransition>
+            <PageTransition compact={compact}>
               <Suspense
                 fallback={
                   <div style={{ minHeight: "100vh" }} aria-busy="true" />
@@ -76,7 +75,7 @@ export default function Router({
         <Route
           path="/projects/3"
           element={
-            <PageTransition>
+            <PageTransition compact={compact}>
               <Suspense
                 fallback={
                   <div style={{ minHeight: "100vh" }} aria-busy="true" />
@@ -91,7 +90,7 @@ export default function Router({
         <Route
           path="/projects/4"
           element={
-            <PageTransition>
+            <PageTransition compact={compact}>
               <Suspense
                 fallback={
                   <div style={{ minHeight: "100vh" }} aria-busy="true" />
@@ -106,7 +105,7 @@ export default function Router({
         <Route
           path="/projects/5"
           element={
-            <PageTransition>
+            <PageTransition compact={compact}>
               <Suspense
                 fallback={
                   <div style={{ minHeight: "100vh" }} aria-busy="true" />
@@ -121,7 +120,7 @@ export default function Router({
         <Route
           path="/projects/6"
           element={
-            <PageTransition>
+            <PageTransition compact={compact}>
               <Suspense
                 fallback={
                   <div style={{ minHeight: "100vh" }} aria-busy="true" />

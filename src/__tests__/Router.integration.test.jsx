@@ -20,7 +20,7 @@ test("renders Main page on /", () => {
   ).toBeInTheDocument();
 });
 
-test("renders Project1 on /projects/1", () => {
+test("renders Project1 on /projects/1", async () => {
   render(
     <MemoryRouter initialEntries={["/projects/1"]}>
       <Router
@@ -34,8 +34,8 @@ test("renders Project1 on /projects/1", () => {
   );
 
   expect(
-    screen.getByRole("heading", {
-      name: /secure enterprise office network/i,
+    await screen.findByRole("heading", {
+      name: /enterprise multi-site network lab/i,
     })
   ).toBeInTheDocument();
 });

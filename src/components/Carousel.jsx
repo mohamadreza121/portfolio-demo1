@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import { centerCarouselItem } from "../utils/scrollCarousel";
 import "./Carousel.css";
 
 const clamp01 = (n) => Math.max(0, Math.min(1, n));
@@ -45,14 +46,8 @@ export default function Carousel({
     (idx, behavior = "smooth") => {
       const i = normalizeLoopIndex(idx);
       const el = itemRefs.current[i];
-      if (!el) return;
-
-      // Scroll the card itself into view (center)
-      el.scrollIntoView({
-        behavior,
-        inline: "center",
-        block: "nearest",
-      });
+      const viewport = viewportRef.current;
+      if (el && viewport) centerCarouselItem(viewport, el, behavior);
     },
     [normalizeLoopIndex]
   );
@@ -64,7 +59,7 @@ export default function Carousel({
 
     requestAnimationFrame(() => {
       isJumpingRef.current = true;
-      scrollToIndex(startIndex, "auto");
+      scrollToIndex(startIndex, "instant");
       requestAnimationFrame(() => {
         isJumpingRef.current = false;
       });
