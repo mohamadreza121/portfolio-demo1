@@ -331,6 +331,8 @@
 }
 
 @media (max-width: 720px), (pointer: coarse) {
+  html:has(.project-page--lab) { scroll-behavior: auto; }
+  .lab-terminal__prompt { scroll-margin-bottom: var(--mobile-dock-clearance, 72px); }
   .project-page--lab :is(#console, #runbook, #linkmap) { scroll-margin-top: 8px; }
   .lab-console__workbench { grid-template-columns: minmax(0, 1fr); gap: 9px; }
   .lab-console__devices { display: flex; align-items: end; gap: 9px; overflow-x: auto; padding: 8px; }

@@ -145,7 +145,10 @@ export default function Project1Console() {
   function runStep(step) {
     selectDevice(step.host);
     run(step.command, step.host);
-    heading.current?.scrollIntoView({ block: "start", behavior: reducedMotion() ? "instant" : "smooth" });
+    heading.current?.scrollIntoView({
+      block: "start",
+      behavior: reducedMotion() || isTouch() ? "instant" : "smooth",
+    });
     heading.current?.focus({ preventScroll: true });
   }
 
@@ -266,7 +269,18 @@ export default function Project1Console() {
                   maxLength={128}
                   placeholder="Type a command"
                 />
-                <button type="submit" disabled={!draft.trim()}>Run</button>
+                <button
+                  type="submit"
+                  disabled={!draft.trim()}
+                  onPointerDown={(event) => {
+                    // Keep the dock from returning over Run when a tap would blur the input.
+                    if (event.pointerType === "touch" && document.activeElement === input.current) {
+                      event.preventDefault();
+                    }
+                  }}
+                >
+                  Run
+                </button>
               </form>
             </div>
 
