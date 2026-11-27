@@ -103,7 +103,7 @@ export default function Projects({ onEnterLab }) {
             <p className="project-story__eyebrow">GNS3 / Cisco IOS / Windows Server</p>
             <h1 id="featured-lab-title"><DecryptedText text={project1.title} animateOn="view" sequential speed={30} revealDirection="center" /></h1>
             <p className="project-story__summary">I built a connected HQ and branch from the ground up—segmented networks, redundant gateways, two internet providers, and a secure link between sites.</p>
-            <Link id="open-project-1" className="project-story__cta" {...linkProps}>Enter the lab <FaExpand aria-hidden="true" /></Link>
+            <Link id="open-project-1" className="project-story__cta cursor-target" {...linkProps}>Enter the lab <FaExpand aria-hidden="true" /></Link>
             <p className="project-story__scroll"><span aria-hidden="true" /> Scroll through the build</p>
           </header>
 
@@ -125,7 +125,7 @@ export default function Projects({ onEnterLab }) {
               <figcaption>HQ-EDGE <span>Lab output excerpt</span></figcaption>
               <pre><code><b>show interface tunnel10</b>{"\nTunnel10 is up, line protocol is up"}</code></pre>
             </figure>
-            <Link className="project-story__cta" {...linkProps}>Explore the configuration <FaExpand aria-hidden="true" /></Link>
+            <Link className="project-story__cta cursor-target" {...linkProps}>Explore the configuration <FaExpand aria-hidden="true" /></Link>
           </section>
         </div>
 

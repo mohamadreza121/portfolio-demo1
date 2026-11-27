@@ -120,10 +120,10 @@ export default function NetworkLabStage({ ready }) {
         <h1 id="lab-hero-title"><DecryptedText text="Two sites." animateOn="view" sequential speed={55} revealDirection="center" /><br /><DecryptedText text="One network." animateOn="view" sequential speed={55} revealDirection="center" revealDelay={140} /></h1>
         <p>Open a device and follow the path from HQ, across two providers, to the branch.</p>
         <div className="lab-stage__actions">
-          <button type="button" onClick={(event) => openDevice(defaultConsole, event.currentTarget)}>
+          <button type="button" className="cursor-target" onClick={(event) => openDevice(defaultConsole, event.currentTarget)}>
             <FaTerminal aria-hidden="true" /> Open HQ edge
           </button>
-          <Link to="#story" replace state={state}>Read the case study</Link>
+          <Link to="#story" className="cursor-target" replace state={state}>Read the case study</Link>
         </div>
       </header>
 

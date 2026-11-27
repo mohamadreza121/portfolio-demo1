@@ -237,8 +237,11 @@ export default function Certifications() {
       <span className="spy-marker" />
       <div className="credential-gallery">
         <header className="credential-header">
-          <div>
-            <h1 id="credentials-heading"><DecryptedText text="Professional" animateOn="view" sequential speed={45} revealDirection="center" />{" "}<span className="credential-title-accent"><DecryptedText text="Certifications" animateOn="view" sequential speed={45} revealDirection="center" revealDelay={100} /></span></h1>
+          <div className="credential-heading-copy">
+            <h1 id="credentials-heading">
+              <DecryptedText text="Professional" animateOn="view" sequential speed={45} revealDirection="center" />{" "}
+              <span className="credential-title-accent"><DecryptedText text="Certifications" animateOn="view" sequential speed={45} revealDirection="center" revealDelay={75} /></span>
+            </h1>
             <p>Networking, security, hardware, and programming credentials.</p>
           </div>
           <a className="credential-credly cursor-target" href="https://www.credly.com/users/mohammadreza-heidarpoor" target="_blank" rel="noreferrer">

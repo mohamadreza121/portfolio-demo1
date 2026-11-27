@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import "./PortfolioIntro.css";
 
 const command = "show portfolio";
-const desktopTiming = { lead: 540, interval: 48, hold: 360, exit: 520 };
-const compactTiming = { lead: 270, interval: 38, hold: 230, exit: 340 };
+const desktopTiming = { lead: 540, interval: 48, hold: 360, exit: 940 };
+const compactTiming = { lead: 270, interval: 38, hold: 230, exit: 680 };
 
 export default function PortfolioIntro({ compact, onHandoff, onComplete }) {
   const [timing] = useState(() => compact ? compactTiming : desktopTiming);

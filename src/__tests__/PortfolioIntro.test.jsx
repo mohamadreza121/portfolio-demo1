@@ -6,8 +6,8 @@ beforeEach(() => vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout", "perf
 afterEach(() => vi.useRealTimers());
 
 test.each([
-  { compact: false, lead: 540, interval: 48, hold: 360, exit: 520 },
-  { compact: true, lead: 270, interval: 38, hold: 230, exit: 340 },
+  { compact: false, lead: 540, interval: 48, hold: 360, exit: 940 },
+  { compact: true, lead: 270, interval: 38, hold: 230, exit: 680 },
 ])("types the full command before the handoff (compact: $compact)", ({ compact, lead, interval, hold, exit }) => {
   const onHandoff = vi.fn();
   const onComplete = vi.fn();
@@ -26,7 +26,9 @@ test.each([
   expect(onHandoff).toHaveBeenCalledOnce();
   expect(onComplete).not.toHaveBeenCalled();
 
-  act(() => vi.advanceTimersByTime(exit));
+  act(() => vi.advanceTimersByTime(exit - 1));
+  expect(onComplete).not.toHaveBeenCalled();
+  act(() => vi.advanceTimersByTime(1));
   expect(onComplete).toHaveBeenCalledOnce();
 });
 
