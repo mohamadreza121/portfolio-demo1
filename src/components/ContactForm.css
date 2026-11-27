@@ -42,14 +42,6 @@
     inset 0 -18px 30px rgba(0, 0, 0, 0.28);
 }
 
-:root[data-theme="day"] .contact-tray {
-  border-color: rgba(0, 0, 0, 0.10);
-  box-shadow:
-    inset 0 0 0 1px rgba(0, 0, 0, 0.05),
-    inset 0 14px 24px rgba(255, 255, 255, 0.65),
-    inset 0 -16px 24px rgba(0, 0, 0, 0.06);
-}
-
 /* ================================
    FORM GRID
 ================================ */
@@ -87,13 +79,6 @@
     transform 180ms ease;
 }
 
-:root[data-theme="day"] .form-grid input,
-:root[data-theme="day"] .form-grid select,
-:root[data-theme="day"] .form-grid textarea {
-  background: rgba(255, 255, 255, 0.85);
-  border-color: rgba(0, 0, 0, 0.14);
-}
-
 .form-grid textarea {
   grid-column: 1 / -1;
   resize: vertical;
@@ -121,16 +106,6 @@
 
   /* preserve your per-theme base input bg; just bump slightly */
   background: color-mix(in srgb, currentColor 0%, transparent);
-}
-
-
-:root[data-theme="day"] .form-grid input:focus,
-:root[data-theme="day"] .form-grid select:focus,
-:root[data-theme="day"] .form-grid textarea:focus {
-  border-color: rgba(0, 0, 0, 0.26);
-  box-shadow:
-    0 0 0 2px rgba(0, 0, 0, 0.10);
-  background: rgba(255, 255, 255, 0.92);
 }
 
 /* ================================

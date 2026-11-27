@@ -1,330 +1,142 @@
-/* =====================================================
-   FOOTER — CHASSIS / RACK PANEL (FINAL)
-   ===================================================== */
-
 .footer {
-  background: var(--footer-surface);
-  border-top: 1px solid var(--border-footer);
-  padding: 40px 20px 20px;
-  color: var(--text-color);
-  font-family: "JetBrains Mono", monospace;
+  --chip-ink: #ecf4f0;
+  --chip-metal: #a9bdb5;
+  --chip-mono: "JetBrains Mono", ui-monospace, monospace;
   position: relative;
-  z-index: 10;
-  transition: background 0.4s ease, color 0.4s ease, border-color 0.4s ease;
-  pointer-events: auto;
-
-  /* ==============================
-     CHASSIS TOKENS (ONE PLACE)
-  ============================== */
-  --notch: 14px;
-  --chassis-radius: 10px;
-
-  /* Plate / module surfaces */
-  --footer-plate-surface: rgba(0, 0, 0, 0.22);
-  --footer-module-surface: rgba(0, 0, 0, 0.18);
-
-  /* Borders / keylines */
-  --footer-plate-border: rgba(255, 255, 255, 0.08);
-  --footer-plate-keyline: color-mix(in srgb, var(--accent) 18%, transparent);
-
-  /* Screws */
-  --footer-screw-hi: rgba(255, 255, 255, 0.26);
-  --footer-screw-core: rgba(0, 0, 0, 0.86);
-  --footer-screw-ring: color-mix(in srgb, var(--accent) 32%, transparent);
-  --footer-screw-glow: color-mix(in srgb, var(--accent) 18%, transparent);
-
-  /* Bevel */
-  --footer-bevel-top: rgba(255, 255, 255, 0.04);
-  --footer-bevel-bot: rgba(0, 0, 0, 0.42);
-
-  /* Shadow */
-  --footer-plate-shadow: rgba(0, 0, 0, 0.62);
+  isolation: isolate;
+  color: var(--chip-ink);
+  padding: clamp(44px, 6vw, 85px) max(5vw, 18px) 26px;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
+.footer-board {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: clamp(36px, 5vw, 74px);
+  max-width: 1050px;
+  margin-inline: auto;
 }
 
-/* =====================================================
-   DAY MODE MAPPING (KEEP MINIMAL + NEUTRAL)
-   ===================================================== */
-
-:root[data-theme="day"] .footer {
-  --footer-plate-surface: rgba(255, 255, 255, 0.78);
-  --footer-module-surface: rgba(255, 255, 255, 0.66);
-
-  --footer-plate-border: rgba(0, 0, 0, 0.12);
-  --footer-plate-keyline: rgba(0, 0, 0, 0.10);
-
-  /* screws stay visible but read as hardware (neutral) */
-  --footer-screw-hi: rgba(0, 0, 0, 0.10);
-  --footer-screw-core: rgba(0, 0, 0, 0.22);
-  --footer-screw-ring: rgba(0, 0, 0, 0.12);
-  --footer-screw-glow: rgba(0, 0, 0, 0.08);
-
-  --footer-bevel-top: rgba(255, 255, 255, 0.62);
-  --footer-bevel-bot: rgba(0, 0, 0, 0.06);
-
-  --footer-plate-shadow: rgba(0, 0, 0, 0.14);
-}
-
-/* =====================================================
-   BACKGROUND GRID
-   ===================================================== */
-
-.footer::before {
-  content: "";
+.footer-board__traces {
   position: absolute;
+  z-index: -1;
   inset: 0;
-  background-image:
-    linear-gradient(var(--grid-color) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
-  background-size: 40px 40px;
   pointer-events: none;
-  z-index: 0;
-  transition: background-image 0.4s ease;
-  opacity: 1;
+  --trace: #527c65;
 }
+.footer-board__traces i {
+  position: absolute;
+  inset: 36% 31% 35% 39%;
+  border: 1px solid var(--trace);
+  transform: skewY(-14deg);
+  box-shadow: 0 0 10px #61dca319;
+}
+.footer-board__traces i:nth-child(2) { inset-block: calc(36% + 6px) calc(35% + 6px); }
+.footer-board__traces i:nth-child(3) { inset-block: calc(36% + 12px) calc(35% + 12px); }
+.footer-board:focus-within .footer-board__traces { --trace: #61dca3; }
 
-/* =====================================================
-   LAYOUT
-   ===================================================== */
+.footer-chip {
+  --cpu-pin-size: 9px;
+  --cpu-pin-inset: 35px;
+  --cpu-pin-pitch: 8px;
+  --cpu-pin-width: 5px;
+  --cpu-substrate: 6px;
+  --cpu-mark: 7px;
+  filter: drop-shadow(0 12px 14px #000a);
+}
+.footer-chip > .cpu-package__substrate > .cpu-package__lid { padding: clamp(22px, 3.2vw, 43px); }
+.footer-chip:focus-within > .cpu-package__substrate > .cpu-package__lid { border-color: #89bda0; }
+.footer-chip:is(:hover, :focus-within) > .cpu-package__substrate > .cpu-package__lid::after { color: var(--accent); opacity: 1; }
 
-.footer-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  position: relative;
-  z-index: 1;
+.footer-chip h2 {
+  margin: 0;
+  color: var(--chip-ink);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -.054em;
+  text-shadow: 0 2px #050b08;
+}
+.footer-chip--contact h2 { font-size: clamp(2.25rem, 4.4vw, 4.2rem); }
+.footer-chip--links h2 { font-size: clamp(1.55rem, 2.3vw, 2.15rem); }
 
+.footer-email {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
+  padding: 11px 0;
+  margin: 6px 0 16px;
+  border-bottom: 1px solid #94c6aa77;
+  color: var(--accent);
+  overflow-wrap: anywhere;
+  text-decoration: none;
+  font: 600 clamp(.85rem, 1.55vw, 1.11rem)/1.4 var(--chip-mono);
+}
+.footer-email:hover { color: var(--chip-ink); border-color: var(--accent); }
+.footer-contacts {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 28px;
-}
-
-/* Desktop: grid so plates align nicely */
-@media (min-width: 980px) {
-  .footer-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr minmax(420px, 1.25fr);
-    align-items: stretch;
-    gap: 28px;
-  }
-}
-
-/* =====================================================
-   CHASSIS PLATES (ALL COLUMNS)
-   ===================================================== */
-
-.footer-section {
-  flex: 1;
-  min-width: 220px;
-  display: flex;
-  flex-direction: column;
-
-  position: relative;
-  overflow: hidden;
-
-  /* plate separation (theme-safe) */
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.05),
-      rgba(255, 255, 255, 0.012) 40%,
-      rgba(0, 0, 0, 0.22) 100%
-    ),
-    var(--footer-plate-surface);
-
-  border: 1px solid var(--footer-plate-border);
-  padding: 18px 18px 16px;
-
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-
-  box-shadow:
-    0 18px 54px var(--footer-plate-shadow),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.04),
-    inset 0 0 0 1px var(--footer-plate-keyline),
-    0 0 0 1px rgba(0, 0, 0, 0.30);
-
-  /* Notched corners */
-  -webkit-clip-path: polygon(
-    var(--notch) 0%,
-    calc(100% - var(--notch)) 0%,
-    100% var(--notch),
-    100% calc(100% - var(--notch)),
-    calc(100% - var(--notch)) 100%,
-    var(--notch) 100%,
-    0% calc(100% - var(--notch)),
-    0% var(--notch)
-  );
-  clip-path: polygon(
-    var(--notch) 0%,
-    calc(100% - var(--notch)) 0%,
-    100% var(--notch),
-    100% calc(100% - var(--notch)),
-    calc(100% - var(--notch)) 100%,
-    var(--notch) 100%,
-    0% calc(100% - var(--notch)),
-    0% var(--notch)
-  );
-}
-
-/* Inner bevel */
-.footer-section::after {
-  content: "";
-  position: absolute;
-  inset: 10px;
-  pointer-events: none;
-  opacity: 0.92;
-  border-radius: var(--chassis-radius);
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.06),
-    inset 0 12px 30px var(--footer-bevel-top),
-    inset 0 -18px 40px var(--footer-bevel-bot);
-}
-
-/* Screws (asymmetric: top-left + bottom-right) */
-.footer-section::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 2;
-  opacity: 1;
-
-  background:
-    /* screw TL */
-    radial-gradient(circle at 18px 18px,
-      var(--footer-screw-hi) 0 1.8px,
-      var(--footer-screw-core) 2px 4.2px,
-      transparent 4.4px
-    ),
-    /* screw BR */
-    radial-gradient(circle at calc(100% - 18px) calc(100% - 18px),
-      var(--footer-screw-hi) 0 1.8px,
-      var(--footer-screw-core) 2px 4.2px,
-      transparent 4.4px
-    ),
-
-    /* ring + glow TL */
-    radial-gradient(circle at 18px 18px,
-      transparent 0 4.2px,
-      var(--footer-screw-ring) 4.2px 5.4px,
-      var(--footer-screw-glow) 5.4px 7.6px,
-      transparent 7.8px
-    ),
-    /* ring + glow BR */
-    radial-gradient(circle at calc(100% - 18px) calc(100% - 18px),
-      transparent 0 4.2px,
-      var(--footer-screw-ring) 4.2px 5.4px,
-      var(--footer-screw-glow) 5.4px 7.6px,
-      transparent 7.8px
-    ),
-
-    /* notch edge highlight (helps cut corners read in night mode) */
-    linear-gradient(135deg, rgba(255,255,255,0.08), transparent 35%) 0 0 / 40px 40px no-repeat,
-    linear-gradient(315deg, rgba(255,255,255,0.06), transparent 35%) 100% 0 / 40px 40px no-repeat,
-    linear-gradient(225deg, rgba(255,255,255,0.06), transparent 35%) 0 100% / 40px 40px no-repeat,
-    linear-gradient(45deg,  rgba(255,255,255,0.08), transparent 35%) 100% 100% / 40px 40px no-repeat;
-}
-
-/* Ensure content sits above screws/bevel */
-.footer-section > * {
-  position: relative;
-  z-index: 3;
-}
-
-/* Make the form column a touch larger, but same chassis style */
-.footer-form-section {
-  flex: 1.2;
-  min-width: min(420px, 100%);
-}
-
-/* =====================================================
-   TITLES / TEXT
-   ===================================================== */
-
-.footer-title {
-  font-size: 1.05rem;
-  font-weight: 800;
-  color: var(--accent);
-  margin-bottom: 12px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.footer-section p {
-  display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-  line-height: 1.6;
+  column-gap: 19px;
+  margin: 0;
+  color: var(--chip-ink);
+  font: normal .87rem/1.5 var(--chip-mono);
 }
-
-.footer-section svg {
-  flex-shrink: 0;
+.footer-contacts > * {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 38px;
+  text-decoration: none;
 }
-
-/* =====================================================
-   LINKS / BUTTON LINKS
-   ===================================================== */
+.footer-contacts svg, .footer-email svg { flex: none; font-size: .84rem; }
+.footer-contacts svg { color: var(--chip-metal); }
+.footer-contacts a:hover { color: var(--accent); }
 
 .footer-links {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+  margin-top: 15px;
 }
-
-.footer-link {
-  color: var(--text-color);
-  text-decoration: none;
-  transition: color 0.3s ease, text-shadow 0.3s ease;
-  display: inline-block;
-  margin-bottom: 8px;
-
-  background: none;
-  border: none;
-  padding: 0;
-
-  font: inherit;
-  cursor: pointer;
-  text-align: left;
+.footer-links button {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 3px;
+  min-height: 64px;
+  padding: 5px 2px;
+  border: 1px solid #75928743;
+  background: #0a130f8c;
+  color: var(--chip-ink);
+  font: 500 .8rem/1.25 var(--chip-mono);
 }
-
-.footer-link:hover {
-  color: var(--accent);
-  text-shadow: 0 0 6px var(--accent);
+.footer-links button:is(:hover, :focus-visible) { border-color: #61dca3a0; color: var(--accent); }
+.footer-links button:is(:hover, :focus-visible) .nav-chip { color: var(--accent); }
+.footer-links .nav-chip {
+  --cpu-pin-size: 3px;
+  --cpu-pin-pitch: 4px;
+  --cpu-substrate: 1px;
+  --cpu-mark: 2px;
+  flex: none;
+  width: 32px;
+  height: 32px;
 }
-
-.footer-cta-btn {
-  margin-top: 14px;
-  color: var(--accent);
-  font-weight: 800;
-  letter-spacing: 0.3px;
-}
-
-/* =====================================================
-   BOTTOM BAR
-   ===================================================== */
-
+.footer :is(button, a):focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .footer-bottom {
-  margin-top: 22px;
-  text-align: center;
-  font-size: 0.85rem;
+  max-width: 1050px;
+  margin: 28px auto 0;
+  padding: 13px 0 0;
+  border-top: 1px solid #69817252;
   color: var(--muted);
-  border-top: 1px solid var(--border-footer);
-  padding-top: 12px;
-  position: relative;
-  z-index: 1;
+  font: .8rem/1.5 var(--chip-mono);
 }
 
-/* =====================================================
-   MOBILE
-   ===================================================== */
-
-@media (max-width: 640px) {
-  .footer {
-    padding: 34px 16px 18px;
-  }
-
-  .footer-section {
-    padding: 16px 16px 14px;
-  }
+@media (max-width: 760px) {
+  .footer-board { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .footer-board__traces i { inset-inline: 33%; transform: none; }
+  .footer-chip { --cpu-pin-size: 7px; --cpu-pin-inset: 26px; --cpu-substrate: 4px; }
+  .footer-chip > .cpu-package__substrate > .cpu-package__lid { padding: 22px 16px; }
+  .footer-contacts > * { min-height: 44px; }
 }

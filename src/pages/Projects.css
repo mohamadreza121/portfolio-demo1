@@ -1,475 +1,163 @@
-/* =====================================================
-   PROJECTS — CINEMATIC ENTERPRISE GRID (DAY/NIGHT COMPAT)
-   - Uses theme tokens from index.css
-   - Day mode: neutral shadows, no neon glow
-   - Night mode: subtle accent glow
-===================================================== */
-
-.projects-page {
+.project-story {
+  --lab-mono: "JetBrains Mono", ui-monospace, monospace;
+  --story-turn: -28deg;
+  --story-lift: 0px;
+  --story-progress: 0;
   position: relative;
-  width: 100%;
-  font-family: "JetBrains Mono", monospace;
-  margin-top: 120px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.06fr);
+  gap: clamp(24px, 5vw, 84px);
+  width: min(100% - clamp(40px, 8vw, 140px), 1450px);
+  margin: 0 auto;
+  padding: clamp(130px, 15vh, 170px) 0 60px;
+  color: var(--text-color);
 }
+.project-story__narrative { min-width: 0; }
+.project-story__chapter {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: max(650px, 84svh);
+  padding: 65px 0;
+  opacity: .4;
+  transform: translateY(18px);
+  transition: opacity 600ms ease, transform 750ms cubic-bezier(.22, 1, .36, 1);
+}
+.project-story__chapter[data-current="true"] { opacity: 1; transform: none; }
+.project-story__hero { min-height: max(580px, 78svh); padding-top: 0; }
+.project-story__eyebrow {
+  margin: 0 0 22px;
+  color: var(--accent);
+  font: 500 .78rem/1.6 var(--lab-mono);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.project-story h1,
+.project-story h2 {
+  margin: 0 0 25px;
+  font-size: clamp(2.7rem, 5.05vw, 5.7rem);
+  font-weight: 670;
+  letter-spacing: -.068em;
+  line-height: .98;
+  text-wrap: balance;
+  text-shadow: 0 3px 24px var(--bg-color);
+}
+.project-story h2 { font-size: clamp(2.6rem, 4.6vw, 5rem); }
+.project-story h2 em { font-style: normal; color: var(--accent); }
+.project-story__chapter > p:not(.project-story__eyebrow):not(.project-story__scroll) {
+  max-width: 39ch;
+  margin: 0 0 27px;
+  color: var(--muted);
+  font-size: clamp(1rem, 1.35vw, 1.16rem);
+  line-height: 1.7;
+  text-shadow: 0 2px 10px var(--bg-color);
+}
+.project-story__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 17px;
+  min-height: 49px;
+  padding: 0 19px;
+  border: 1px solid var(--accent-border);
+  border-radius: 2px;
+  background: var(--accent);
+  color: #081811;
+  font-size: .95rem;
+  font-weight: 650;
+  text-decoration: none;
+  transition: box-shadow 300ms ease, transform 300ms ease;
+}
+.project-story__cta:hover { transform: translateY(-2px); box-shadow: 0 9px 25px var(--accent-shadow-soft); }
+.project-story :focus-visible { outline: 2px solid var(--accent); outline-offset: 6px; }
+.project-story__scroll { display: flex; align-items: center; gap: 12px; margin: 37px 0 0; color: var(--muted); font: .75rem/1.5 var(--lab-mono); }
+.project-story__scroll span { width: 1px; height: 28px; background: linear-gradient(transparent, var(--accent)); }
+.project-story__terminal {
+  width: 100%;
+  min-width: 0;
+  margin: 5px 0 30px;
+  padding: 18px 0 18px 19px;
+  border-left: 1px solid var(--accent);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--bg-color) 95%, transparent), color-mix(in srgb, var(--bg-color) 72%, transparent));
+  box-shadow: -8px 0 25px -22px var(--accent);
+}
+.project-story__terminal figcaption { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-bottom: 15px; color: var(--accent); font: .78rem/1.5 var(--lab-mono); }
+.project-story__terminal figcaption span { color: var(--muted); font-size: .7rem; }
+.project-story__terminal pre { margin: 0; padding-bottom: 5px; overflow-x: auto; color: var(--text-color); font: .78rem/1.9 var(--lab-mono); }
+.project-story__terminal code { font: inherit; }
+.project-story__terminal b { color: var(--accent); font-weight: 500; }
 
-/* Subtle grid background */
-.projects-page::before {
+.project-story__visual {
+  position: sticky;
+  top: clamp(115px, 14vh, 160px);
+  align-self: start;
+  min-width: 0;
+  margin: 0;
+  height: min(76svh, 740px);
+  min-height: 570px;
+  display: flex;
+  flex-direction: column;
+}
+.project-rack-link {
+  position: relative;
+  flex: 1;
+  display: grid;
+  place-items: center;
+  perspective: 1500px;
+  isolation: isolate;
+  text-decoration: none;
+}
+.project-rack-link::before {
   content: "";
   position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(var(--grid-line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-  background-size: 48px 48px;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.projects-container {
-  position: relative;
-  z-index: 2;
-  max-width: 1320px;
-  margin: 0 auto;
-  padding: 44px 20px 110px;
-}
-
-/* =====================================================
-   HEADER
-===================================================== */
-
-.projects-hero {
-  text-align: center;
-  margin-bottom: clamp(44px, 8vh, 96px);
-}
-
-.projects-title {
-  font-size: clamp(2.2rem, 5vw, 3.4rem);
-  font-weight: 800;
-  color: var(--accent);
-  text-shadow: 0 0 12px var(--accent-glow);
-  margin-bottom: 16px;
-  line-height: 1.15;
-}
-
-.projects-subtitle {
-  max-width: 860px;
-  margin: 0 auto;
-  font-size: clamp(1rem, 1.5vw, 1.15rem);
-  line-height: 1.7;
-  color: var(--muted);
-}
-
-/* =====================================================
-   GRID
-===================================================== */
-
-.projects-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 30px;
-}
-
-/* =====================================================
-   CARD SHELL (TOKENS)
-===================================================== */
-
-.project-card {
-  /* magnetic variables (JS sets these) */
-  --mx: 0px;
-  --my: 0px;
-
-  /* parallax variable (JS sets this) */
-  --media-y: 0px;
-
-  /* terminal bar height variable */
-  --termbar-h: 46px;
-
-  /* ================================
-     CARD THEME TOKENS (ONE PLACE)
-  ================================ */
-  --proj-card-bg: rgba(0, 0, 0, 0.18);
-  --proj-card-border: var(--accent-border);
-  --proj-card-shadow1: rgba(0, 0, 0, 0.55);
-  --proj-card-shadow2: rgba(255, 255, 255, 0.04);
-
-  --proj-hover-border: rgba(97, 220, 163, 0.35);
-  --proj-hover-shadow1: rgba(0, 0, 0, 0.72);
-  --proj-hover-glow: rgba(97, 220, 163, 0.22);
-
-  --proj-focus-ring:
-    0 0 0 2px rgba(97, 220, 163, 0.65),
-    0 0 26px rgba(97, 220, 163, 0.25);
-
-  --proj-termbar-bg: linear-gradient(
-    180deg,
-    rgba(0, 0, 0, 0.78),
-    rgba(0, 0, 0, 0.40)
-  );
-  --proj-termbar-border: rgba(255, 255, 255, 0.06);
-  --proj-termbar-label: rgba(230, 247, 239, 0.78);
-
-  position: relative;
-  border-radius: 22px;
-  overflow: hidden;
-  min-height: 520px;
-
-  background: var(--proj-card-bg);
-  border: 1px solid var(--proj-card-border);
-  box-shadow:
-    0 18px 52px var(--proj-card-shadow1),
-    inset 0 0 0 1px var(--proj-card-shadow2);
-
-  transform: translate3d(var(--mx), var(--my), 0);
-  transition:
-    transform 520ms cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 520ms cubic-bezier(0.16, 1, 0.3, 1),
-    border-color 520ms cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: transform;
-}
-
-/* Calm lift + glow (night default) */
-.project-card:hover {
-  box-shadow:
-    0 26px 86px var(--proj-hover-shadow1),
-    0 0 34px var(--proj-hover-glow);
-  border-color: var(--proj-hover-border);
-}
-
-/* =====================================================
-   DAY MODE — neutral shadows, no neon glow
-===================================================== */
-
-html[data-theme="day"] .project-card {
-  --proj-card-bg: rgba(255, 255, 255, 0.55);
-  --proj-card-border: rgba(0, 0, 0, 0.10);
-  --proj-card-shadow1: rgba(0, 0, 0, 0.12);
-  --proj-card-shadow2: rgba(0, 0, 0, 0.06);
-
-  --proj-hover-border: rgba(0, 0, 0, 0.18);
-  --proj-hover-shadow1: rgba(0, 0, 0, 0.18);
-  --proj-hover-glow: rgba(0, 0, 0, 0);
-
-  --proj-focus-ring:
-    0 0 0 2px rgba(0, 0, 0, 0.38),
-    0 0 0 7px rgba(0, 0, 0, 0.10);
-
-  --proj-termbar-bg: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.86),
-    rgba(255, 255, 255, 0.55)
-  );
-  --proj-termbar-border: rgba(0, 0, 0, 0.08);
-  --proj-termbar-label: rgba(15, 15, 15, 0.68);
-}
-
-html[data-theme="day"] .project-card:hover {
-  box-shadow:
-    0 22px 60px rgba(0, 0, 0, 0.18),
-    inset 0 0 0 1px rgba(0, 0, 0, 0.10);
-  border-color: rgba(0, 0, 0, 0.18);
-}
-
-/* =====================================================
-   FOCUS RING (WCAG)
-===================================================== */
-
-.project-card:focus-within .project-focus-ring {
-  opacity: 1;
-}
-
-.project-focus-ring {
-  position: absolute;
-  inset: 10px;
-  border-radius: 18px;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 220ms ease;
-  box-shadow: var(--proj-focus-ring);
-}
-
-/* Ensure button focus is neutral in day mode */
-html[data-theme="day"] .project-cta .btn-pill:focus-visible {
-  outline: 2px solid rgba(0, 0, 0, 0.45);
-  outline-offset: 3px;
-}
-
-/* =====================================================
-   TERMINAL HEADER BAR (PROJECT CARDS)
-===================================================== */
-
-.project-terminalbar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: var(--termbar-h);
-  z-index: 3;
-
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 0 14px;
-
-  background: var(--proj-termbar-bg);
-  border-bottom: 1px solid var(--proj-termbar-border);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-
-/* macOS dots */
-.term-dots {
-  display: inline-flex;
-  gap: 7px;
-  align-items: center;
-  flex: 0 0 auto;
-}
-
-.term-dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 999px;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.10);
-  opacity: 0.95;
-}
-
-.term-dot.dot-red    { background: rgba(255, 95, 86, 0.95); }
-.term-dot.dot-yellow { background: rgba(255, 189, 46, 0.95); }
-.term-dot.dot-green  { background: rgba(39, 201, 63, 0.95); }
-
-.term-label {
-  min-width: 0;
-  font-family: "JetBrains Mono", monospace;
-  font-size: 0.78rem;
-  letter-spacing: 0.01em;
-  color: var(--proj-termbar-label);
-
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.term-spacer {
-  flex: 1 1 auto;
-}
-
-.term-badge {
-  flex: 0 0 auto;
-  font-family: "JetBrains Mono", monospace;
-  font-size: 0.72rem;
-  padding: 6px 10px;
-  border-radius: 999px;
-
-  color: var(--accent);
-  background: rgba(0, 0, 0, 0.22);
-  border: 1px solid var(--accent-border);
-  box-shadow: 0 0 10px rgba(97, 220, 163, 0.14);
-}
-
-html[data-theme="day"] .term-badge {
-  background: rgba(255, 255, 255, 0.70);
-  border-color: rgba(0, 0, 0, 0.12);
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
-  color: var(--accent);
-}
-
-/* =====================================================
-   MEDIA LAYER
-===================================================== */
-
-.project-media {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  overflow: hidden;
-}
-
-.project-img,
-.project-video {
-  position: absolute;
-  inset: -14px;
-  width: calc(100% + 28px);
-  height: calc(100% + 28px);
-  object-fit: cover;
-
-  transform: translate3d(0, var(--media-y), 0) scale(1.06);
-  transition:
-    transform 900ms cubic-bezier(0.16, 1, 0.3, 1),
-    opacity 520ms cubic-bezier(0.16, 1, 0.3, 1);
-
-  will-change: transform, opacity;
-  backface-visibility: hidden;
-}
-
-.project-video {
-  opacity: 0;
-}
-
-.project-card.is-media-active .project-video {
-  opacity: 1;
-}
-
-.project-card.is-media-active .project-img {
-  opacity: 0;
-}
-
-/* Vignette for readability */
-.project-vignette {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(
-      60% 55% at 50% 35%,
-      rgba(0, 0, 0, 0.05),
-      rgba(0, 0, 0, 0.35) 60%,
-      rgba(0, 0, 0, 0.85) 100%
-    ),
-    linear-gradient(
-      to top,
-      rgba(0, 0, 0, 0.85),
-      rgba(0, 0, 0, 0.20)
-    );
+  z-index: -1;
+  inset: 8% -8% -5%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, var(--accent-shadow-soft), transparent 68%);
+  opacity: .8;
   pointer-events: none;
 }
-
-html[data-theme="day"] .project-vignette {
-  background:
-    radial-gradient(
-      60% 55% at 50% 35%,
-      rgba(255, 255, 255, 0.06),
-      rgba(255, 255, 255, 0.28) 60%,
-      rgba(255, 255, 255, 0.62) 100%
-    ),
-    linear-gradient(
-      to top,
-      rgba(255, 255, 255, 0.68),
-      rgba(255, 255, 255, 0.22)
-    );
+.project-rack-link .rack-model {
+  --rack-width: clamp(340px, 34vw, 490px);
+  transform: translate(-12%, var(--story-lift)) rotateX(-17deg) rotateY(var(--story-turn)) scale(1.06);
+  transition: transform 220ms linear;
+  pointer-events: none;
 }
+.project-rack-link .rack-module { transition: border-color 600ms ease, box-shadow 600ms ease; }
+.project-story__rack-caption { display: grid; gap: 13px; margin: 26px 8% 0; text-align: center; font: .75rem/1.55 var(--lab-mono); color: var(--muted); }
+.project-story__focus { min-height: 2.8em; animation: story-focus-in 450ms ease both; }
+.project-story__progress { height: 1px; width: 100%; background: var(--accent-border); overflow: hidden; }
+.project-story__progress i { display: block; height: 100%; background: var(--accent); transform-origin: left; transform: scaleX(calc(.08 + var(--story-progress) * .92)); box-shadow: 0 0 12px var(--accent); }
+@keyframes story-focus-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
-/* =====================================================
-   CONTENT LAYER
-===================================================== */
-
-.project-body {
-  position: relative;
-  z-index: 2;
-  height: 100%;
-
-  padding: calc(26px + var(--termbar-h)) 26px 26px;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 18px;
+@media (max-width: 1050px) and (min-width: 761px) {
+  .project-story { gap: 28px; width: calc(100% - 60px); }
+  .project-rack-link .rack-model { --rack-width: 340px; transform: translate(-12%, var(--story-lift)) rotateX(-17deg) rotateY(var(--story-turn)) scale(.91); }
 }
-
-.project-title {
-  font-size: 1.45rem;
-  font-weight: 800;
-  color: var(--accent);
-  text-shadow: 0 0 10px var(--accent-glow);
-  margin: 0 0 10px;
-  line-height: 1.2;
+@media (max-width: 760px) {
+  .project-story { display: flex; flex-direction: column; gap: 0; width: min(100% - 36px, 560px); padding: 48px 0 55px; }
+  .project-story__narrative { display: contents; }
+  .project-story__chapter { min-height: 0; padding: 64px 0; opacity: 1; transform: none; order: 2; }
+  .project-story__hero { order: 0; padding: 0 0 15px; }
+  .project-story h1 { font-size: clamp(2.65rem, 10.8vw, 4.5rem); }
+  .project-story h2 { font-size: clamp(2.5rem, 9vw, 4rem); }
+  .project-story__eyebrow { font-size: .72rem; margin-bottom: 18px; }
+  .project-story__visual { order: 1; position: relative; top: auto; align-self: stretch; height: 450px; min-height: 0; margin: 18px 0 0; }
+  .project-rack-link::before { inset-inline: 0; }
+  .project-rack-link .rack-model { --rack-width: 345px; transform: translateX(-6%) rotateX(-8deg) rotateY(-20deg) scale(.76); }
+  .project-story__rack-caption { display: none; }
+  .project-story__focus, .project-story__progress { display: none; }
+  .project-story__scroll { margin-top: 22px; }
+  .project-story__terminal pre { font-size: .72rem; }
 }
-
-.project-summary {
-  font-size: 0.98rem;
-  line-height: 1.6;
-  color: var(--text-color);
-  margin: 0;
-  max-width: 52ch;
+@media (max-width: 359px) {
+  .project-rack-link .rack-model { transform: translateX(-6%) rotateX(-8deg) rotateY(-20deg) scale(.65); }
 }
-
-/* =====================================================
-   TECH PILLS + CTA
-===================================================== */
-
-.project-bottom {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.project-tech {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.tech-pill {
-  font-family: "JetBrains Mono", monospace;
-  font-size: 0.72rem;
-  padding: 6px 10px;
-  border-radius: 999px;
-
-  background: var(--card-bg);
-  border: 1px solid var(--accent-border);
-  color: var(--accent);
-
-  box-shadow: 0 0 6px rgba(97, 220, 163, 0.18);
-}
-
-html[data-theme="day"] .tech-pill {
-  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
-  border-color: rgba(0, 0, 0, 0.12);
-}
-
-.project-cta {
-  display: flex;
-  justify-content: flex-start;
-}
-
-.project-cta .btn-pill:focus-visible {
-  outline: 2px solid rgba(97, 220, 163, 0.75);
-  outline-offset: 3px;
-}
-
-/* =====================================================
-   RESPONSIVE
-===================================================== */
-
-@media (max-width: 900px) {
-  .projects-grid {
-    grid-template-columns: 1fr;
-    gap: 22px;
-  }
-
-  .project-card {
-    min-height: 460px;
-  }
-}
-
-@media (max-width: 520px) {
-  .projects-page {
-    padding-bottom: 70px;
-  }
-}
-
-/* =====================================================
-   MOBILE / COARSE POINTER: disable magnetic translation
-===================================================== */
-@media (pointer: coarse) {
-  .project-card {
-    transform: none !important;
-  }
-}
-
-/* =====================================================
-   REDUCED MOTION: disable parallax + transitions + video fade
-===================================================== */
 @media (prefers-reduced-motion: reduce) {
-  .project-card {
-    transition: none !important;
-    transform: none !important;
-  }
-
-  .project-img,
-  .project-video {
-    transition: none !important;
-    transform: none !important;
-  }
-
-  .project-video {
-    display: none;
-  }
+  .project-story__chapter, .project-rack-link .rack-model, .project-rack-link .rack-module, .project-story__cta { transition: none; }
+  .project-story__chapter { opacity: 1; transform: none; }
+  .project-story__focus { animation: none; }
+  .project-rack-link .rack-model { --story-turn: -26deg; --story-lift: 0px; }
+  .project-story__cta:hover { transform: none; }
 }

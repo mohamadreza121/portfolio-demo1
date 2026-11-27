@@ -39,7 +39,6 @@ const BOUNDARY_EPS = 12; // px tolerance for rounding/overscroll across devices
 
 export default function ScrollDeck({
   setActive,
-  isQuoteOpen,
   revealKey,
   ready,
   request,
@@ -375,7 +374,6 @@ export default function ScrollDeck({
       }
 
       if (isTransitioningRef.current) return;
-      if (isQuoteOpen) return;
 
       const dir = target > current ? 1 : -1;
       isTransitioningRef.current = true;
@@ -493,7 +491,6 @@ export default function ScrollDeck({
       blurIfFocusedInside,
       focusDeckContainer,
       focusIntoPanel,
-      isQuoteOpen,
       panels.length,
       publishDeckState,
       scrollPanelTo,
@@ -514,7 +511,7 @@ export default function ScrollDeck({
      Pending navigation (Navbar / deep-link)
   ===================================================== */
   useEffect(() => {
-    if (!ready || !request?.id || isQuoteOpen || handledRequestRef.current === request) return;
+    if (!ready || !request?.id || handledRequestRef.current === request) return;
 
     const frame = requestAnimationFrame(() => {
       handledRequestRef.current = request;
@@ -531,7 +528,7 @@ export default function ScrollDeck({
     });
 
     return () => cancelAnimationFrame(frame);
-  }, [ready, request, isQuoteOpen, goToSection, getIndexById]);
+  }, [ready, request, goToSection, getIndexById]);
 
   useEffect(() => () => transitionRef.current?.kill(), []);
 
@@ -572,7 +569,7 @@ export default function ScrollDeck({
     if (!container) return;
 
     const onWheel = (e) => {
-      if (isQuoteOpen || e.ctrlKey || Math.abs(e.deltaX) >= Math.abs(e.deltaY)) return;
+      if (e.defaultPrevented || e.ctrlKey || Math.abs(e.deltaX) >= Math.abs(e.deltaY)) return;
 
       const now = performance.now();
       if (now < boundaryCooldownUntilRef.current) {
@@ -635,7 +632,7 @@ export default function ScrollDeck({
 
     container.addEventListener("wheel", onWheel, { passive: false });
     return () => container.removeEventListener("wheel", onWheel);
-  }, [goToIndex, isQuoteOpen, panels.length]);
+  }, [goToIndex, panels.length]);
 
   /* =====================================================
      Active-panel scroll reporting

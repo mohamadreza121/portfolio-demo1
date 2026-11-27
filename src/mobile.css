@@ -17,7 +17,7 @@
   max-width: 420px;
   margin-inline: auto;
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 2px;
   padding: 5px;
   border: 1px solid var(--dock-border);
@@ -38,11 +38,11 @@ html:has(:is(input, textarea, select, [contenteditable="true"]):focus) .mobile-d
   align-content: center;
   justify-items: center;
   gap: 4px;
-  min-height: 48px;
-  padding: 4px 0 7px;
+  min-height: 52px;
+  padding: 2px 0 3px;
   border: 1px solid transparent;
   border-radius: 10px;
-  color: var(--muted);
+  color: var(--nav-inactive);
   font-size: clamp(9px, 2.6vw, 11px);
   font-weight: 600;
   line-height: 1.05;
@@ -50,28 +50,15 @@ html:has(:is(input, textarea, select, [contenteditable="true"]):focus) .mobile-d
   -webkit-tap-highlight-color: transparent;
 }
 
-.mobile-dock__icon {
-  display: grid;
-  place-items: center;
-  font-size: 15px;
+.mobile-dock .nav-chip {
+  width: 32px;
+  height: 32px;
+  --cpu-pin-size: 3px;
+  --cpu-pin-pitch: 4px;
+  --cpu-substrate: 1px;
 }
 
-.mobile-dock button[aria-current] {
-  color: var(--nav-active);
-  background: var(--accent-bg-soft);
-  border-color: var(--accent-border);
-}
-
-.mobile-dock button[aria-current]::after {
-  content: "";
-  position: absolute;
-  bottom: 3px;
-  width: 12px;
-  height: 2px;
-  border-radius: 2px;
-  background: currentColor;
-  box-shadow: 0 0 6px var(--accent-glow);
-}
+.mobile-dock button[aria-current] { color: var(--nav-active); }
 
 .mobile-dock button:focus-visible,
 .rackdeckx__device:focus-visible,
@@ -87,7 +74,7 @@ html:has(:is(input, textarea, select, [contenteditable="true"]):focus) .mobile-d
   padding-bottom: var(--mobile-dock-clearance);
 }
 
-.mobile-portfolio :is(#home, #about, #projects, #certifications, #services) {
+.mobile-portfolio :is(#home, #about, #projects, #certifications) {
   margin-top: 0;
   scroll-margin-top: env(safe-area-inset-top);
 }
@@ -97,34 +84,7 @@ html:has(:is(input, textarea, select, [contenteditable="true"]):focus) .mobile-d
   padding-top: env(safe-area-inset-top);
 }
 
-.mobile-portfolio .home-container {
-  padding: 20px 18px 22px;
-}
-
-.mobile-portfolio .home-hero { min-height: auto; padding: 0; }
-
-.mobile-portfolio .hero-right {
-  gap: 0.85rem;
-  padding: 20px 0;
-}
-
-.mobile-portfolio .home-title {
-  font-size: clamp(1.9rem, 7.6vw, 3.4rem);
-  overflow-wrap: anywhere;
-}
-
-.mobile-portfolio .home-cta-row { margin-top: 10px; }
-
-@media (max-width: 460px) {
-  .mobile-portfolio .home-cta-row {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-    width: min(100%, 300px);
-  }
-}
-
-.mobile-portfolio :is(#about, #projects, #certifications, #services) {
+.mobile-portfolio :is(#about, #projects, #certifications) {
   position: relative;
   min-height: auto;
   border-top: 1px solid var(--grid-line);
@@ -132,16 +92,16 @@ html:has(:is(input, textarea, select, [contenteditable="true"]):focus) .mobile-d
 
 .mobile-portfolio :is(.about-page, .certifications-page) { padding-bottom: 0; }
 
-.mobile-portfolio :is(.about-container, .projects-container, .certifications-container, .services-container) {
+.mobile-portfolio :is(.about-container, .projects-container, .certifications-container) {
   padding: 42px max(16px, 4vw) 48px;
 }
 
-.mobile-portfolio :is(.about-title-center, .projects-title, .certifications-title, .services-title-center) {
+.mobile-portfolio :is(.about-title-center, .projects-title, .certifications-title) {
   font-size: clamp(1.65rem, 6vw, 2.7rem);
   overflow-wrap: anywhere;
 }
 
-.mobile-portfolio :is(.projects-hero, .certifications-hero-center, .services-hero-center) {
+.mobile-portfolio :is(.projects-hero, .certifications-hero-center) {
   margin-bottom: 30px;
 }
 
@@ -152,8 +112,6 @@ html:has(:is(input, textarea, select, [contenteditable="true"]):focus) .mobile-d
 .mobile-portfolio .project-card { scroll-margin-bottom: var(--mobile-dock-clearance); }
 
 .mobile-portfolio .project-cta { margin-top: 12px; }
-
-.mobile-portfolio .footer-section { min-width: 0; }
 
 .app-root[data-compact="true"] .project-page {
   min-height: 100svh;

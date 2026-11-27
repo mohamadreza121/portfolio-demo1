@@ -1,6 +1,6 @@
 /* =====================================================
    PROJECT CLI SHELL — Cisco-style terminal containers
-   - Compatible with day/night theme tokens (index.css)
+   - Compatible with portfolio color tokens (index.css)
    - Uses existing .project-page padding from ProjectDetail.css
 ===================================================== */
 
@@ -249,7 +249,7 @@
 
 /* =====================================================
    PROJECT CLI — Terminal cards + CTA buttons
-   Works with your existing theme tokens (night mode default).
+   Uses the shared portfolio colors.
    ===================================================== */
 
 :root {

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { FaArrowUp } from "react-icons/fa";
 import { useLocation } from "react-router-dom";
-import { sendQuoteMessage } from "./services/messaging";
 
 import Router from "./routes/Router";
 import LetterGlitch from "./components/LetterGlitch";
@@ -9,7 +8,6 @@ import TargetCursor from "./components/TargetCursor";
 import Preloader from "./components/Preloader";
 import Navbar from "./components/Navbar";
 import CurtainOverlay from "./components/CurtainOverlay";
-import QuoteModal from "./components/QuoteModal";
 import useCompactLayout from "./hooks/useCompactLayout";
 
 import "./index.css";
@@ -25,19 +23,28 @@ export default function App() {
   /* =====================================================
      GLOBAL STATE
   ===================================================== */
-  const [theme, setTheme] = useState("night");
   const [active, setActive] = useState("Home");
 
   /* =====================================================
      PHASE STATE
   ===================================================== */
-  const [phase, setPhase] = useState("preloader");
-  // preloader → curtains → ready
+  const [homeEntry] = useState(() => location.pathname === "/" &&
+    (!location.hash || location.hash === "#home") &&
+    (!location.state?.scrollTo || location.state.scrollTo === "home"));
+  const [phase, setPhase] = useState(homeEntry ? "ready" : "preloader");
+  const [homeOpening, setHomeOpening] = useState(homeEntry);
+
+  // Release the opening state while leaving all controls usable from the first frame.
+  useEffect(() => {
+    if (!homeOpening) return;
+    const timeout = window.setTimeout(() => setHomeOpening(false), 1300);
+    return () => window.clearTimeout(timeout);
+  }, [homeOpening]);
 
   /* =====================================================
      REVEAL KEY
   ===================================================== */
-  const [revealKey, setRevealKey] = useState(0);
+  const [revealKey, setRevealKey] = useState(homeEntry ? 1 : 0);
 
   /* =====================================================
      INTERNAL GUARDS
@@ -48,24 +55,6 @@ export default function App() {
      UI STATE
   ===================================================== */
   const [showScrollTop, setShowScrollTop] = useState(false);
-
-  /* =====================================================
-     QUOTE MODAL STATE
-  ===================================================== */
-  const [quoteOpen, setQuoteOpen] = useState(false);
-  const [quoteService, setQuoteService] = useState("");
-  const closeQuote = useCallback(() => setQuoteOpen(false), []);
-
-  useEffect(() => {
-    const onOpen = (e) => {
-      const svc = e?.detail?.service ?? "";
-      setQuoteService(svc);
-      setQuoteOpen(true);
-    };
-
-    window.addEventListener("openQuoteModal", onOpen);
-    return () => window.removeEventListener("openQuoteModal", onOpen);
-  }, []);
 
   /* =====================================================
      DISABLE BROWSER SCROLL RESTORATION (CRITICAL)
@@ -90,17 +79,6 @@ export default function App() {
   useEffect(() => {
     document.documentElement.setAttribute("data-phase", phase);
   }, [phase]);
-
-  /* =====================================================
-     THEME ATTRIBUTE
-  ===================================================== */
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "night" ? "day" : "night"));
-  };
 
   /* =====================================================
      PRELOADER → CURTAINS
@@ -144,19 +122,6 @@ export default function App() {
   }, [location.pathname, phase]);
 
   /* =====================================================
-    CLEAR SECTION HASH OUTSIDE MAIN ROUTE
-  ===================================================== */
-  useEffect(() => {
-    if (location.pathname !== "/" && window.location.hash) {
-      window.history.replaceState(
-        window.history.state,
-        "",
-        location.pathname + location.search
-      );
-    }
-  }, [location.pathname, location.search]);
-
-  /* =====================================================
      SCROLL-TOP VISIBILITY
   ===================================================== */
   useEffect(() => {
@@ -184,7 +149,7 @@ export default function App() {
      RENDER
   ===================================================== */
   return (
-    <div className="app-root" data-compact={compact}>
+    <div className="app-root" data-compact={compact} data-home-opening={homeOpening || undefined}>
       {(phase === "preloader" || phase === "curtains") && (
         <CurtainOverlay
           phase={phase}
@@ -202,14 +167,11 @@ export default function App() {
           <Navbar
             active={location.pathname.startsWith("/projects/") ? "Projects" : active}
             compact={compact}
-            hidden={quoteOpen}
-            theme={theme}
-            onToggleTheme={toggleTheme}
           />
 
           {!compact && showScrollTop && (
             <button
-              className="scroll-top-btn cursor-target"
+              className="scroll-top-btn"
               aria-label="Scroll to top"
               onClick={() => {
                 if (location.pathname === "/") {
@@ -229,7 +191,6 @@ export default function App() {
       )}
 
       <LetterGlitch
-        theme={theme}
         glitchSpeed={compact ? 190 : 120}
         maxFps={compact ? 18 : 30}
         centerVignette={compact}
@@ -247,24 +208,10 @@ export default function App() {
         ].join(" ")}
       >
         <Router
-          theme={theme}
           compact={compact}
           ready={phase === "ready"}
           setActive={setActive}
           revealKey={revealKey}
-          onRequestQuote={(service) => {
-            setQuoteService(service || "");
-            setQuoteOpen(true);
-          }}
-          isQuoteOpen={quoteOpen}
-        />
-
-        <QuoteModal
-          open={quoteOpen}
-          compact={compact}
-          service={quoteService}
-          onClose={closeQuote}
-          onSubmit={(data) => sendQuoteMessage(data, quoteService)}
         />
       </div>
     </div>

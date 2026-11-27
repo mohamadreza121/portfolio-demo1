@@ -4,7 +4,6 @@ import Home from "./Home";
 import About from "./About";
 import Projects from "./Projects";
 import Certifications from "./Certifications";
-import Services from "./Services";
 import Footer from "../components/footer";
 import ScrollDeck from "../components/ScrollDeck";
 import NativePortfolioScroll from "../components/NativePortfolioScroll";
@@ -13,27 +12,26 @@ import { getProjectPosition, portfolioSections } from "../utils/scrollToSection"
 export default function Main({
   setActive,
   revealKey,
-  onRequestQuote,
-  isQuoteOpen,
+  onEnterLab,
   compact = false,
   ready = Boolean(revealKey),
 }) {
   const { key, hash, state } = useLocation();
   const request = useMemo(() => {
     const projectPosition = getProjectPosition(key);
-    const target = projectPosition ? "projects" : state?.scrollTo || hash.slice(1);
+    const section = state?.scrollTo || hash.slice(1);
+    const target = projectPosition ? "projects" : section === "services" ? "certifications" : section;
     const id = portfolioSections.some((section) => section.id === target) ? target : null;
     return { id, projectPosition };
   }, [key, hash, state]);
 
   const pages = [
-    <Home key="home" revealKey={revealKey} />,
+    <Home key="home" />,
     <About key="about" />,
-    <Projects key="projects" compact={compact} />,
-    <Certifications key="certifications" />,
-    <div key="services">
-      <Services onRequestQuote={onRequestQuote} />
-      <Footer onRequestQuote={onRequestQuote} />
+    <Projects key="projects" onEnterLab={onEnterLab} />,
+    <div key="certifications">
+      <Certifications />
+      <Footer />
     </div>,
   ];
 
@@ -46,7 +44,6 @@ export default function Main({
       ) : (
         <ScrollDeck
           setActive={setActive}
-          isQuoteOpen={isQuoteOpen}
           revealKey={revealKey}
           ready={ready}
           request={request}

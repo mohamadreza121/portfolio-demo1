@@ -1,41 +1,44 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import CarouselProject from "../components/CarouselProject";
+import { createPortal } from "react-dom";
 import { project6 } from "../data/projects/project6";
-import ProjectPager from "../components/ProjectPager";
-import "./ProjectDetail.css";
-import "./ProjectCli.css";
 
 function Lightbox({ item, onClose }) {
+  const closeButton = useRef(null);
   useEffect(() => {
     if (!item) return;
 
     const onKeyDown = (e) => e.key === "Escape" && onClose?.();
     const prevOverflow = document.body.style.overflow;
+    const opener = document.activeElement;
 
     document.body.style.overflow = "hidden";
     window.addEventListener("keydown", onKeyDown);
+    closeButton.current?.focus();
 
     return () => {
       document.body.style.overflow = prevOverflow;
       window.removeEventListener("keydown", onKeyDown);
+      if (opener instanceof HTMLElement && opener.isConnected) opener.focus({ preventScroll: true });
     };
   }, [item, onClose]);
 
   if (!item) return null;
 
-  return (
+  return createPortal(
     <div
-      className="lightbox-project"
+      className="lightbox-project lab-windows-lightbox"
       role="dialog"
       aria-modal="true"
       aria-label={item.title || "Media viewer"}
-      onMouseDown={(e) => {
+      onClick={(e) => {
         if (e.target === e.currentTarget) onClose?.();
       }}
     >
       <button
         type="button"
         className="project-lightbox-close cursor-target"
+        ref={closeButton}
         onClick={onClose}
         aria-label="Close"
         title="Close"
@@ -43,10 +46,7 @@ function Lightbox({ item, onClose }) {
         ×
       </button>
 
-      <div
-        className="lightbox-project-inner"
-        onMouseDown={(e) => e.stopPropagation()}
-      >
+      <div className="lightbox-project-inner">
         <img
           src={item.fullSrc || item.mediaSrc}
           alt={item.title || "Media"}
@@ -60,7 +60,8 @@ function Lightbox({ item, onClose }) {
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.getElementById("portal-root") || document.body,
   );
 }
 
@@ -84,61 +85,25 @@ function buildCmdBlock() {
   return `${header}\n\n${sections}`.trimEnd();
 }
 
-export default function Project6() {
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "instant" });
-  }, []);
+const cmdText = buildCmdBlock();
 
+export default function WindowsLabEvidence() {
   const [lightboxItem, setLightboxItem] = useState(null);
-  const isLightboxOpen = Boolean(lightboxItem);
-
-  const cmdText = useMemo(() => buildCmdBlock(), []);
+  const closeLightbox = useCallback(() => setLightboxItem(null), []);
 
   return (
-    <main className="project-page">
-      <div className="project-container">
-        <section className="section-block">
-          <div className="hero-grid">
-            <div className="hero-copy">
-              <h1 className="project-title">{project6.title}</h1>
-              <p className="muted">{project6.subtitle}</p>
-
-              <div className="pill-row">
-                {project6.badges.map((b) => (
-                  <span className="pill" key={b}>
-                    {b}
-                  </span>
-                ))}
-              </div>
-
-              <div className="cta-row">
-                <a className="btn btn-primary cursor-target" href="#cmd">
-                  Runbook (CMD)
-                </a>
-                <a
-                  className="btn btn-ghost cursor-target"
-                  href="#troubleshooting"
-                >
-                  Troubleshooting Screenshots
-                </a>
-              </div>
-            </div>
-
-            <div className="hero-media">
-              <img
-                src="/project-media/SRV1-info1.png"
-                alt="Windows Server SRV1"
-                className="hero-img"
-              />
-            </div>
-          </div>
-        </section>
-
+    <section id="windows" className="section-block lab-chapter lab-windows" aria-labelledby="lab-windows-title">
+      <header className="lab-windows__heading">
+        <div>
+          <h2 id="lab-windows-title">{project6.title}</h2>
+          <p>{project6.subtitle}</p>
+        </div>
+      </header>
+      <div className="lab-windows__details">
         <section className="section-block" id="cmd">
-          <h2>Server Runbook (CMD)</h2>
+          <h3>Server Runbook (CMD)</h3>
           <p className="muted">
-            This is intentionally formatted as a Windows Server terminal
-            workflow for repeatable validation.
+            Commands for checking the server baseline, DHCP, DNS, and domain join.
           </p>
 
           <div className="cmd-terminal-card">
@@ -150,19 +115,19 @@ export default function Project6() {
         </section>
 
         <section className="section-block">
-          <h2>SRV1 Baseline</h2>
+          <h3>SRV1 Baseline</h3>
           <dl className="kv">
             {project6.srv1.map((x) => (
               <div className="kv__item" key={x.k}>
-                <div className="kv__label">{x.k}</div>
-                <p className="kv__value">{x.v}</p>
+                <dt className="kv__label">{x.k}</dt>
+                <dd className="kv__value">{x.v}</dd>
               </div>
             ))}
           </dl>
         </section>
 
         <section className="section-block">
-          <h2>Scope Strategy</h2>
+          <h3>Scope Strategy</h3>
           <table className="data-table">
             <thead>
               <tr>
@@ -188,7 +153,7 @@ export default function Project6() {
         </section>
 
         <section className="section-block">
-          <h2>Join Workflow</h2>
+          <h3>Join Workflow</h3>
           <ul className="list">
             {project6.joinWorkflow.map((x, i) => (
               <li key={i}>{x}</li>
@@ -197,26 +162,21 @@ export default function Project6() {
         </section>
 
         <section className="section-block" id="troubleshooting">
-          <h2>Troubleshooting Screenshots</h2>
+          <h3>Troubleshooting Screenshots</h3>
           <p className="muted">
-            One carousel only—used as a visual proof pack for SRV1 services.
+            Captured DHCP, DNS, and domain troubleshooting output.
           </p>
 
           <CarouselProject
             items={project6.troubleshootingScreenshots}
-            onOpen={(item) => setLightboxItem(item)}
-            isLightboxOpen={isLightboxOpen}
-            ariaLabel="Project 6 troubleshooting screenshots carousel"
+            onOpen={setLightboxItem}
+            isLightboxOpen={Boolean(lightboxItem)}
+            ariaLabel="SRV1 DHCP and DNS evidence"
           />
         </section>
 
-        <ProjectPager
-          prev={{ href: "/projects/5", label: "Project 5" }}
-          next={null}
-        />
       </div>
-
-      <Lightbox item={lightboxItem} onClose={() => setLightboxItem(null)} />
-    </main>
+      <Lightbox item={lightboxItem} onClose={closeLightbox} />
+    </section>
   );
 }
