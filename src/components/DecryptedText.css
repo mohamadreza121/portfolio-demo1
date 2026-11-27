@@ -1,0 +1,19 @@
+.decrypted-text { white-space: pre-wrap; }
+.decrypted-text__word { white-space: nowrap; }
+.decrypted-text__slot { position: relative; }
+.decrypted-text__slot[data-decoding] > :first-child {
+  visibility: hidden;
+}
+.decrypted-text__cipher {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  justify-items: unsafe center;
+  clip-path: inset(-.22em 0);
+  color: color-mix(in srgb, currentColor 79%, var(--bg-color));
+  font-size: .72em;
+  letter-spacing: 0;
+  text-shadow: none;
+  pointer-events: none;
+}

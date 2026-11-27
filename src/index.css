@@ -15,38 +15,39 @@
   --text-color: #e6f7ef;
   --muted: #9fb6a8;
 
-  --accent: #61dca3;
+  --accent-rgb: 75 188 137;
+  --accent: rgb(var(--accent-rgb));
   --accent-alt: #61b3dc;
-  --accent-dark: #2fa97a;
+  --accent-dark: #278b64;
 
-  --accent-glow: rgba(97, 220, 163, 0.6);
-  --accent-border: rgba(97, 220, 163, 0.3);
-  --card-hover: rgba(97, 220, 163, 0.45);
+  --accent-glow: rgb(var(--accent-rgb) / .38);
+  --accent-border: rgb(var(--accent-rgb) / 0.3);
+  --card-hover: rgb(var(--accent-rgb) / 0.45);
 
   /* Common soft surfaces used across pages */
-  --accent-bg-soft: rgba(97, 220, 163, 0.09);
-  --accent-bg-softer: rgba(97, 220, 163, 0.08);
-  --accent-shadow-soft: rgba(97, 220, 163, 0.12);
-  --accent-strong: rgba(97, 220, 163, 0.65);
-  --accent-strong-inset: rgba(97, 220, 163, 0.18);
-  --accent-strong-shadow: rgba(97, 220, 163, 0.10);
+  --accent-bg-soft: rgb(var(--accent-rgb) / 0.09);
+  --accent-bg-softer: rgb(var(--accent-rgb) / 0.08);
+  --accent-shadow-soft: rgb(var(--accent-rgb) / 0.12);
+  --accent-strong: rgb(var(--accent-rgb) / 0.65);
+  --accent-strong-inset: rgb(var(--accent-rgb) / 0.18);
+  --accent-strong-shadow: rgb(var(--accent-rgb) / 0.1);
 
   /* Rack hotspot colors (theme-aware) */
-  --hotspot-border: rgba(97, 220, 163, 0.35);
-  --hotspot-bg: rgba(97, 220, 163, 0.10);
-  --hotspot-border-hover: rgba(97, 220, 163, 0.60);
-  --hotspot-bg-hover: rgba(97, 220, 163, 0.18);
-  --hotspot-border-active: rgba(97, 220, 163, 0.90);
-  --hotspot-bg-active: rgba(97, 220, 163, 0.22);
-  --hotspot-inset: rgba(97, 220, 163, 0.12);
+  --hotspot-border: rgb(var(--accent-rgb) / 0.35);
+  --hotspot-bg: rgb(var(--accent-rgb) / 0.1);
+  --hotspot-border-hover: rgb(var(--accent-rgb) / 0.6);
+  --hotspot-bg-hover: rgb(var(--accent-rgb) / 0.18);
+  --hotspot-border-active: rgb(var(--accent-rgb) / 0.9);
+  --hotspot-bg-active: rgb(var(--accent-rgb) / 0.22);
+  --hotspot-inset: rgb(var(--accent-rgb) / 0.12);
 
   --section-bg: rgba(10, 10, 10, 0.85);
   --card-bg: rgba(10, 10, 10, 0.85);
   --card-shadow: rgba(0, 0, 0, 0.6);
 
-  --grid-line: rgba(97, 220, 163, 0.05);
+  --grid-line: rgb(var(--accent-rgb) / 0.05);
 
-  --grid-color: rgba(97, 220, 163, 0.05);
+  --grid-color: rgb(var(--accent-rgb) / 0.05);
 
   /* Dock / Navbar */
   --dock-bg: #060010;
@@ -55,7 +56,7 @@
   --dock-label-border: #222;
   --dock-label-color: #ffffff;
 
-  --nav-active: #61dca3;
+  --nav-active: var(--accent);
   --nav-inactive: #9fb6a8;
 
 
@@ -68,7 +69,7 @@
   );
 
   /* Profile Card visuals (DO NOT TOUCH) */
-  --behind-glow-color: rgba(97, 220, 163, 0.25);
+  --behind-glow-color: rgb(var(--accent-rgb) / 0.25);
   --behind-glow-size: 25%;
   --name-gradient: linear-gradient(to bottom, #ffffff, #6f6fbe);
   --title-gradient: linear-gradient(to bottom, #ffffff, #4a4ac0);
@@ -132,8 +133,7 @@ html {
   scroll-behavior: smooth;
 }
 
-html[data-phase="preloader"],
-html[data-phase="curtains"] {
+html[data-phase="intro"] {
   overflow: hidden;
 }
 
@@ -198,36 +198,6 @@ body {
 .site-shell {
   position: relative;
   z-index: 10;
-}
-
-/* =====================================================
-   SITE REVEAL TRANSITION
-   ===================================================== */
-
-.site-hidden {
-  opacity: 0;
-  filter: blur(26px);
-  transform: scale(0.96);
-  pointer-events: none;
-}
-
-.site-visible {
-  opacity: 1;
-  filter: blur(0);
-  transform: scale(1);
-  transition:
-    opacity 1.6s cubic-bezier(0.25, 1, 0.5, 1),
-    filter 1.6s cubic-bezier(0.25, 1, 0.5, 1),
-    transform 1.6s cubic-bezier(0.25, 1, 0.5, 1);
-}
-
-.site-locked {
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.site-unlocked {
-  pointer-events: auto;
 }
 
 /* =====================================================
@@ -534,8 +504,6 @@ a.btn-pill {
 
 /* When any lightbox is open, disable transforms on the site wrapper(s)
    so position:fixed overlays are truly viewport-fixed */
-html:has(.lightbox-project) .site-visible,
-html:has(.lightbox-project) .site-hidden,
 html:has(.lightbox-project) .site-content,
 html:has(.lightbox-project) .site-shell {
   transform: none !important;

@@ -48,7 +48,6 @@
 }
 .about-title-line { display: block; }
 .about-title-line--accent { color: var(--accent); }
-.about-title-line--accent > span { white-space: normal !important; }
 .about-page .about-intro__bio { max-width: 43ch; color: var(--about-soft); font-size: clamp(1rem, 1.38vw, 1.19rem); line-height: 1.65; }
 .about-intro__copy .about-action { margin-top: 16px; }
 
@@ -103,7 +102,7 @@
   height: 123%;
   object-fit: contain;
   object-position: center bottom;
-  filter: saturate(.74) drop-shadow(10px 0 24px #4edc9e55);
+  filter: saturate(.74) drop-shadow(10px 0 24px var(--accent-border));
   mask-image: linear-gradient(#000 78%, #000d 90%, transparent);
 }
 .about-portrait figcaption,

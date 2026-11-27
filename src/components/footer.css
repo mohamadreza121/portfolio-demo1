@@ -30,11 +30,11 @@
   inset: 36% 31% 35% 39%;
   border: 1px solid var(--trace);
   transform: skewY(-14deg);
-  box-shadow: 0 0 10px #61dca319;
+  box-shadow: 0 0 10px var(--accent-shadow-soft);
 }
 .footer-board__traces i:nth-child(2) { inset-block: calc(36% + 6px) calc(35% + 6px); }
 .footer-board__traces i:nth-child(3) { inset-block: calc(36% + 12px) calc(35% + 12px); }
-.footer-board:focus-within .footer-board__traces { --trace: #61dca3; }
+.footer-board:focus-within .footer-board__traces { --trace: var(--accent); }
 
 .footer-chip {
   --cpu-pin-size: 9px;
@@ -112,7 +112,7 @@
   color: var(--chip-ink);
   font: 500 .8rem/1.25 var(--chip-mono);
 }
-.footer-links button:is(:hover, :focus-visible) { border-color: #61dca3a0; color: var(--accent); }
+.footer-links button:is(:hover, :focus-visible) { border-color: var(--accent-strong); color: var(--accent); }
 .footer-links button:is(:hover, :focus-visible) .nav-chip { color: var(--accent); }
 .footer-links .nav-chip {
   --cpu-pin-size: 3px;

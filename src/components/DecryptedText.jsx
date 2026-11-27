@@ -1,26 +1,18 @@
-import { useEffect, useState, useRef, useMemo, useCallback } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useReducedMotion } from "framer-motion";
 import useCompactLayout from "../hooks/useCompactLayout";
+import "./DecryptedText.css";
 
-const styles = {
-  wrapper: { display: "inline-block", whiteSpace: "pre-wrap" },
-  srOnly: {
-    position: "absolute",
-    width: "1px",
-    height: "1px",
-    padding: 0,
-    margin: "-1px",
-    overflow: "hidden",
-    clip: "rect(0,0,0,0)",
-    border: 0,
-  },
-};
+function hasGlyph(character) {
+  return /\S/.test(character);
+}
 
-// Defers work so we don’t call setState synchronously inside an effect body.
-// This satisfies react-hooks/set-state-in-effect without silencing anything.
-function defer(fn) {
-  if (typeof queueMicrotask === "function") queueMicrotask(fn);
-  else Promise.resolve().then(fn);
+function revealOrder(letters, direction) {
+  const indices = letters.map((_, index) => index).filter((index) => hasGlyph(letters[index]));
+  if (direction === "end") return indices.reverse();
+  if (direction !== "center") return indices;
+  const center = Math.floor(letters.length / 2);
+  return indices.sort((a, b) => Math.abs(a - center) - Math.abs(b - center) || b - a);
 }
 
 export default function DecryptedText({
@@ -30,7 +22,7 @@ export default function DecryptedText({
   sequential = false,
   revealDirection = "start",
   useOriginalCharsOnly = false,
-  characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()_+",
+  characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%+=",
   className = "",
   parentClassName = "",
   encryptedClassName = "",
@@ -41,297 +33,157 @@ export default function DecryptedText({
 }) {
   const compact = useCompactLayout();
   const reducedMotion = useReducedMotion();
-  const simpleReveal = compact || reducedMotion;
-  const [displayText, setDisplayText] = useState(text);
-  const [isHovering, setIsHovering] = useState(false);
-  const [isScrambling, setIsScrambling] = useState(false);
-  const [revealedIndices, setRevealedIndices] = useState(new Set());
+  const letters = useMemo(() => Array.from(text), [text]);
+  const [frame, setFrame] = useState(null);
+  const container = useRef(null);
+  const stopAnimation = useRef(null);
+  const lastViewedText = useRef(null);
 
-  const containerRef = useRef(null);
-  const viewTimerRef = useRef(null);
+  const stop = useCallback(() => {
+    stopAnimation.current?.();
+    stopAnimation.current = null;
+  }, []);
 
-  const hasAnimatedRef = useRef(false);
-  const revealableCountRef = useRef(0);
+  const play = useCallback((delay = 0) => {
+    stop();
+    if (reducedMotion || !letters.some(hasGlyph)) return;
 
-  // Track text changes without synchronous setState in the effect body.
-  useEffect(() => {
-    revealableCountRef.current = text.split("").filter((c) => c !== " ").length;
-    hasAnimatedRef.current = false;
-
-    let cancelled = false;
-    defer(() => {
-      if (cancelled) return;
-      setDisplayText(text);
-      setRevealedIndices(new Set());
-      setIsHovering(false);
-      setIsScrambling(false);
-    });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [text]);
-
-  const availableChars = useMemo(() => {
-    if (useOriginalCharsOnly) {
-      return Array.from(new Set(text.split(""))).filter((c) => c !== " ");
-    }
-    return characters.split("");
-  }, [useOriginalCharsOnly, characters, text]);
-
-  const scrambleOnce = useCallback(
-    (originalText, currentRevealed) =>
-      simpleReveal ? originalText : originalText
-        .split("")
-        .map((char, i) => {
-          if (char === " ") return " ";
-          if (currentRevealed.has(i)) return originalText[i];
-          return availableChars[Math.floor(Math.random() * availableChars.length)];
-        })
-        .join(""),
-    [availableChars, simpleReveal]
-  );
-
-  // Scramble / reveal engine
-  useEffect(() => {
-    let interval;
-    let currentIteration = 0;
-    let cancelled = false;
-
-    if (simpleReveal) {
-      if (!isHovering) return;
-      const animation = !reducedMotion && containerRef.current?.animate?.([
-        { opacity: .25, transform: "translateY(6px)" },
-        { opacity: 1, transform: "translateY(0)" },
-      ], { duration: 360, easing: "cubic-bezier(.22, .75, .23, 1)" });
-      defer(() => {
-        if (cancelled) return;
-        setDisplayText(text);
-        setIsScrambling(false);
-      });
-      return () => {
-        cancelled = true;
-        animation?.cancel();
-      };
-    }
-
-    const getNextIndex = (revealedSet) => {
-      const L = text.length;
-      switch (revealDirection) {
-        case "start":
-          for (let i = 0; i < L; i++) if (!revealedSet.has(i) && text[i] !== " ") return i;
-          return null;
-        case "end":
-          for (let i = L - 1; i >= 0; i--) if (!revealedSet.has(i) && text[i] !== " ") return i;
-          return null;
-        case "center": {
-          const mid = Math.floor(L / 2);
-          for (let off = 0; off <= mid; off++) {
-            const i1 = mid + off;
-            const i2 = mid - off;
-            if (i1 < L && !revealedSet.has(i1) && text[i1] !== " ") return i1;
-            if (i2 >= 0 && !revealedSet.has(i2) && text[i2] !== " ") return i2;
-          }
-          return null;
-        }
-        default:
-          return null;
+    let timer = window.setTimeout(() => {
+      if (compact) {
+        animation = container.current?.animate?.(
+          [{ opacity: .55 }, { opacity: 1 }],
+          { duration: 220, easing: "ease-out" }
+        );
+        return;
       }
-    };
 
-    if (isHovering) {
-      // no synchronous setState inside effect body
-      defer(() => {
-        if (!cancelled) setIsScrambling(true);
-      });
+      const alphabet = Array.from(useOriginalCharsOnly ? new Set(letters) : characters).filter(hasGlyph);
+      if (!alphabet.length) return;
+      const order = revealOrder(letters, revealDirection);
+      const revealed = new Set();
+      const steps = sequential ? order.length : maxIterations;
+      let step = 0;
 
-      interval = setInterval(() => {
-        setRevealedIndices((prev) => {
-          const nextSet = new Set(prev);
-
-          if (sequential) {
-            if (nextSet.size < revealableCountRef.current) {
-              const nextIndex = getNextIndex(nextSet);
-              if (nextIndex !== null) nextSet.add(nextIndex);
-              setDisplayText(scrambleOnce(text, nextSet));
-              return nextSet;
-            }
-
-            clearInterval(interval);
-            defer(() => {
-              if (cancelled) return;
-              setIsScrambling(false);
-              setDisplayText(text);
-              setIsHovering(false);
-            });
-            return nextSet;
-          }
-
-          // non-sequential
-          setDisplayText(scrambleOnce(text, prev));
-          currentIteration += 1;
-
-          if (currentIteration >= maxIterations) {
-            clearInterval(interval);
-            defer(() => {
-              if (cancelled) return;
-              setIsScrambling(false);
-              setDisplayText(text);
-            });
-          }
-
-          return prev;
-        });
-      }, speed);
-    } else {
-      // stop/reset without synchronous setState in effect body
-      defer(() => {
-        if (cancelled) return;
-        setDisplayText(text);
-        setRevealedIndices(new Set());
-        setIsScrambling(false);
-      });
-    }
-
-    return () => {
-      cancelled = true;
-      if (interval) clearInterval(interval);
-    };
-  }, [isHovering, text, speed, maxIterations, sequential, revealDirection, scrambleOnce, simpleReveal, reducedMotion]);
-
-  // Explicit reveal (revealKey): pre-scramble immediately, then start
-  useEffect(() => {
-    if (!revealKey) return;
-
-    if (viewTimerRef.current) clearTimeout(viewTimerRef.current);
-
-    viewTimerRef.current = setTimeout(() => {
-      const empty = new Set();
-      setRevealedIndices(empty);
-      setDisplayText(scrambleOnce(text, empty));
-      setIsHovering(true);
-    }, revealDelay);
-
-    return () => {
-      if (viewTimerRef.current) clearTimeout(viewTimerRef.current);
-    };
-  }, [revealKey, revealDelay, text, scrambleOnce]);
-
-  // View-based reveal (when no revealKey): pre-scramble on trigger
-  useEffect(() => {
-    if (revealKey) return;
-    if (animateOn !== "view" && animateOn !== "both") return;
-
-    const el = containerRef.current;
-    if (!el) return;
-
-    const panel = el.closest?.(".scroll-deck__panel") || null;
-    const root = panel || null;
-
-    const panelIsActive = () => {
-      const phase = document.documentElement.dataset.phase;
-      if (phase && phase !== "ready") return false;
-      if (!panel) return true;
-      return panel.getAttribute("aria-hidden") !== "true";
-    };
-
-    const trigger = () => {
-      if (hasAnimatedRef.current) return;
-      if (!panelIsActive()) return;
-
-      hasAnimatedRef.current = true;
-
-      const empty = new Set();
-      setRevealedIndices(empty);
-      setDisplayText(scrambleOnce(text, empty));
-
-      if (viewTimerRef.current) clearTimeout(viewTimerRef.current);
-      viewTimerRef.current = setTimeout(() => setIsHovering(true), revealDelay + (panel ? 280 : 0));
-    };
-
-    const manualCheck = () => {
-      if (hasAnimatedRef.current) return;
-      if (!panelIsActive()) return;
-
-      const r = el.getBoundingClientRect();
-      const rr = root ? root.getBoundingClientRect() : { top: 0, bottom: window.innerHeight };
-      if (r.bottom > rr.top && r.top < rr.bottom) trigger();
-    };
-
-    if (typeof IntersectionObserver === "undefined") {
-      requestAnimationFrame(manualCheck);
-      return () => {
-        if (viewTimerRef.current) clearTimeout(viewTimerRef.current);
-      };
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => entries.forEach((e) => e.isIntersecting && trigger()),
-      { root, threshold: 0.25 }
-    );
-
-    observer.observe(el);
-
-    const onDeckState = () => requestAnimationFrame(manualCheck);
-    const phaseObserver = new MutationObserver(onDeckState);
-    phaseObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["data-phase"] });
-    window.addEventListener("deck:state", onDeckState);
-    window.addEventListener("deck:active", onDeckState);
-    window.addEventListener("resize", onDeckState);
-    if (panel) panel.addEventListener("scroll", onDeckState, { passive: true });
-
-    requestAnimationFrame(manualCheck);
-
-    return () => {
-      observer.disconnect();
-      phaseObserver.disconnect();
-      window.removeEventListener("deck:state", onDeckState);
-      window.removeEventListener("deck:active", onDeckState);
-      window.removeEventListener("resize", onDeckState);
-      if (panel) panel.removeEventListener("scroll", onDeckState);
-      if (viewTimerRef.current) clearTimeout(viewTimerRef.current);
-    };
-  }, [animateOn, text, revealDelay, revealKey, scrambleOnce]);
-
-  // Hover support: pre-scramble immediately (no jump)
-  const hoverProps =
-    !simpleReveal && (animateOn === "hover" || animateOn === "both")
-      ? {
-          onMouseEnter: () => {
-            const empty = new Set();
-            setRevealedIndices(empty);
-            setDisplayText(scrambleOnce(text, empty));
-            setIsHovering(true);
-          },
-          onMouseLeave: () => setIsHovering(false),
+      function draw() {
+        if (step >= steps) {
+          setFrame(null);
+          return;
         }
-      : {};
+        setFrame({
+          text,
+          glyphs: letters.map((letter, index) => hasGlyph(letter) && !revealed.has(index)
+            ? alphabet[Math.floor(Math.random() * alphabet.length)]
+            : null),
+        });
+        revealed.add(order[step]);
+        step += 1;
+        timer = window.setTimeout(draw, speed);
+      }
+
+      draw();
+    }, delay);
+    let animation;
+
+    stopAnimation.current = () => {
+      window.clearTimeout(timer);
+      animation?.cancel();
+    };
+  }, [characters, compact, letters, maxIterations, reducedMotion, revealDirection, sequential, speed, stop, text, useOriginalCharsOnly]);
+
+  useEffect(() => stop, [play, stop]);
+
+  useEffect(() => {
+    if (!revealKey || reducedMotion) return;
+    play(revealDelay);
+  }, [play, revealDelay, revealKey, reducedMotion]);
+
+  useEffect(() => {
+    if (revealKey || reducedMotion || (animateOn !== "view" && animateOn !== "both")) return;
+
+    const element = container.current;
+    const panel = element.closest(".scroll-deck__panel");
+    let checkFrame;
+
+    function trigger() {
+      const phase = document.documentElement.dataset.phase;
+      if ((phase && phase !== "ready") || panel?.getAttribute("aria-hidden") === "true") return;
+      if (lastViewedText.current === text) return;
+      lastViewedText.current = text;
+      play(revealDelay + (panel ? 180 : 0));
+    }
+
+    function checkVisibility() {
+      const rect = element.getBoundingClientRect();
+      const viewport = panel?.getBoundingClientRect() ?? { top: 0, bottom: window.innerHeight };
+      if (rect.bottom > viewport.top && rect.top < viewport.bottom) trigger();
+    }
+
+    function scheduleCheck() {
+      cancelAnimationFrame(checkFrame);
+      checkFrame = requestAnimationFrame(checkVisibility);
+    }
+
+    const observer = typeof IntersectionObserver !== "undefined" && new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) trigger(); },
+      { root: panel, threshold: .2 }
+    );
+    observer?.observe?.(element);
+    const phaseObserver = new MutationObserver(scheduleCheck);
+    phaseObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["data-phase"] });
+    window.addEventListener("deck:active", scheduleCheck);
+    window.addEventListener("deck:state", scheduleCheck);
+    window.addEventListener("resize", scheduleCheck);
+    scheduleCheck();
+
+    return () => {
+      cancelAnimationFrame(checkFrame);
+      observer?.disconnect?.();
+      phaseObserver.disconnect();
+      window.removeEventListener("deck:active", scheduleCheck);
+      window.removeEventListener("deck:state", scheduleCheck);
+      window.removeEventListener("resize", scheduleCheck);
+    };
+  }, [animateOn, play, reducedMotion, revealDelay, revealKey, text]);
+
+  const glyphs = !compact && !reducedMotion && frame?.text === text ? frame.glyphs : null;
+  const hover = !compact && !reducedMotion && ["hover", "both"].includes(animateOn);
+  let offset = 0;
 
   return (
-    <motion.span
-      className={parentClassName}
-      ref={containerRef}
-      style={styles.wrapper}
-      {...hoverProps}
+    <span
+      className={`decrypted-text ${parentClassName}`}
+      ref={container}
+      onMouseEnter={hover ? () => play() : undefined}
+      onMouseLeave={hover ? () => { stop(); setFrame(null); } : undefined}
       {...props}
     >
-      <span style={styles.srOnly}>{text}</span>
-
+      <span className="sr-only">{text}</span>
       <span aria-hidden="true">
-        {simpleReveal ? text : displayText.split("").map((char, index) => {
-          const isRevealedOrDone =
-            revealedIndices.has(index) || !isScrambling || !isHovering;
+        {text.split(/(\s+|(?<=-)(?=\S))/u).map((word) => {
+          if (!word) return null;
+          const start = offset;
+          const wordLetters = Array.from(word);
+          offset += wordLetters.length;
+          if (!hasGlyph(word)) return <Fragment key={start}>{word}</Fragment>;
 
           return (
-            <span
-              key={index}
-              className={isRevealedOrDone ? className : encryptedClassName}
-            >
-              {char}
-            </span>
+            <Fragment key={start}>
+              <span className="decrypted-text__word">
+                {wordLetters.map((letter, index) => {
+                  const glyph = glyphs?.[start + index];
+                  return (
+                    <span className="decrypted-text__slot" key={index} data-decoding={glyph ? "" : undefined}>
+                      <span className={className}>{letter}</span>
+                      {glyph && <span className={`decrypted-text__cipher ${encryptedClassName}`}>{glyph}</span>}
+                    </span>
+                  );
+                })}
+              </span>
+              {word.endsWith("-") && <wbr />}
+            </Fragment>
           );
         })}
       </span>
-    </motion.span>
+    </span>
   );
 }
