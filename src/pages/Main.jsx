@@ -28,7 +28,7 @@ export default function Main({
   const pages = [
     <Home key="home" />,
     <About key="about" />,
-    <Projects key="projects" onEnterLab={onEnterLab} />,
+    <Projects key="projects" ready={ready} onEnterLab={onEnterLab} />,
     <div key="certifications">
       <Certifications />
       <Footer />

@@ -7,7 +7,7 @@ const cornerExtent = 12;
 const geometryTransitions = new Set(["all", "transform", "translate", "scale", "rotate"]);
 
 export default function TargetCursor({
-  targetSelector = ".cursor-target",
+  targetSelector = ".cursor-target, [data-cursor-target]",
   spinDuration = 2,
   hideDefaultCursor = true,
   hoverDuration = 0.2,
