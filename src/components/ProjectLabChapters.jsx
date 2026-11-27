@@ -125,7 +125,7 @@ export default function ProjectLabChapters({ hash }) {
       <div className="lab-story__layout">
         <div className="lab-story__steps" role="tablist" aria-label="Case study chapters">
           {story.map(({ id, label }, index) => (
-            <button key={id} type="button" role="tab" id={"story-tab-" + id} aria-controls="lab-story-panel" aria-selected={selected === id}
+            <button key={id} type="button" role="tab" className="cursor-target" id={"story-tab-" + id} aria-controls="lab-story-panel" aria-selected={selected === id}
               tabIndex={selected === id ? 0 : -1} onClick={() => setSelected(id)} onKeyDown={(event) => onKeyDown(event, index)}>
               <i aria-hidden="true" />{label}
             </button>

@@ -8,9 +8,7 @@
   justify-items: center;
   gap: 20px;
   padding: max(18px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(18px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
-  background:
-    radial-gradient(ellipse at center, color-mix(in srgb, var(--accent) 13%, #040907), transparent 72%),
-    #030605;
+  background: #000;
   font-family: ui-monospace, "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
   transition: opacity var(--intro-exit) ease-in-out;
 }
@@ -23,7 +21,7 @@
   border: 1px solid var(--accent-border);
   border-radius: 5px;
   background: #070e0a;
-  box-shadow: inset 0 1px #b4d9c41c, 0 1px 0 4px #070d09, 0 26px 80px #000b, 0 0 60px var(--accent-shadow-soft);
+  box-shadow: inset 0 1px #b4d9c41c, 0 1px 0 4px #070d09, 0 26px 80px #000b, 0 0 34px var(--accent-shadow-soft), 0 0 88px var(--accent-bg-soft);
   animation: portfolio-terminal-in 330ms var(--intro-ease) both;
 }
 .portfolio-intro[data-exiting] .portfolio-intro__terminal {
@@ -114,7 +112,7 @@
 
 @keyframes portfolio-cursor { 55% { opacity: 0; } }
 @keyframes portfolio-terminal-in { from { opacity: 0; transform: translateY(7px) scale(.985); } }
-@keyframes portfolio-terminal-out { to { opacity: 0; transform: translateY(-6px) scale(1.035); } }
+@keyframes portfolio-terminal-out { to { transform: translateY(-7px) scale(1.025); } }
 
 @media (max-width: 720px), (pointer: coarse) {
   .portfolio-intro__terminal { animation-duration: 180ms; }

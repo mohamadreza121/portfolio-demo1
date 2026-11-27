@@ -179,18 +179,37 @@
   .home-signature { padding-bottom: 18px; }
   .home-wordmark { font-size: clamp(2rem, 10.45vw, 5.6rem); }
   .home-word + .home-word { margin-left: .35em; }
-  .home-trace { inset: auto auto 0 0; width: 62px; height: 1px; }
-  .home-trace .home-trace__lead, .home-trace .home-trace__drop { display: none; }
-  .home-trace__baseline { inset: 0; }
-  .home-trace__lamp { width: 4px; height: 4px; }
-  .home-details { display: flex; flex-direction: column; gap: 16px; padding-top: 20px; }
+  .home-trace { display: none; }
+  .home-details { display: flex; flex-direction: column; gap: 10px; padding-top: 0; }
+  .home-statement {
+    position: relative;
+    width: fit-content;
+    max-width: 100%;
+    padding: 15px clamp(18px, 5vw, 26px) 16px 0;
+  }
+  .home-statement::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 1px solid var(--accent-dark);
+    border-inline-start: 0;
+    border-radius: 0 14px 14px 0;
+    pointer-events: none;
+  }
   .home-statement p { max-width: 35ch; }
   .home-work { padding-inline-start: 0; }
   .home-work::before { content: none; }
 }
 @media (prefers-reduced-motion: no-preference) and (max-width: 720px), (prefers-reduced-motion: no-preference) and (pointer: coarse) {
-  [data-home-opening] .home-trace__baseline { transform-origin: left; animation: home-run-x 280ms ease-out both; }
+  [data-home-opening] .home-statement::before { animation: home-mobile-trace 700ms 110ms ease-in-out backwards; }
   [data-home-opening] .home-wordmark { animation: home-copy-in 240ms ease-out backwards; }
+}
+
+@keyframes home-mobile-trace {
+  0% { clip-path: polygon(0 0, 0 0, 0 14px, 0 14px, 0 14px, 0 14px); }
+  40% { clip-path: polygon(0 0, 100% 0, 100% 14px, 100% 14px, 93% 14px, 0 14px); }
+  65% { clip-path: polygon(0 0, 100% 0, 100% 100%, 93% 100%, 93% 14px, 0 14px); }
+  100% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 0 14px, 0 14px); }
 }
 
 /* Keep the hero geometry in place while the terminal still covers it. */

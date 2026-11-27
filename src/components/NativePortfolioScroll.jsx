@@ -45,10 +45,11 @@ export default function NativePortfolioScroll({ children, ready, request, setAct
       element: container.current.querySelector(`#${section.id}`),
     }));
 
+    const viewport = window.visualViewport;
     let frame = 0;
     function updateActive() {
       frame = 0;
-      const marker = window.innerHeight * 0.3;
+      const marker = (viewport?.offsetTop ?? 0) + (viewport?.height ?? window.innerHeight) * 0.3;
       let active = sections[0];
       for (const section of sections) {
         if (!section.element || section.element.getBoundingClientRect().top > marker) break;
@@ -64,12 +65,18 @@ export default function NativePortfolioScroll({ children, ready, request, setAct
       if (!frame) frame = requestAnimationFrame(updateActive);
     }
 
-    window.addEventListener("scroll", scheduleUpdate, { passive: true });
+    // Capture scrolls from the body as well as the viewport in mobile webviews.
+    window.addEventListener("scroll", scheduleUpdate, { capture: true, passive: true });
     window.addEventListener("resize", scheduleUpdate, { passive: true });
+    viewport?.addEventListener("scroll", scheduleUpdate, { passive: true });
+    viewport?.addEventListener("resize", scheduleUpdate);
+    scheduleUpdate();
     return () => {
       cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", scheduleUpdate);
+      window.removeEventListener("scroll", scheduleUpdate, true);
       window.removeEventListener("resize", scheduleUpdate);
+      viewport?.removeEventListener("scroll", scheduleUpdate);
+      viewport?.removeEventListener("resize", scheduleUpdate);
     };
   }, [ready, setActive]);
 
