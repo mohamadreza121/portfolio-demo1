@@ -40,7 +40,7 @@ export default function Project1({ ready = true }) {
           </div>
           <div className="lab-archive__accordions">
             <details id="runbook" open={hash === "#runbook" || undefined}>
-              <summary>Validation runbook</summary>
+              <summary className="cursor-target">Validation runbook</summary>
               <ul>
                 {verificationSteps.map(({ host, command, label, finding }) => (
                   <li key={host + command}><b>{label}</b><code>{consolePrompt(host)} {command}</code><span>{finding}</span></li>
@@ -48,7 +48,7 @@ export default function Project1({ ready = true }) {
               </ul>
             </details>
             <details id="linkmap" open={hash === "#linkmap" || undefined}>
-              <summary>Physical and logical links <span>{project1.connections.length}</span></summary>
+              <summary className="cursor-target">Physical and logical links <span>{project1.connections.length}</span></summary>
               <ul>
                 {project1.connections.map(({ from, fromIf, to, toIf, type, notes }) => (
                   <li key={from + fromIf}><b>{from} <code>{fromIf}</code> <span aria-hidden="true">↔</span> {to} <code>{toIf}</code></b><span>{type} · {notes}</span></li>
@@ -56,7 +56,7 @@ export default function Project1({ ready = true }) {
               </ul>
             </details>
             <details>
-              <summary>Lab outcomes</summary>
+              <summary className="cursor-target">Lab outcomes</summary>
               <ul>{project1.keyOutcomes.map((outcome) => <li key={outcome}>{outcome}</li>)}</ul>
             </details>
           </div>

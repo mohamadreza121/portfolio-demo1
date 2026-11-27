@@ -143,8 +143,10 @@
 .lab-archive__accordions code { overflow-wrap: anywhere; color: var(--accent); font: .77rem var(--lab-mono); }
 .lab-windows__details .section-block { min-width: 0; overflow: auto; }
 .lab-windows__details .kv__value { margin-inline-start: 0; }
-.lab-windows-lightbox .lightbox-project-inner { transform: none; max-height: 82dvh; overflow: auto; }
-.lab-windows-lightbox .project-lightbox-close { min-width: 44px; min-height: 44px; }
+.lab-windows__screenshots { min-width: 0; margin-block: clamp(21px, 4vw, 42px) 8px; }
+.lab-windows__screenshots > p { margin-bottom: 8px; }
+.lab-story summary.cursor-target:hover,
+.lab-archive summary.cursor-target:hover { color: var(--accent); }
 
 @media (max-width: 760px) {
   .project-page--lab { padding-top: 16px; }

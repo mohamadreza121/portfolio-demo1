@@ -73,12 +73,12 @@ function DeviceEvidence({ card }) {
   const host = card.terminals[0].host;
   return (
     <details className="lab-story__device">
-      <summary>{host}<FaChevronRight aria-hidden="true" /></summary>
+      <summary className="cursor-target">{host}<FaChevronRight aria-hidden="true" /></summary>
       <p>{card.description}</p>
       {card.notes?.length > 0 && <ul className="list">{card.notes.map((note) => <li key={note}>{note}</li>)}</ul>}
       {card.terminals.map((entry) => (
         <details key={entry.command} className="lab-story__output">
-          <summary><code>{entry.command}</code></summary>
+          <summary className="cursor-target"><code>{entry.command}</code></summary>
           {entry.output && <pre className="cli-pre" tabIndex={0}>{readableOutput(entry)}</pre>}
         </details>
       ))}
@@ -144,7 +144,7 @@ export default function ProjectLabChapters({ hash }) {
               <figcaption>{chapter.observation}</figcaption>
             </figure>
             <details className="lab-story__evidence" open={showServerEvidence || undefined}>
-              <summary>{selected === "windows" ? "Server runbook and screenshots" : "Full device evidence"}<FaChevronRight aria-hidden="true" /></summary>
+              <summary className="cursor-target">{selected === "windows" ? "Server runbook and screenshots" : "Full device evidence"}<FaChevronRight aria-hidden="true" /></summary>
               {cards ? cards.map((card) => <DeviceEvidence key={card.id} card={card} />) : <WindowsLabEvidence />}
             </details>
           </article>

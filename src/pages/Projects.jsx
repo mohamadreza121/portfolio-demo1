@@ -19,26 +19,33 @@ function warmProject() {
   loadProjectLab().catch(() => {});
 }
 
-export default function Projects({ onEnterLab }) {
+export default function Projects({ onEnterLab, ready = true }) {
   const { key } = useLocation();
   const story = useRef(null);
   const screen = useRef(null);
   const [chapter, setChapter] = useState(0);
 
   useEffect(() => {
+    if (!ready) return;
     const element = story.current;
     const panel = element.closest(".scroll-deck__panel");
     const scroller = panel || window;
     const chapters = [...element.querySelectorAll(".project-story__chapter")];
     let frame = 0;
-    let warmed = false;
+    let cancelWarmup;
 
     function update() {
       frame = 0;
       if (panel?.getAttribute("aria-hidden") === "true") return;
-      if (!warmed && element.getBoundingClientRect().top < window.innerHeight) {
-        warmed = true;
-        warmProject();
+      const bounds = element.getBoundingClientRect();
+      if (!cancelWarmup && bounds.bottom > 0 && bounds.top < window.innerHeight) {
+        if (window.requestIdleCallback) {
+          const task = window.requestIdleCallback(warmProject, { timeout: 1200 });
+          cancelWarmup = () => window.cancelIdleCallback(task);
+        } else {
+          const task = window.setTimeout(warmProject, 220);
+          cancelWarmup = () => window.clearTimeout(task);
+        }
       }
       const top = panel?.getBoundingClientRect().top || 0;
       const height = panel?.clientHeight || window.innerHeight;
@@ -48,7 +55,6 @@ export default function Projects({ onEnterLab }) {
         if (item.getBoundingClientRect().top < marker) current = index;
       });
       setChapter(current);
-      const bounds = element.getBoundingClientRect();
       const progress = Math.max(0, Math.min(1, (top - bounds.top) / Math.max(1, bounds.height - height)));
       element.style.setProperty("--story-progress", progress);
       element.style.setProperty("--story-turn", (-28 + progress * 10) + "deg");
@@ -65,12 +71,13 @@ export default function Projects({ onEnterLab }) {
     schedule();
     return () => {
       cancelAnimationFrame(frame);
+      cancelWarmup?.();
       scroller.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
       window.removeEventListener("deck:active", schedule);
       window.removeEventListener("deck:state", schedule);
     };
-  }, []);
+  }, [ready]);
 
   function openProject(event) {
     if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
@@ -91,7 +98,7 @@ export default function Projects({ onEnterLab }) {
 
   const linkProps = {
     to: projectPath, state: { projectsBack: 1 }, onClick: openProject,
-    onPointerEnter: warmProject, onFocus: warmProject,
+    onPointerEnter: ready ? warmProject : undefined, onFocus: ready ? warmProject : undefined,
   };
 
   return (

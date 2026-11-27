@@ -1,67 +1,26 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import CarouselProject from "../components/CarouselProject";
-import { createPortal } from "react-dom";
+import GalleryCarousel from "../components/GalleryCarousel";
+import GalleryViewer from "../components/GalleryViewer";
 import { project6 } from "../data/projects/project6";
 
-function Lightbox({ item, onClose }) {
-  const closeButton = useRef(null);
-  useEffect(() => {
-    if (!item) return;
+const screenshots = project6.troubleshootingScreenshots.map((item) => ({ ...item, thumb: item.mediaSrc }));
 
-    const onKeyDown = (e) => e.key === "Escape" && onClose?.();
-    const prevOverflow = document.body.style.overflow;
-    const opener = document.activeElement;
+function renderScreenshotCaption(item) {
+  return (
+    <>
+      <h4>{item.title}</h4>
+      <p className="credential-info__description">{item.caption}</p>
+    </>
+  );
+}
 
-    document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", onKeyDown);
-    closeButton.current?.focus();
-
-    return () => {
-      document.body.style.overflow = prevOverflow;
-      window.removeEventListener("keydown", onKeyDown);
-      if (opener instanceof HTMLElement && opener.isConnected) opener.focus({ preventScroll: true });
-    };
-  }, [item, onClose]);
-
-  if (!item) return null;
-
-  return createPortal(
-    <div
-      className="lightbox-project lab-windows-lightbox"
-      role="dialog"
-      aria-modal="true"
-      aria-label={item.title || "Media viewer"}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose?.();
-      }}
-    >
-      <button
-        type="button"
-        className="project-lightbox-close cursor-target"
-        ref={closeButton}
-        onClick={onClose}
-        aria-label="Close"
-        title="Close"
-      >
-        ×
-      </button>
-
-      <div className="lightbox-project-inner">
-        <img
-          src={item.fullSrc || item.mediaSrc}
-          alt={item.title || "Media"}
-          style={{ width: "100%", height: "auto", borderRadius: 14 }}
-        />
-
-        {(item.title || item.caption) && (
-          <div className="section-block" style={{ marginTop: 12 }}>
-            {item.title && <h3 style={{ marginBottom: 6 }}>{item.title}</h3>}
-            {item.caption && <p className="muted">{item.caption}</p>}
-          </div>
-        )}
-      </div>
-    </div>,
-    document.getElementById("portal-root") || document.body,
+function renderScreenshotViewer(item, view, onClose) {
+  return (
+    <GalleryViewer title={item.title} closeLabel="Close screenshot" view={view} onClose={onClose}>
+      <figure className="credential-viewer__screenshot">
+        <img src={item.fullSrc || item.mediaSrc} alt={item.title} />
+        <figcaption>{item.caption}</figcaption>
+      </figure>
+    </GalleryViewer>
   );
 }
 
@@ -88,9 +47,6 @@ function buildCmdBlock() {
 const cmdText = buildCmdBlock();
 
 export default function WindowsLabEvidence() {
-  const [lightboxItem, setLightboxItem] = useState(null);
-  const closeLightbox = useCallback(() => setLightboxItem(null), []);
-
   return (
     <section id="windows" className="section-block lab-chapter lab-windows" aria-labelledby="lab-windows-title">
       <header className="lab-windows__heading">
@@ -161,22 +117,18 @@ export default function WindowsLabEvidence() {
           </ul>
         </section>
 
-        <section className="section-block" id="troubleshooting">
+        <section className="lab-windows__screenshots" id="troubleshooting">
           <h3>Troubleshooting Screenshots</h3>
           <p className="muted">
             Captured DHCP, DNS, and domain troubleshooting output.
           </p>
 
-          <CarouselProject
-            items={project6.troubleshootingScreenshots}
-            onOpen={setLightboxItem}
-            isLightboxOpen={Boolean(lightboxItem)}
-            ariaLabel="SRV1 DHCP and DNS evidence"
-          />
+          <GalleryCarousel items={screenshots} className="credential-carousel--screenshots" label="SRV1 DHCP and DNS evidence"
+            itemLabel="screenshot" viewLabel="View screenshot" renderCaption={renderScreenshotCaption}
+            renderViewer={renderScreenshotViewer} lockOnSlides />
         </section>
 
       </div>
-      <Lightbox item={lightboxItem} onClose={closeLightbox} />
     </section>
   );
 }

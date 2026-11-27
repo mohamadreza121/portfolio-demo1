@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { FaDownload, FaEnvelope, FaClipboardList, FaShareNodes, FaTableCells } from "react-icons/fa6";
 import DecryptedText from "../components/DecryptedText";
+import useNearViewport from "../hooks/useNearViewport";
 import profile from "../data/professionalProfile.json";
 import "./AboutModern.css";
 
@@ -157,6 +158,8 @@ function RepairStory({ storyRef }) {
 
 export default function About() {
   const storyRef = useRef(null);
+  const portraitRef = useRef(null);
+  const loadPortrait = useNearViewport(portraitRef);
   return (
     <section id="about" className="about-page" aria-labelledby="about-heading">
       <span className="spy-marker" />
@@ -177,8 +180,13 @@ export default function About() {
             }}>Follow one repair</button>
           </div>
           <figure className="about-portrait">
-            <div className="about-portrait__image">
-              <img src="/my-avatar.jpg" alt={profile.name} width="1200" height="1600" decoding="async" />
+            <div className="about-portrait__image" ref={portraitRef}>
+              {loadPortrait && (
+                <img src="/about-portrait-960.webp"
+                  srcSet="/about-portrait-480.webp 480w, /about-portrait-960.webp 960w, /about-portrait-1200.webp 1200w"
+                  sizes="(max-width: 880px) min(100vw - 36px, 520px), min(44vw, 600px)"
+                  alt={profile.name} width="1200" height="1600" decoding="async" />
+              )}
             </div>
             <figcaption><span>{profile.name}</span><span>{profile.location}</span></figcaption>
           </figure>
