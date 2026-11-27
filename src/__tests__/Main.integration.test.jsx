@@ -6,7 +6,7 @@ import Main from "../pages/Main";
 test("renders all major sections", async () => {
   render(
     <MemoryRouter initialEntries={["/"]}>
-      <Main setActive={vi.fn()} revealKey={1} isQuoteOpen={false} />
+      <Main setActive={vi.fn()} revealKey={1} />
     </MemoryRouter>
   );
 
@@ -14,12 +14,14 @@ test("renders all major sections", async () => {
   expect(await screen.findByRole("heading", { name: /about me/i })).toBeInTheDocument();
 
   expect(
-    await screen.findByRole("heading", { name: /enterprise network architecture/i })
+    await screen.findByRole("heading", { name: "Enterprise Multi-Site Network Lab" })
   ).toBeInTheDocument();
 
   expect(
     await screen.findByRole("heading", { name: /professional certifications/i })
   ).toBeInTheDocument();
 
-  expect(await screen.findByRole("heading", { name: /services/i })).toBeInTheDocument();
+  expect(screen.getByRole("heading", { name: "Get in touch" })).toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: /request a quote/i })).not.toBeInTheDocument();
+  expect(screen.queryByRole("heading", { name: /professional it & network services/i })).not.toBeInTheDocument();
 });

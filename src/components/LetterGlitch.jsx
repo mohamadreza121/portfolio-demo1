@@ -2,7 +2,6 @@
 import { useRef, useEffect } from "react";
 
 const LetterGlitch = ({
-  theme = "night",
   className = "",
   glitchSpeed = 90, // ms between new glitch updates
   centerVignette = false,
@@ -82,12 +81,7 @@ const LetterGlitch = ({
 
     const symbols = Array.from(characters);
 
-    const palettes = {
-      night: ["#2b4539", "#61dca3", "#61b3dc"],
-      day: ["#ff7b54", "#ffb347", "#e85d04"],
-    };
-
-    const colors = palettes[theme] ?? palettes.night;
+    const colors = ["#2b4539", "#61dca3", "#61b3dc"];
 
     const getRandomChar = () =>
       symbols[Math.floor(Math.random() * symbols.length)];
@@ -321,18 +315,14 @@ const LetterGlitch = ({
       document.removeEventListener("visibilitychange", handleVisibility);
       clearTimeout(resizeTimeout);
     };
-  }, [glitchSpeed, smooth, theme, characters, maxFps, transitionMs]);
+  }, [glitchSpeed, smooth, characters, maxFps, transitionMs]);
 
   const containerStyle = {
     position: "fixed",
     inset: 0,
     width: "100%",
     height: "100%",
-    background:
-      theme === "night"
-        ? "#000000"
-        : "linear-gradient(135deg, #fefefe 0%, #f5f5f5 100%)",
-    transition: "background 0.5s ease",
+    background: "#000000",
     overflow: "hidden",
     zIndex: 0,
     pointerEvents: "none",
@@ -342,31 +332,22 @@ const LetterGlitch = ({
     display: "block",
     width: "100%",
     height: "100%",
-    opacity: theme === "night" ? 0.22 : 0.4,
-    mixBlendMode: theme === "night" ? "screen" : "multiply",
-    transition: "opacity 0.5s ease, mix-blend-mode 0.5s ease",
+    opacity: 0.22,
+    mixBlendMode: "screen",
   };
 
   const outerVignetteStyle = {
     position: "absolute",
     inset: 0,
     pointerEvents: "none",
-    background:
-      theme === "night"
-        ? "radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,1) 100%)"
-        : "radial-gradient(circle, rgba(255,255,255,0) 60%, rgba(240,240,240,0.9) 100%)",
-    transition: "background 0.5s ease",
+    background: "radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,1) 100%)",
   };
 
   const centerVignetteStyle = {
     position: "absolute",
     inset: 0,
     pointerEvents: "none",
-    background:
-      theme === "night"
-        ? "radial-gradient(circle, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 60%)"
-        : "radial-gradient(circle, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 60%)",
-    transition: "background 0.5s ease",
+    background: "radial-gradient(circle, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 60%)",
   };
 
   return (

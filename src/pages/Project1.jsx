@@ -1,151 +1,66 @@
-import { useEffect, useMemo } from "react";
-import CliTerminalCard from "../components/CliTerminalCard";
+import { useLayoutEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import { project1 } from "../data/projects/project1";
-import ProjectPager from "../components/ProjectPager";
+import { consolePrompt, verificationSteps } from "../data/projects/project1Console";
+import NetworkLabStage from "../components/NetworkLabStage";
+import ProjectLabChapters from "../components/ProjectLabChapters";
 import "./ProjectDetail.css";
 import "./ProjectCli.css";
+import "./NetworkLab.css";
 
-function pad(value, width) {
-  const s = String(value ?? "");
-  return s.length >= width ? s.slice(0, width - 1) + "…" : s.padEnd(width, " ");
-}
+const storyAnchors = ["switching", "routing", "wan", "branch", "windows"];
 
-function formatKV(rows = []) {
-  const header = pad("KEY", 22) + "VALUE";
-  const body = rows.map((r) => pad(r.k, 22) + (r.v || "")).join("\n");
-  return `${header}\n${"-".repeat(78)}\n${body}`;
-}
+export default function Project1({ ready = true }) {
+  const { hash, key } = useLocation();
+  const hasScrolled = useRef(false);
 
-function formatConnections(rows = []) {
-  const header =
-    pad("FROM", 16) +
-    pad("IF", 10) +
-    pad("TO", 16) +
-    pad("IF", 10) +
-    pad("TYPE", 10) +
-    "NOTES";
-
-  const body = rows
-    .map(
-      (r) =>
-        pad(r.from, 16) +
-        pad(r.fromIf, 10) +
-        pad(r.to, 16) +
-        pad(r.toIf, 10) +
-        pad(r.type, 10) +
-        (r.notes || "")
-    )
-    .join("\n");
-
-  return `${header}\n${"-".repeat(92)}\n${body}`;
-}
-
-function formatChecklist(rows = []) {
-  const header = pad("CHECK", 24) + pad("COMMAND", 30) + "EXPECTED";
-  const body = rows
-    .map((r) => pad(r.check, 24) + pad(r.command, 30) + (r.expected || ""))
-    .join("\n");
-  return `${header}\n${"-".repeat(92)}\n${body}`;
-}
-
-export default function Project1() {
-  useEffect(() => window.scrollTo({ top: 0, behavior: "auto" }), []);
-
-  const kvText = useMemo(() => formatKV(project1.topologyAtAGlance || []), []);
-  const connText = useMemo(
-    () => formatConnections(project1.connections || []),
-    []
-  );
-  const checklistText = useMemo(
-    () => formatChecklist(project1.validationChecklist || []),
-    []
-  );
-
-  const outcomesText = useMemo(() => {
-    const header = "OUTCOMES";
-    const body = (project1.keyOutcomes || [])
-      .map((x, i) => `${String(i + 1).padStart(2, "0")}. ${x}`)
-      .join("\n");
-    return `${header}\n${"-".repeat(78)}\n${body}`;
-  }, []);
+  useLayoutEffect(() => {
+    if (!ready) return;
+    const id = hash.slice(1);
+    const section = document.getElementById(storyAnchors.includes(id) ? "story" : id);
+    const smooth = hasScrolled.current && !window.matchMedia("(prefers-reduced-motion: reduce), (pointer: coarse)").matches;
+    hasScrolled.current = true;
+    if (section?.closest(".project-page--lab")) {
+      section.scrollIntoView({ block: "start", behavior: smooth ? "smooth" : "instant" });
+    } else {
+      window.scrollTo({ top: 0, behavior: "instant" });
+    }
+  }, [hash, key, ready]);
 
   return (
-    <main className="project-page">
+    <main className="project-page project-page--lab">
       <div className="project-container">
-        <section className="section-block">
-          <div className="hero-grid">
-            <div className="hero-copy">
-              <h1 className="project-title">{project1.title}</h1>
-              <p className="muted">{project1.subtitle}</p>
+        <NetworkLabStage ready={ready} />
+        <ProjectLabChapters hash={hash} />
 
-              <div className="pill-row">
-                {(project1.badges || []).map((b) => (
-                  <span className="pill" key={b}>
-                    {b}
-                  </span>
+        <section className="lab-archive" aria-labelledby="lab-archive-title">
+          <div>
+            <p className="lab-kicker">Verification</p>
+            <h2 id="lab-archive-title">Check the design against the output.</h2>
+          </div>
+          <div className="lab-archive__accordions">
+            <details id="runbook" open={hash === "#runbook" || undefined}>
+              <summary>Validation runbook</summary>
+              <ul>
+                {verificationSteps.map(({ host, command, label, finding }) => (
+                  <li key={host + command}><b>{label}</b><code>{consolePrompt(host)} {command}</code><span>{finding}</span></li>
                 ))}
-              </div>
-
-              <div className="cta-row">
-                <a className="btn btn-primary cursor-target" href="#linkmap">
-                  Link Map
-                </a>
-                <a className="btn btn-ghost cursor-target" href="#runbook">
-                  Validation
-                </a>
-              </div>
-            </div>
-
-            <div className="hero-media">
-              <img
-                src={project1.media?.heroImage}
-                alt="Full network topology"
-                className="hero-img"
-              />
-            </div>
+              </ul>
+            </details>
+            <details id="linkmap" open={hash === "#linkmap" || undefined}>
+              <summary>Physical and logical links <span>{project1.connections.length}</span></summary>
+              <ul>
+                {project1.connections.map(({ from, fromIf, to, toIf, type, notes }) => (
+                  <li key={from + fromIf}><b>{from} <code>{fromIf}</code> <span aria-hidden="true">↔</span> {to} <code>{toIf}</code></b><span>{type} · {notes}</span></li>
+                ))}
+              </ul>
+            </details>
+            <details>
+              <summary>Lab outcomes</summary>
+              <ul>{project1.keyOutcomes.map((outcome) => <li key={outcome}>{outcome}</li>)}</ul>
+            </details>
           </div>
         </section>
-
-        <section className="section-block">
-          <h2>Topology at a Glance (CLI)</h2>
-          <CliTerminalCard
-            title="Design Summary"
-            subtitle="High-level inventory and roles"
-            content={kvText}
-          />
-        </section>
-
-        <section id="linkmap" className="section-block">
-          <h2>Physical / Logical Link Map (CLI)</h2>
-          <CliTerminalCard
-            title="Connections"
-            subtitle="Documentation-ready interconnect list"
-            content={connText}
-          />
-        </section>
-
-        <section className="section-block">
-          <h2>Key Outcomes (CLI)</h2>
-          <CliTerminalCard
-            title="Outcomes"
-            subtitle="What the lab proves in a portfolio review"
-            content={outcomesText}
-          />
-        </section>
-
-        <section id="runbook" className="section-block">
-          <h2>Representative Validation Checklist (CLI)</h2>
-          <CliTerminalCard
-            title="Runbook"
-            subtitle="Commands + expected outcomes"
-            content={checklistText}
-          />
-        </section>
-
-        <ProjectPager
-          prev={null}
-          next={{ href: "/projects/2", label: "Project 2" }}
-        />
       </div>
     </main>
   );

@@ -92,6 +92,8 @@ export default function ContactForm({
           <div className="form-grid">
             <input
               name="name"
+              aria-label="Name"
+              autoComplete="name"
               type="text"
               placeholder="Name"
               value={formState.name}
@@ -101,6 +103,8 @@ export default function ContactForm({
 
             <input
               name="email"
+              aria-label="Email"
+              autoComplete="email"
               type="email"
               placeholder="Email"
               value={formState.email}
@@ -111,6 +115,7 @@ export default function ContactForm({
             {showServiceSelect && (
               <select
                 name="service"
+                aria-label="Service"
                 className="cursor-target"
                 value={formState.service}
                 onChange={handleChange}
@@ -125,6 +130,7 @@ export default function ContactForm({
 
             <textarea
               name="message"
+              aria-label="Project summary"
               placeholder="Short project summary"
               rows={variant === "footer" ? 3 : 5}
               value={formState.message}

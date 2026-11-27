@@ -6,8 +6,6 @@ test("renders Main page on /", () => {
   render(
     <MemoryRouter initialEntries={["/"]}>
       <Router
-        theme="night"
-        toggleTheme={vi.fn()}
         active="Home"
         setActive={vi.fn()}
         revealKey={1}
@@ -20,12 +18,10 @@ test("renders Main page on /", () => {
   ).toBeInTheDocument();
 });
 
-test("renders Project1 on /projects/1", () => {
+test("renders Project1 on /projects/1", async () => {
   render(
     <MemoryRouter initialEntries={["/projects/1"]}>
       <Router
-        theme="night"
-        toggleTheme={vi.fn()}
         active="Projects"
         setActive={vi.fn()}
         revealKey={1}
@@ -34,8 +30,8 @@ test("renders Project1 on /projects/1", () => {
   );
 
   expect(
-    screen.getByRole("heading", {
-      name: /secure enterprise office network/i,
+    await screen.findByRole("heading", {
+      name: /two sites\.\s*one network\./i,
     })
   ).toBeInTheDocument();
 });

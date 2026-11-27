@@ -52,15 +52,11 @@
 
 
 /* =====================================================
-   PROFILE CARD — THEME-DEPENDENT BEHAVIOR
+   PROFILE CARD BLENDING
    ===================================================== */
 
-:root[data-theme="night"] .pc-content:not(.pc-avatar-content) {
+:root .pc-content:not(.pc-avatar-content) {
   mix-blend-mode: luminosity;
-}
-
-:root[data-theme="day"] .pc-content:not(.pc-avatar-content) {
-  mix-blend-mode: normal;
 }
 
 
@@ -107,7 +103,6 @@
   transition: background-color 0.4s ease;
   transform: translateZ(0) rotateX(0deg) rotateY(0deg);
   background: var(--card-bg, rgba(0, 0, 0, 0.9));
-  background-image: var(--day-vignette, none);
   backface-visibility: hidden;
   overflow: hidden;
 }
@@ -287,6 +282,7 @@
 }
 
 .pc-avatar-content .avatar {
+  filter: grayscale(100%) contrast(1.2);
   width: 100%;
   position: absolute;
   left: 50%;
@@ -419,7 +415,7 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
   -webkit-background-clip: text;
-  text-shadow: 0 0 4px rgba(255, 123, 84, 0.4);
+  text-shadow: 0 0 4px var(--accent-border);
 }
 
 .pc-details p {
@@ -435,7 +431,7 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
   -webkit-background-clip: text;
-  text-shadow: 0 0 4px rgba(255, 123, 84, 0.4);
+  text-shadow: 0 0 4px var(--accent-border);
 }
 
 @keyframes glow-bg {

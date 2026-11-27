@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { FaArrowUp } from "react-icons/fa";
 import { useLocation } from "react-router-dom";
-import { sendQuoteMessage } from "./services/messaging";
 
 import Router from "./routes/Router";
 import LetterGlitch from "./components/LetterGlitch";
@@ -9,32 +8,43 @@ import TargetCursor from "./components/TargetCursor";
 import Preloader from "./components/Preloader";
 import Navbar from "./components/Navbar";
 import CurtainOverlay from "./components/CurtainOverlay";
-import QuoteModal from "./components/QuoteModal";
+import useCompactLayout from "./hooks/useCompactLayout";
 
 import "./index.css";
+import "./mobile.css";
 
 export default function App() {
   /* =====================================================
      ROUTING
   ===================================================== */
   const location = useLocation();
+  const compact = useCompactLayout();
 
   /* =====================================================
      GLOBAL STATE
   ===================================================== */
-  const [theme, setTheme] = useState("night");
   const [active, setActive] = useState("Home");
 
   /* =====================================================
      PHASE STATE
   ===================================================== */
-  const [phase, setPhase] = useState("preloader");
-  // preloader → curtains → ready
+  const [homeEntry] = useState(() => location.pathname === "/" &&
+    (!location.hash || location.hash === "#home") &&
+    (!location.state?.scrollTo || location.state.scrollTo === "home"));
+  const [phase, setPhase] = useState(homeEntry ? "ready" : "preloader");
+  const [homeOpening, setHomeOpening] = useState(homeEntry);
+
+  // Release the opening state while leaving all controls usable from the first frame.
+  useEffect(() => {
+    if (!homeOpening) return;
+    const timeout = window.setTimeout(() => setHomeOpening(false), 1300);
+    return () => window.clearTimeout(timeout);
+  }, [homeOpening]);
 
   /* =====================================================
      REVEAL KEY
   ===================================================== */
-  const [revealKey, setRevealKey] = useState(0);
+  const [revealKey, setRevealKey] = useState(homeEntry ? 1 : 0);
 
   /* =====================================================
      INTERNAL GUARDS
@@ -45,23 +55,6 @@ export default function App() {
      UI STATE
   ===================================================== */
   const [showScrollTop, setShowScrollTop] = useState(false);
-
-  /* =====================================================
-     QUOTE MODAL STATE
-  ===================================================== */
-  const [quoteOpen, setQuoteOpen] = useState(false);
-  const [quoteService, setQuoteService] = useState("");
-
-  useEffect(() => {
-    const onOpen = (e) => {
-      const svc = e?.detail?.service ?? "";
-      setQuoteService(svc);
-      setQuoteOpen(true);
-    };
-
-    window.addEventListener("openQuoteModal", onOpen);
-    return () => window.removeEventListener("openQuoteModal", onOpen);
-  }, []);
 
   /* =====================================================
      DISABLE BROWSER SCROLL RESTORATION (CRITICAL)
@@ -88,17 +81,6 @@ export default function App() {
   }, [phase]);
 
   /* =====================================================
-     THEME ATTRIBUTE
-  ===================================================== */
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "night" ? "day" : "night"));
-  };
-
-  /* =====================================================
      PRELOADER → CURTAINS
   ===================================================== */
   const handlePreloaderComplete = useCallback(() => {
@@ -123,19 +105,6 @@ export default function App() {
   }, []);
 
   /* =====================================================
-     ENSURE HOME IS ACTIVE AFTER BOOT
-  ===================================================== */
-  useEffect(() => {
-    if (phase !== "ready") return;
-
-    requestAnimationFrame(() => {
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
-      setActive("Home");
-    });
-  }, [phase]);
-
-  /* =====================================================
      RE-TRIGGER REVEAL WHEN RETURNING TO "/"
   ===================================================== */
   useEffect(() => {
@@ -153,23 +122,11 @@ export default function App() {
   }, [location.pathname, phase]);
 
   /* =====================================================
-    CLEAR SECTION HASH OUTSIDE MAIN ROUTE
-  ===================================================== */
-  useEffect(() => {
-    if (location.pathname !== "/" && window.location.hash) {
-      window.history.replaceState(
-        window.history.state,
-        "",
-        location.pathname + location.search
-      );
-    }
-  }, [location.pathname, location.search]);
-
-  /* =====================================================
      SCROLL-TOP VISIBILITY
   ===================================================== */
   useEffect(() => {
-    // Main uses ScrollDeck (internal scroller). Project pages use window.
+    // The compact dock already includes a Home control.
+    if (compact) return;
     if (location.pathname === "/") {
       const onDeckState = (e) => {
         const d = e?.detail || {};
@@ -186,13 +143,13 @@ export default function App() {
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
-  }, [location.pathname, location.search]); // keep both if you reference both
+  }, [location.pathname, compact]);
 
   /* =====================================================
      RENDER
   ===================================================== */
   return (
-    <div className="app-root">
+    <div className="app-root" data-compact={compact} data-home-opening={homeOpening || undefined}>
       {(phase === "preloader" || phase === "curtains") && (
         <CurtainOverlay
           phase={phase}
@@ -208,15 +165,14 @@ export default function App() {
       {(phase === "curtains" || phase === "ready") && (
         <>
           <Navbar
-            active={active}
-            onSetActive={setActive}
-            theme={theme}
-            onToggleTheme={toggleTheme}
+            active={location.pathname.startsWith("/projects/") ? "Projects" : active}
+            compact={compact}
           />
 
-          {showScrollTop && (
+          {!compact && showScrollTop && (
             <button
-              className="scroll-top-btn cursor-target"
+              className="scroll-top-btn"
+              aria-label="Scroll to top"
               onClick={() => {
                 if (location.pathname === "/") {
                   window.dispatchEvent(new Event("deck:scrollToTop"));
@@ -235,14 +191,14 @@ export default function App() {
       )}
 
       <LetterGlitch
-        theme={theme}
-        glitchSpeed={120}
-        centerVignette={false}
+        glitchSpeed={compact ? 190 : 120}
+        maxFps={compact ? 18 : 30}
+        centerVignette={compact}
         outerVignette
-        smooth
+        smooth={!compact}
       />
 
-      <TargetCursor spinDuration={2.2} hideDefaultCursor parallaxOn />
+      {!compact && <TargetCursor spinDuration={2.2} hideDefaultCursor parallaxOn />}
 
       <div
         className={[
@@ -252,23 +208,10 @@ export default function App() {
         ].join(" ")}
       >
         <Router
-          theme={theme}
-          toggleTheme={toggleTheme}
-          active={active}
+          compact={compact}
+          ready={phase === "ready"}
           setActive={setActive}
           revealKey={revealKey}
-          onRequestQuote={(service) => {
-            setQuoteService(service || "");
-            setQuoteOpen(true);
-          }}
-          isQuoteOpen={quoteOpen}
-        />
-
-        <QuoteModal
-          open={quoteOpen}
-          service={quoteService}
-          onClose={() => setQuoteOpen(false)}
-          onSubmit={(data) => sendQuoteMessage(data, quoteService)}
         />
       </div>
     </div>

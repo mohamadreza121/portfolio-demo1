@@ -13,6 +13,7 @@
  */
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import { centerCarouselItem } from "../utils/scrollCarousel";
 import "./CarouselProject.css";
 
 /* Clamp helper */
@@ -56,18 +57,11 @@ export default function CarouselProject({
      --------------------------------------------------------- */
   useEffect(() => {
     const first = itemRefs.current[1];
-    if (!first) return;
+    const viewport = viewportRef.current;
+    if (!first || !viewport) return;
 
-    requestAnimationFrame(() => {
-      // JSDOM doesn't implement scrollIntoView; guard for tests.
-      if (typeof first.scrollIntoView === "function") {
-        first.scrollIntoView({
-          behavior: "instant",
-          inline: "center",
-          block: "nearest",
-        });
-      }
-    });
+    const frame = requestAnimationFrame(() => centerCarouselItem(viewport, first, "instant"));
+    return () => cancelAnimationFrame(frame);
   }, [extendedItems.length]);
 
   /* ---------------------------------------------------------
@@ -187,11 +181,7 @@ export default function CarouselProject({
             ? itemRefs.current[items.length]
             : itemRefs.current[1];
 
-        target?.scrollIntoView({
-          behavior: "instant",
-          inline: "center",
-          block: "nearest",
-        });
+        if (target) centerCarouselItem(viewport, target, "instant");
 
         requestAnimationFrame(() => {
           viewport.style.scrollSnapType = "";
@@ -212,11 +202,9 @@ export default function CarouselProject({
     const mobile =
       typeof window !== "undefined" && window.innerWidth < 520;
 
-    el.scrollIntoView({
-      behavior: mobile ? "instant" : "smooth",
-      inline: "center",
-      block: "nearest",
-    });
+    if (viewportRef.current) {
+      centerCarouselItem(viewportRef.current, el, mobile ? "instant" : "smooth");
+    }
   };
 
   const next = () => scrollToIndex(activeIndex + 1);

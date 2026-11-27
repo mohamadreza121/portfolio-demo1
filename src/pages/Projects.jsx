@@ -1,431 +1,144 @@
-import React, { useEffect, useMemo, useRef, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { FaExpand } from "react-icons/fa6";
 import DecryptedText from "../components/DecryptedText";
+import NetworkRack from "../components/NetworkRack";
+import { project1 } from "../data/projects/project1";
+import { loadProjectLab } from "../routes/loadProjectLab";
+import { rememberProjectPosition } from "../utils/scrollToSection";
 import "./Projects.css";
 
-/**
- * Notes:
- * - Add actual MP4 files under /public/projects/ and update `video` paths.
- * - If a project has no video, the card gracefully stays image-only.
- */
-
-const projects = [
-  {
-    id: 1,
-    title: "Enterprise Multi-Site Network Lab",
-    summary:
-      "HQ VLAN segmentation, branch connectivity, dual edge routers, FortiGate dual-ISP, and Windows Server services.",
-    tech: ["OSPF", "BGP", "FortiGate", "VLANs", "DHCP/DNS"],
-    // These exist in src/assets/projects/ in this repo
-    image: new URL("../assets/projects/Topology.png", import.meta.url).href,
-    video: new URL("../assets/projects/vid1.mp4", import.meta.url).href,
-  },
-  {
-    id: 2,
-    title: "Campus Switching + Gateway Experience",
-    summary: "SW1 VLAN access, HQ-GW1, and HQ-GW2",
-    tech: ["802.1Q", "VLANs", "OSPF", "VRRP"],
-    // Public path (replace freely)
-    image: new URL("../assets/projects/Topology.png", import.meta.url).href,
-    video: new URL("../assets/projects/vid2.mp4", import.meta.url).href,
-  },
-  {
-    id: 3,
-    title: "Predictable Routing and Observable Failover",
-    summary: "BGP Default, OSPF database, Int Tunnel.",
-    tech: ["BGP", "NAT", "IPsec", "OSPF"],
-    image: new URL("../assets/projects/Topology.png", import.meta.url).href,
-    video: new URL("../assets/projects/vid3.mp4", import.meta.url).href,
-  },
-  {
-    id: 4,
-    title: "Edge Enforcement and Management Hardening",
-    summary: "Wan section. Ip Route",
-    tech: ["BGP", "SSH-V2", "Failover"],
-    image: new URL("../assets/projects/Topology.png", import.meta.url).href,
-    video: new URL("../assets/projects/vid5.mp4", import.meta.url).href,
-  },
-  {
-    id: 5,
-    title: "Multihoming Simulation with Repeatable Tests",
-    summary: "SW2, R2",
-    tech: ["OSPF", "NAT", "IPsec"],
-    image: new URL("../assets/projects/Topology.png", import.meta.url).href,
-    video: new URL("../assets/projects/vid5.mp4", import.meta.url).href,
-  },
-  {
-    id: 6,
-    title: "Windows Infrastructure Runbook",
-    summary: "Windows Server 2022.",
-    tech: ["Verification", "Troubleshooting", "Logging", "DHCP", "DNS", "AD"],
-    image: new URL("../assets/projects/Topology.png", import.meta.url).href,
-    video: new URL("../assets/projects/vid5.mp4", import.meta.url).href,
-  },
+const projectPath = "/projects/1";
+const rackFocus = [
+  { host: "SW1", label: "HQ access · Segmentation & resilient gateways" },
+  { host: "HQ-EDGE", label: "WAN edge · Routing & encrypted tunnels" },
+  { host: "R2", label: "Branch · Reachability & service verification" },
 ];
 
-function usePrefersReducedMotion() {
-  const reducedRef = useRef(false);
-
-  useEffect(() => {
-    const mq = window.matchMedia?.("(prefers-reduced-motion: reduce)");
-    if (!mq) return;
-
-    const apply = () => {
-      reducedRef.current = !!mq.matches;
-    };
-    apply();
-
-    if (mq.addEventListener) mq.addEventListener("change", apply);
-    else mq.addListener(apply);
-
-    return () => {
-      if (mq.removeEventListener) mq.removeEventListener("change", apply);
-      else mq.removeListener(apply);
-    };
-  }, []);
-
-  return reducedRef;
+function warmProject() {
+  loadProjectLab().catch(() => {});
 }
 
-export default function Projects() {
-  const navigate = useNavigate();
+export default function Projects({ onEnterLab }) {
+  const { key } = useLocation();
+  const story = useRef(null);
+  const screen = useRef(null);
+  const [chapter, setChapter] = useState(0);
 
-  const reducedMotionRef = usePrefersReducedMotion();
-  const cardsRef = useRef([]);
-  const rafMagnetRef = useRef(new Map());
-  const rafParallaxRef = useRef(0);
-
-  const projectsList = useMemo(() => projects, []);
-
-  /* =====================================================
-     Magnetic hover (subtle translate, no 3D tilt)
-  ===================================================== */
-  const setCardOffset = useCallback((el, x, y) => {
-    el.style.setProperty("--mx", `${x}px`);
-    el.style.setProperty("--my", `${y}px`);
-  }, []);
-
-  const onCardPointerMove = useCallback(
-    (e, idx) => {
-      const el = cardsRef.current[idx];
-      if (!el) return;
-
-      // Disable on reduced-motion
-      if (reducedMotionRef.current) return;
-
-      // Disable on coarse pointers (mobile/touch)
-      if (window.matchMedia && window.matchMedia("(pointer: coarse)").matches)
-        return;
-
-      const rect = el.getBoundingClientRect();
-      const px = (e.clientX - rect.left) / rect.width; // 0..1
-      const py = (e.clientY - rect.top) / rect.height; // 0..1
-
-      // Calm magnetic strength (in px)
-      const strength = 8;
-      const tx = (px - 0.5) * strength * 2;
-      const ty = (py - 0.5) * strength * 2;
-
-      // rAF throttle per-card
-      const map = rafMagnetRef.current;
-      if (map.get(idx)) return;
-
-      map.set(
-        idx,
-        requestAnimationFrame(() => {
-          setCardOffset(el, tx, ty);
-          map.delete(idx);
-        }),
-      );
-    },
-    [reducedMotionRef, setCardOffset],
-  );
-
-  const onCardPointerLeave = useCallback(
-    (idx) => {
-      const el = cardsRef.current[idx];
-      if (!el) return;
-
-      setCardOffset(el, 0, 0);
-      el.classList.remove("is-media-active");
-
-      const vid = el.querySelector("video");
-      if (vid) {
-        try {
-          vid.pause();
-          vid.currentTime = 0;
-        } catch {
-          // ignore
-        }
-      }
-    },
-    [setCardOffset],
-  );
-
-  const onCardPointerEnter = useCallback(
-    (idx) => {
-      const el = cardsRef.current[idx];
-      if (!el) return;
-
-      // Start preview on hover (if video exists and not reduced motion)
-      if (!reducedMotionRef.current) {
-        const vid = el.querySelector("video");
-        if (vid) {
-          el.classList.add("is-media-active");
-          try {
-            vid.currentTime = 0;
-            const p = vid.play();
-            if (p && typeof p.catch === "function") p.catch(() => {});
-          } catch {
-            // ignore
-          }
-        }
-      }
-    },
-    [reducedMotionRef],
-  );
-
-  const onCardFocus = useCallback(
-    (idx) => {
-      const el = cardsRef.current[idx];
-      if (!el) return;
-
-      // Keyboard focus should also preview (if video exists)
-      if (!reducedMotionRef.current) {
-        const vid = el.querySelector("video");
-        if (vid) {
-          el.classList.add("is-media-active");
-          try {
-            vid.currentTime = 0;
-            const p = vid.play();
-            if (p && typeof p.catch === "function") p.catch(() => {});
-          } catch {
-            // ignore
-          }
-        }
-      }
-    },
-    [reducedMotionRef],
-  );
-
-  const onCardBlur = useCallback(
-    (idx) => {
-      // When focus leaves the card, stop preview
-      onCardPointerLeave(idx);
-    },
-    [onCardPointerLeave],
-  );
-
-  /* =====================================================
-     Scroll parallax (media drifts as the panel scrolls)
-  ===================================================== */
   useEffect(() => {
-    const root = document.getElementById("projects");
-    if (!root) return;
+    const element = story.current;
+    const panel = element.closest(".scroll-deck__panel");
+    const scroller = panel || window;
+    const chapters = [...element.querySelectorAll(".project-story__chapter")];
+    let frame = 0;
+    let warmed = false;
 
-    // In your ScrollDeck setup, the scroll container is the nearest .scroll-deck__panel
-    const scrollContainer =
-      root.closest(".scroll-deck__panel") ||
-      root.closest(".scroll-deck") ||
-      window;
-
-    const maxShift = 18; // px (keep calm)
-
-    const update = () => {
-      rafParallaxRef.current = 0;
-
-      // Disable parallax on reduced motion
-      if (reducedMotionRef.current) {
-        cardsRef.current.forEach((card) => {
-          if (!card) return;
-          card.style.setProperty("--media-y", `0px`);
-        });
-        return;
+    function update() {
+      frame = 0;
+      if (panel?.getAttribute("aria-hidden") === "true") return;
+      if (!warmed && element.getBoundingClientRect().top < window.innerHeight) {
+        warmed = true;
+        warmProject();
       }
-
-      const viewportH =
-        scrollContainer === window
-          ? window.innerHeight
-          : scrollContainer.clientHeight;
-
-      const viewportMid =
-        scrollContainer === window
-          ? window.innerHeight / 2
-          : scrollContainer.getBoundingClientRect().height / 2;
-
-      cardsRef.current.forEach((card) => {
-        if (!card) return;
-
-        const r = card.getBoundingClientRect();
-
-        // cardMid relative to viewport
-        const cardMid = r.top + r.height / 2;
-
-        // Normalize -1..1 based on distance from center
-        const t = (cardMid - viewportMid) / viewportH;
-
-        // Clamp and invert slightly for "cinematic" drift
-        const clamped = Math.max(-1, Math.min(1, t));
-        const y = -clamped * maxShift;
-
-        card.style.setProperty("--media-y", `${y}px`);
+      const top = panel?.getBoundingClientRect().top || 0;
+      const height = panel?.clientHeight || window.innerHeight;
+      const marker = top + height * .54;
+      let current = 0;
+      chapters.forEach((item, index) => {
+        if (item.getBoundingClientRect().top < marker) current = index;
       });
-    };
-
-    const schedule = () => {
-      if (rafParallaxRef.current) return;
-      rafParallaxRef.current = requestAnimationFrame(update);
-    };
-
-    // Initial
-    schedule();
-
-    if (scrollContainer === window) {
-      window.addEventListener("scroll", schedule, { passive: true });
-      window.addEventListener("resize", schedule);
-      return () => {
-        window.removeEventListener("scroll", schedule);
-        window.removeEventListener("resize", schedule);
-      };
+      setChapter(current);
+      const bounds = element.getBoundingClientRect();
+      const progress = Math.max(0, Math.min(1, (top - bounds.top) / Math.max(1, bounds.height - height)));
+      element.style.setProperty("--story-progress", progress);
+      element.style.setProperty("--story-turn", (-28 + progress * 10) + "deg");
+      element.style.setProperty("--story-lift", (-progress * 14) + "px");
     }
 
-    scrollContainer.addEventListener("scroll", schedule, { passive: true });
+    function schedule() {
+      if (!frame) frame = requestAnimationFrame(update);
+    }
+    scroller.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", schedule);
-
+    window.addEventListener("deck:active", schedule);
+    window.addEventListener("deck:state", schedule);
+    schedule();
     return () => {
-      scrollContainer.removeEventListener("scroll", schedule);
+      cancelAnimationFrame(frame);
+      scroller.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
+      window.removeEventListener("deck:active", schedule);
+      window.removeEventListener("deck:state", schedule);
     };
-  }, [reducedMotionRef]);
+  }, []);
 
-  /* =====================================================
-     Render
-  ===================================================== */
+  function openProject(event) {
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    rememberProjectPosition(key, 1, event.currentTarget);
+    const rack = screen.current?.querySelector(".rack-model");
+    const rect = screen.current?.getBoundingClientRect();
+    if (!onEnterLab || !rack || !rect?.width || !rect.height || window.matchMedia("(prefers-reduced-motion: reduce), (max-width: 760px), (pointer: coarse)").matches) return;
+    if (rect.bottom <= 0 || rect.top >= window.innerHeight) return;
+
+    event.preventDefault();
+    onEnterLab({
+      left: rect.left, top: rect.top, width: rect.width, height: rect.height,
+      rackWidth: rack.offsetWidth, pose: getComputedStyle(rack).transform,
+      perspective: getComputedStyle(screen.current).perspective,
+      host: rackFocus[chapter].host,
+    });
+  }
+
+  const linkProps = {
+    to: projectPath, state: { projectsBack: 1 }, onClick: openProject,
+    onPointerEnter: warmProject, onFocus: warmProject,
+  };
+
   return (
-    <section id="projects" className="projects-page">
+    <section id="projects" className="projects-page" aria-labelledby="featured-lab-title">
       <span className="spy-marker" />
+      <article className="project-story" ref={story} data-chapter={chapter}>
+        <div className="project-story__narrative">
+          <header className="project-story__chapter project-story__hero" data-current={chapter === 0}>
+            <p className="project-story__eyebrow">GNS3 / Cisco IOS / Windows Server</p>
+            <h1 id="featured-lab-title"><DecryptedText text={project1.title} animateOn="view" sequential speed={30} revealDirection="center" /></h1>
+            <p className="project-story__summary">I built a connected HQ and branch from the ground up—segmented networks, redundant gateways, two internet providers, and a secure link between sites.</p>
+            <Link id="open-project-1" className="project-story__cta" {...linkProps}>Enter the lab <FaExpand aria-hidden="true" /></Link>
+            <p className="project-story__scroll"><span aria-hidden="true" /> Scroll through the build</p>
+          </header>
 
-      <div
-        className="projects-container"
-        aria-label="Enterprise Network Architecture Portfolio"
-      >
-        {/* ==============================
-           HEADER
-        ============================== */}
-        <header className="projects-hero">
-          <h1 className="projects-title">
-            <DecryptedText
-              text="Enterprise Network Architecture"
-              animateOn="view"
-              sequential
-              speed={80}
-              revealDirection="center"
-              encryptedClassName="encrypted"
-              className="revealed"
-            />
-          </h1>
+          <section className="project-story__chapter" aria-labelledby="project-config-title" data-current={chapter === 1}>
+            <p className="project-story__eyebrow">The configuration</p>
+            <h2 id="project-config-title">Built at the<br /><em>command line.</em></h2>
+            <p>I configured VLANs and VRRP at HQ, OSPF inside the network, and eBGP toward both ISPs. IPsec VTIs connect the branch, with a lower-cost primary path and a standby tunnel.</p>
+            <figure className="project-story__terminal">
+              <figcaption>HQ-EDGE <span>Running-config excerpt</span></figcaption>
+              <pre><code>{"interface Tunnel10\n ip ospf 1 area 0\n ip ospf cost 10\n tunnel mode ipsec ipv4\n tunnel protection ipsec profile IPSEC-VTI-WAN1"}</code></pre>
+            </figure>
+          </section>
 
-          <p className="projects-subtitle">
-            A progressive, real-world enterprise infrastructure — designed,
-            secured, routed, and operated as a unified system.
-          </p>
-        </header>
-
-        {/* ==============================
-           GRID
-        ============================== */}
-        <div className="projects-grid" role="list">
-          {projectsList.map((project, idx) => (
-            <article
-              key={project.id}
-              ref={(node) => {
-                cardsRef.current[idx] = node;
-              }}
-              className="project-card"
-              role="listitem"
-              tabIndex={-1}
-              onPointerEnter={() => onCardPointerEnter(idx)}
-              onPointerLeave={() => onCardPointerLeave(idx)}
-              onPointerMove={(e) => onCardPointerMove(e, idx)}
-              onFocusCapture={() => onCardFocus(idx)}
-              onBlurCapture={() => onCardBlur(idx)}
-            >
-              {/* Media */}
-              <div className="project-media" aria-hidden="true">
-                <img
-                  src={project.image}
-                  alt=""
-                  loading="lazy"
-                  className="project-img"
-                  draggable="false"
-                />
-
-                {project.video ? (
-                  <video
-                    className="project-video"
-                    muted
-                    loop
-                    playsInline
-                    preload="metadata"
-                  >
-                    <source src={project.video} type="video/mp4" />
-                  </video>
-                ) : null}
-
-                <div className="project-vignette" />
-              </div>
-
-              {/* Terminal Bar */}
-              <div className="project-terminalbar" aria-hidden="true">
-                <div className="term-dots">
-                  <span className="term-dot dot-red" />
-                  <span className="term-dot dot-yellow" />
-                  <span className="term-dot dot-green" />
-                </div>
-
-                <div className="term-label">
-                  {`netops@lab:~/projects$ open p${String(project.id).padStart(2, "0")}`}
-                </div>
-
-                <div className="term-spacer" />
-
-                <div className="term-badge">{project.tech?.[0] || "LAB"}</div>
-              </div>
-
-              {/* Content */}
-              <div className="project-body">
-                <div className="project-top">
-                  <h2 className="project-title">{project.title}</h2>
-                  <p className="project-summary">{project.summary}</p>
-                </div>
-
-                <div className="project-bottom">
-                  <div className="project-tech" aria-label="Technologies used">
-                    {project.tech.map((t, i) => (
-                      <span key={i} className="tech-pill">
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-
-                  <div className="project-cta">
-                    <button
-                      className="btn-pill primary cursor-target"
-                      onClick={() => navigate(`/projects/${project.id}`)}
-                      aria-label={`View architecture for ${project.title}`}
-                    >
-                      View Architecture →
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Focus ring helper */}
-              <span className="project-focus-ring" aria-hidden="true" />
-            </article>
-          ))}
+          <section className="project-story__chapter" aria-labelledby="project-verify-title" data-current={chapter === 2}>
+            <p className="project-story__eyebrow">The verification</p>
+            <h2 id="project-verify-title">Follow the packet.<br /><em>Check the result.</em></h2>
+            <p>I traced routes, checked tunnel states, and tested access to central Windows services. AD DS, DNS, and DHCP tie the network together. The lab lets you inspect the devices and their command output.</p>
+            <figure className="project-story__terminal">
+              <figcaption>HQ-EDGE <span>Lab output excerpt</span></figcaption>
+              <pre><code><b>show interface tunnel10</b>{"\nTunnel10 is up, line protocol is up"}</code></pre>
+            </figure>
+            <Link className="project-story__cta" {...linkProps}>Explore the configuration <FaExpand aria-hidden="true" /></Link>
+          </section>
         </div>
-      </div>
+
+        <figure className="project-story__visual">
+          <Link {...linkProps} className="project-rack-link" aria-label="Open the interactive network lab" ref={screen}>
+            <NetworkRack active={rackFocus[chapter].host} />
+          </Link>
+          <figcaption className="project-story__rack-caption">
+            <span className="project-story__focus" key={chapter}>{rackFocus[chapter].label}</span>
+            <span className="project-story__progress" aria-hidden="true"><i /></span>
+          </figcaption>
+        </figure>
+      </article>
     </section>
   );
 }

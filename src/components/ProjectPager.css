@@ -9,10 +9,6 @@
   background: var(--card-bg);
 }
 
-html[data-theme="day"] .projpager {
-  background: rgba(255,255,255,0.28);
-}
-
 .projpager__spacer {
   flex: 1;
 }
@@ -31,10 +27,6 @@ html[data-theme="day"] .projpager {
   font-size: 0.9rem;
   background: var(--accent-bg-softer);
   transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
-}
-
-html[data-theme="day"] .projpager__btn {
-  background: rgba(255,255,255,0.22);
 }
 
 .projpager__btn:hover {

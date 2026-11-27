@@ -10,6 +10,10 @@
   transform: translate(-50%, -50%);
 }
 
+html:has(.scroll-top-btn:hover) .target-cursor-wrapper {
+  visibility: hidden;
+}
+
 .target-cursor-dot {
   position: absolute;
   left: 50%;
