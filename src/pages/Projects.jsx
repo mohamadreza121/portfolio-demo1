@@ -51,7 +51,7 @@ export default function Projects({ onEnterLab }) {
       const bounds = element.getBoundingClientRect();
       const progress = Math.max(0, Math.min(1, (top - bounds.top) / Math.max(1, bounds.height - height)));
       element.style.setProperty("--story-progress", progress);
-      element.style.setProperty("--story-turn", (-21 + progress * 13) + "deg");
+      element.style.setProperty("--story-turn", (-28 + progress * 10) + "deg");
       element.style.setProperty("--story-lift", (-progress * 14) + "px");
     }
 

@@ -128,7 +128,7 @@
   display: grid;
   place-items: center;
   perspective: 1350px;
-  transition: left 750ms var(--stage-ease), width 750ms var(--stage-ease), opacity 350ms ease, transform 750ms var(--stage-ease);
+  transition: left 750ms var(--stage-ease), top 750ms var(--stage-ease), width 750ms var(--stage-ease), opacity 350ms ease, transform 750ms var(--stage-ease);
 }
 
 .lab-stage__hint {
@@ -147,7 +147,7 @@
 .lab-stage[data-view="topology"] .lab-stage__hardware { left: 3%; width: 94%; }
 .lab-stage[data-view="topology"][data-open="true"] .lab-stage__hardware { opacity: .54; transform: translateX(-22%) scale(.8); }
 
-.lab-stage[data-open="true"] .rack-model { transform: translateX(-4%) translateZ(-165px) rotateX(7deg) rotateY(-7deg) scale(.87); }
+.lab-stage[data-open="true"] .rack-model { transform: translateX(-12%) translateZ(-165px) rotateX(-16deg) rotateY(-20deg) scale(.83); }
 
 .lab-stage__topology {
   --topology-physical: #9aafa6;
@@ -255,6 +255,10 @@
 .lab-stage__legend [data-kind="vpn"] i { border-color: var(--topology-vpn); border-top-style: dashed; }
 .lab-stage__legend [data-kind="standby"] i { border-color: var(--topology-standby); border-top-style: dotted; }
 
+@media (min-width: 761px) {
+  .lab-stage[data-view="rack"][data-open="false"] .lab-stage__hardware { top: 94px; }
+}
+
 @media (max-width: 760px) {
   .lab-stage { min-height: 852px; border-radius: 17px; }
   .lab-stage[data-view="topology"] { min-height: 650px; }
@@ -274,26 +278,15 @@
   .lab-stage__views { top: 12px; right: 12px; }
   .lab-stage__hardware { inset: 335px 0 auto; width: 100%; height: 474px; }
   .lab-stage .rack-model {
-    --rack-depth: 69px;
     transform-origin: center top;
     width: min(78%, 375px);
-    transform: translateX(-9px) rotateY(-12deg) rotateX(4deg);
+    transform: translateX(-5%) rotateX(-7deg) rotateY(-19deg);
   }
-  .lab-stage .rack-model__front { padding-inline: 8px; }
-  .lab-stage .rack-model__front::before { left: 2px; }
-  .lab-stage .rack-model__front::after { right: 2px; }
-  .lab-stage .rack-module { height: 44px; gap: 4px; padding-inline: 4px; grid-template-columns: 8px minmax(72px, .85fr) minmax(0, 1.5fr) 8px; }
-  .lab-stage .rack-jacks { gap: 2px; }
-  .lab-stage .rack-module__name small { font-size: .4rem; letter-spacing: .035em; }
-  .lab-stage .rack-port { width: 13px; }
-  .lab-stage .rack-caddies > span { width: 18px; }
-  .lab-stage .rack-console-jack { display: none; }
-  .lab-stage .rack-vents { flex-basis: 25px; }
   .lab-stage__hint { bottom: 14px; right: 14px; }
   .lab-stage[data-open="true"] .lab-stage__intro,
   .lab-stage[data-view="topology"] .lab-stage__intro { transform: translateY(-15px); }
   .lab-stage[data-open="true"] .lab-stage__hardware { left: 0; width: 100%; transform: translateY(var(--lab-rack-lift, -25px)); }
-  .lab-stage[data-open="true"] .rack-model { transform: translateX(-9px) translateZ(-70px) rotateY(-8deg) scale(var(--lab-rack-scale, .46)); }
+  .lab-stage[data-open="true"] .rack-model { transform: translateX(-8%) translateZ(-70px) rotateY(-15deg) scale(var(--lab-rack-scale, .46)); }
   .lab-stage[data-view="topology"] .lab-stage__hardware { left: 4%; top: 86px; width: 92%; height: 475px; }
   .lab-topology-footer { align-items: flex-start; flex-direction: column; gap: 7px; padding-top: 9px; }
   .lab-topology-heading p { text-align: right; }

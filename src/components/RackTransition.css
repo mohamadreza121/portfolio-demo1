@@ -16,7 +16,6 @@
 @keyframes rack-flight-veil { to { opacity: .28; } }
 .rack-transition__flight { position: absolute; display: grid; place-items: center; transform-origin: center; }
 .rack-transition__flight .rack-model { width: var(--flight-rack-width); transform: var(--flight-rack-pose); transition: none; }
-.rack-transition__flight .rack-module[data-active="true"] { border-color: var(--accent); box-shadow: inset 0 0 19px var(--accent-shadow-soft), 0 0 13px var(--accent-shadow-soft); }
 html[data-rack-transition="true"] .project-rack-link .rack-model,
 html[data-rack-transition="true"] .project-page--lab .lab-stage__hardware { visibility: hidden; }
 .rack-transition__status {
