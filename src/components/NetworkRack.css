@@ -178,13 +178,34 @@
     linear-gradient(var(--face-metal), var(--face-body) 19%, var(--face-base) 92%);
   box-shadow: inset 0 1px #c6d1c145, inset 0 -2px #080d0a, 0 2px 4px #000b;
 }
+.rack-model[data-interactive] :is(.rack-model__front, .rack-devices, .rack-bay) { pointer-events: none; }
+/* Keep the button above the coplanar rack frame and hit-test each chassis surface. */
+.rack-model[data-interactive] :is(.rack-module, .rack-bay__side, .rack-bay__lid) {
+  pointer-events: auto;
+  touch-action: manipulation;
+  cursor: pointer;
+}
+.rack-model[data-interactive] .rack-module { transform: translateZ(2px); }
+.rack-model[data-interactive] :is(.rack-module, .rack-bay__side) * { pointer-events: none; }
+
+/* The native cursor stays on the actual hit point as the rack moves in perspective. */
+html:has(.lab-stage[data-view="rack"] .lab-stage__hardware:hover) .target-cursor-wrapper { visibility: hidden; }
+.lab-stage[data-view="rack"] .lab-stage__hardware { cursor: default; }
+
 .rack-module[aria-pressed="true"],
 .rack-module[data-active="true"],
-button.rack-module:hover,
+.rack-model[data-interactive] .rack-bay:active .rack-module,
 .rack-module:focus-visible {
   border-color: var(--accent);
   color: #fff;
   box-shadow: inset 0 0 12px var(--accent-shadow-soft), inset 0 -2px #0c190f, 0 0 10px var(--accent-border);
+}
+@media (hover: hover) {
+  .rack-model[data-interactive] .rack-bay:hover .rack-module {
+    border-color: var(--accent);
+    color: #fff;
+    box-shadow: inset 0 0 12px var(--accent-shadow-soft), inset 0 -2px #0c190f, 0 0 10px var(--accent-border);
+  }
 }
 .rack-module:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .rack-screw {
@@ -268,7 +289,7 @@ button.rack-module:hover,
 .rack-power b { width: 9px; height: 5px; border: 1px solid #83988c; background: #0f1913; }
 
 @media (max-width: 760px) {
-  .rack-model { --rack-depth: clamp(130px, 38vw, 225px); --rack-post: 8px; --rack-bay-height: 41px; --rack-bay-gap: 3px; }
+  .rack-model { --rack-depth: clamp(130px, 38vw, 225px); --rack-post: 8px; --rack-bay-height: 44px; --rack-bay-gap: 3px; }
   .rack-module { grid-template-columns: 6px minmax(63px, .86fr) minmax(0, 1.7fr) 6px; gap: 5px; padding-inline: 4px; }
   .rack-screw { width: 5px; height: 5px; }
   .rack-screw::after { inset-block: 2px; }

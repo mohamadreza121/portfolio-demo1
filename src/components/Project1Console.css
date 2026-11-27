@@ -182,7 +182,8 @@
     transition: visibility 0s 360ms;
   }
   .lab-mobile-console[data-open="true"] { visibility: visible; pointer-events: auto; transition-delay: 0s; }
-  .lab-mobile-console__backdrop { position: absolute; inset: 0; background: #04100d66; opacity: 0; transition: opacity 340ms ease; touch-action: none; }
+  .lab-mobile-console[data-open="false"] * { pointer-events: none; }
+  .lab-mobile-console__backdrop { position: absolute; inset: 0; background: #04100d66; opacity: 0; transition: opacity 200ms ease; touch-action: none; }
   .lab-mobile-console[data-open="true"] .lab-mobile-console__backdrop { opacity: 1; }
   .rack-console {
     position: absolute;
@@ -193,11 +194,11 @@
     width: auto;
     height: min(530px, calc(var(--lab-viewport-height, 100dvh) * .79));
     clip-path: none;
-    transform: translateY(22%) scale(.98);
-    transition: opacity 240ms ease, transform 400ms var(--stage-ease), visibility 0s 400ms;
+    transform: translateY(8%);
+    transition: opacity 180ms ease, transform 230ms var(--stage-ease), visibility 0s 230ms;
   }
   .lab-mobile-console[data-keyboard="true"] .rack-console { height: calc(var(--lab-viewport-height) - 16px); }
-  .rack-console[data-open="true"] { clip-path: none; transition-delay: 30ms, 30ms, 0s; }
+  .rack-console[data-open="true"] { clip-path: none; transition-delay: 0s; }
   .rack-console__header { min-height: 55px; gap: 8px; padding: 4px 7px; }
   .rack-console__icon { width: 36px; height: 36px; }
   .rack-console__toolbar { gap: 3px; padding-inline: 4px; }

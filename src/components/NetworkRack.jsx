@@ -64,7 +64,7 @@ function NetworkRack({ active, onOpen, obscured }) {
   const Device = onOpen ? "button" : "span";
 
   return (
-    <div className="rack-model" aria-hidden={!onOpen || undefined} aria-label={onOpen ? "Interactive equipment rack" : undefined} inert={obscured || undefined}>
+    <div className="rack-model" data-interactive={onOpen ? "true" : undefined} aria-hidden={!onOpen || undefined} aria-label={onOpen ? "Interactive equipment rack" : undefined} inert={obscured || undefined}>
       <div className="rack-model__floor" aria-hidden="true" />
       <div className="rack-model__back" aria-hidden="true" />
       <div className="rack-model__top" aria-hidden="true"><i /><i /></div>
@@ -73,9 +73,14 @@ function NetworkRack({ active, onOpen, obscured }) {
         <div className="rack-model__rail" aria-hidden="true" />
         <div className="rack-devices">
           {rackDevices.map(({ host, kind }) => (
-            <div className="rack-bay" data-kind={kind} key={host}>
-              <span className="rack-bay__lid" aria-hidden="true" />
-              <span className="rack-bay__side" aria-hidden="true"><i /><b /></span>
+            <div
+              className="rack-bay"
+              data-kind={kind}
+              key={host}
+              onClick={onOpen ? (event) => onOpen(host, event.currentTarget.querySelector("button")) : undefined}
+            >
+              <span className="rack-bay__lid" aria-hidden="true" title={onOpen ? host : undefined} />
+              <span className="rack-bay__side" aria-hidden="true" title={onOpen ? host : undefined}><i /><b /></span>
               <Device
                 className="rack-module"
                 {...(onOpen ? {
@@ -83,7 +88,6 @@ function NetworkRack({ active, onOpen, obscured }) {
                   "aria-label": "Open " + host + " console",
                   "aria-pressed": active === host,
                   title: roles[host],
-                  onClick: (event) => onOpen(host, event.currentTarget),
                 } : {})}
                 data-active={active === host}
               >
