@@ -9,9 +9,8 @@ import {
 import { useNavigate } from "react-router-dom";
 import { navigateAndScroll } from "../utils/scrollToSection";
 
-import Dock from "./Dock";
+import Dock, { DockIcon } from "./Dock";
 import "./Navbar.css";
-import "./Dock.css";
 import "./TargetCursor.css";
 
 export default function Navbar({ active, compact = false, hidden = false }) {
@@ -75,7 +74,7 @@ export default function Navbar({ active, compact = false, hidden = false }) {
             aria-current={item.isActive ? "location" : undefined}
             onClick={item.onClick}
           >
-            <span className="mobile-dock__icon" aria-hidden="true">{item.icon}</span>
+            <DockIcon>{item.icon}</DockIcon>
             <span>{item.label}</span>
           </button>
         ))}

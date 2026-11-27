@@ -107,8 +107,12 @@ function DockLabel({ children, className = '', ...rest }) {
   );
 }
 
-function DockIcon({ children, className = '' }) {
-  return <span aria-hidden="true" className={`dock-icon ${className}`}>{children}</span>;
+export function DockIcon({ children }) {
+  return (
+    <span aria-hidden="true" className="nav-chip">
+      <span className="nav-chip__lid">{children}</span>
+    </span>
+  );
 }
 
 export default function Dock({

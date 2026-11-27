@@ -38,59 +38,101 @@
 
 .dock-item {
   position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  overflow: visible;
-  border-radius: 10px;
-  background-color: var(--dock-item-bg);
-  border: 1px solid var(--dock-item-border);
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  display: grid;
+  place-items: center;
+  flex: none;
+  min-width: 44px;
+  min-height: 44px;
+  border: 0;
+  padding: 0;
+  background: transparent;
   cursor: pointer;
-  outline: none;
-  transition: background-color 0.4s ease, border-color 0.4s ease;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dock-item:focus-visible {
+  outline: 2px solid var(--nav-active);
+  outline-offset: 3px;
 }
 
 .dock-active-pill {
   position: absolute;
-  inset: 0;
-  border-radius: 10px;
-  z-index: 0;
-  background: color-mix(in srgb, var(--accent) 12%, transparent);
-  border: 1px solid var(--accent-border);
-  box-shadow:
-    0 0 0 1px var(--accent-border),
-    0 0 18px var(--accent-glow);
+  inset: 4px;
+  border-radius: 2px;
+  pointer-events: none;
+  box-shadow: 0 0 16px var(--accent-glow);
 }
 
-/* ============================================
-   iOS TOUCH HARDENING — DOCK
-============================================ */
-
-.dock-item {
-  min-width: 44px;
-  min-height: 44px;
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
-}
-
-
-/* Active item emphasis matches cards */
-.dock-item.active {
-  box-shadow:
-    0 0 0 1px var(--accent-border),
-    0 0 18px var(--accent-glow);
-}
-
-.dock-icon {
+/* The icon sits on the lid. Four banks of exposed leads surround it. */
+.nav-chip {
+  --chip-inset: 4px;
+  --pin-pitch: 5px;
+  --pins: #65786e 0 1px, #bdc9c2 1px 2px, #58675f 2px 3px, transparent 3px var(--pin-pitch);
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  width: 100%;
+  height: 100%;
+  padding: var(--chip-inset);
+  box-sizing: border-box;
+  pointer-events: none;
+  color: var(--nav-inactive);
+}
+.nav-chip::before, .nav-chip::after {
+  content: "";
+  position: absolute;
+  background-repeat: no-repeat;
+}
+.nav-chip::before {
+  inset: 1px 21%;
+  --strip: repeating-linear-gradient(90deg, var(--pins));
+  background-image: var(--strip), var(--strip);
+  background-position: center top, center bottom;
+  background-size: 100% var(--chip-inset);
+}
+.nav-chip::after {
+  inset: 21% 1px;
+  --strip: repeating-linear-gradient(0deg, var(--pins));
+  background-image: var(--strip), var(--strip);
+  background-position: left center, right center;
+  background-size: var(--chip-inset) 100%;
+}
+.nav-chip__lid {
+  position: relative;
   z-index: 1;
+  display: grid;
+  place-items: center;
+  border: 1px solid #63776b;
+  border-right-color: #33473b;
+  border-bottom-color: #2a3c31;
+  border-radius: 2px;
+  background:
+    radial-gradient(circle at 4px 4px, #101b15 0 1px, #8c9c9122 1.2px 1.8px, transparent 2px),
+    repeating-linear-gradient(0deg, transparent 0 2px, #d1dfd405 2px 3px),
+    linear-gradient(145deg, #35423a, #202923 47%, #131b16);
+  box-shadow: inset 0 0 0 2px #131f17, inset 0 0 0 3px #9caea329, 0 2px 2px #000a;
+}
+.nav-chip svg {
+  width: 49%;
+  height: 49%;
+  color: inherit;
+  transition: color 180ms ease, filter 180ms ease;
+}
+
+:is(.dock-item, .mobile-dock button):is([aria-current], :focus-visible) .nav-chip {
+  color: var(--nav-active);
+}
+:is(.dock-item, .mobile-dock button):is([aria-current], :focus-visible) .nav-chip__lid {
+  border-color: var(--nav-active);
+  box-shadow: inset 0 0 0 2px #13271b, inset 0 0 9px var(--accent-border), 0 0 9px var(--accent-glow);
+}
+:is(.dock-item, .mobile-dock button):is([aria-current], :focus-visible) .nav-chip svg {
+  filter: drop-shadow(0 0 5px var(--nav-active));
+}
+@media (hover: hover) {
+  .dock-item:hover .nav-chip { color: var(--nav-active); }
+  .dock-item:hover .nav-chip svg { filter: drop-shadow(0 0 4px var(--nav-active)); }
 }
 
 /* ===== LABELS ===== */
@@ -112,36 +154,13 @@
   z-index: 1;
 }
 
-/* ===== ACTIVE / INACTIVE ICONS ===== */
-.dock-item .dock-icon svg {
-  color: var(--nav-inactive);
-  transition: color 0.3s ease, text-shadow 0.3s ease;
-}
-
-.dock-item.active .dock-icon svg {
-  color: var(--nav-active);
-  filter: drop-shadow(0 0 6px var(--nav-active));
-}
-
-/* ===== HOVER EFFECT ===== */
-.dock-item:hover .dock-icon svg {
-  color: var(--accent);
-  text-shadow: 0 0 6px var(--accent);
-}
-
-
 @media (hover: none) {
-  .dock-label {
-    display: none;
-  }
-
-  .dock-item:hover {
-    box-shadow: none;
-    filter: none;
-  }
+  .dock-label { display: none; }
 }
 
-
+@media (prefers-reduced-motion: reduce) {
+  .nav-chip svg { transition: none; }
+}
 
 /* Reduce clutter on very small screens */
 @media (max-width: 420px) {

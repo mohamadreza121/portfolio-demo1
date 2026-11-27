@@ -38,11 +38,11 @@ html:has(:is(input, textarea, select, [contenteditable="true"]):focus) .mobile-d
   align-content: center;
   justify-items: center;
   gap: 4px;
-  min-height: 48px;
-  padding: 4px 0 7px;
+  min-height: 52px;
+  padding: 2px 0 3px;
   border: 1px solid transparent;
   border-radius: 10px;
-  color: var(--muted);
+  color: var(--nav-inactive);
   font-size: clamp(9px, 2.6vw, 11px);
   font-weight: 600;
   line-height: 1.05;
@@ -50,28 +50,14 @@ html:has(:is(input, textarea, select, [contenteditable="true"]):focus) .mobile-d
   -webkit-tap-highlight-color: transparent;
 }
 
-.mobile-dock__icon {
-  display: grid;
-  place-items: center;
-  font-size: 15px;
+.mobile-dock .nav-chip {
+  width: 32px;
+  height: 32px;
+  --chip-inset: 3px;
+  --pin-pitch: 4px;
 }
 
-.mobile-dock button[aria-current] {
-  color: var(--nav-active);
-  background: var(--accent-bg-soft);
-  border-color: var(--accent-border);
-}
-
-.mobile-dock button[aria-current]::after {
-  content: "";
-  position: absolute;
-  bottom: 3px;
-  width: 12px;
-  height: 2px;
-  border-radius: 2px;
-  background: currentColor;
-  box-shadow: 0 0 6px var(--accent-glow);
-}
+.mobile-dock button[aria-current] { color: var(--nav-active); }
 
 .mobile-dock button:focus-visible,
 .rackdeckx__device:focus-visible,
