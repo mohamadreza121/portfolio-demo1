@@ -151,7 +151,7 @@
 
 .lab-stage__topology {
   --topology-physical: #9aafa6;
-  --topology-bgp: #68dca8;
+  --topology-bgp: var(--accent);
   --topology-vpn: #82c9f2;
   --topology-standby: #a2a5b6;
   width: 100%;

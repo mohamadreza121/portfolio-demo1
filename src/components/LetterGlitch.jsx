@@ -81,7 +81,12 @@ const LetterGlitch = ({
 
     const symbols = Array.from(characters);
 
-    const colors = ["#2b4539", "#61dca3", "#61b3dc"];
+    const rootStyle = getComputedStyle(document.documentElement);
+    const accent = rootStyle.getPropertyValue("--accent-rgb").trim().split(/\s+/).map(Number);
+    const green = accent.length === 3
+      ? "#" + accent.map((channel) => channel.toString(16).padStart(2, "0")).join("")
+      : "#4bbc89";
+    const colors = ["#2b4539", green, "#61b3dc"];
 
     const getRandomChar = () =>
       symbols[Math.floor(Math.random() * symbols.length)];

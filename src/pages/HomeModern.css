@@ -77,9 +77,9 @@
   transition: background-color 320ms ease-out, box-shadow 320ms ease-out;
 }
 .app-root:not([data-home-opening]) .home-trace__lamp {
-  background-color: color-mix(in srgb, var(--home-signal) 66%, var(--text-color));
+  background-color: color-mix(in srgb, var(--home-signal) 83%, var(--text-color));
   box-shadow:
-    0 0 6px 2px var(--home-signal),
+    0 0 6px 2px var(--accent-glow),
     0 0 0 5px var(--home-edge),
     0 0 18px 5px var(--accent-glow),
     0 0 36px 9px var(--accent-shadow-soft);
@@ -165,7 +165,7 @@
   [data-home-opening] .home-trace__baseline { transform-origin: right; animation: home-run-x 420ms 360ms ease-out backwards; }
   [data-home-opening] .home-work::before { transform-origin: top; animation: home-run-y 95ms 780ms linear backwards; }
   [data-home-opening] .home-work::after { transform-origin: left; animation: home-run-x 160ms 875ms ease-out backwards; }
-  [data-home-opening] .home-ink { animation: home-decode 160ms calc(340ms + var(--order) * 28ms) ease-out; }
+  [data-home-opening] .home-ink { animation: home-decode 160ms calc(340ms + var(--order) * 28ms) ease-out backwards; }
   [data-home-opening] .home-cipher { display: block; opacity: 0; animation: home-glyph 110ms calc(340ms + var(--order) * 28ms) ease-out; }
   [data-home-opening] .home-statement { animation: home-copy-in 250ms 620ms ease-out backwards; }
 }
@@ -190,5 +190,11 @@
 }
 @media (prefers-reduced-motion: no-preference) and (max-width: 720px), (prefers-reduced-motion: no-preference) and (pointer: coarse) {
   [data-home-opening] .home-trace__baseline { transform-origin: left; animation: home-run-x 280ms ease-out both; }
-  [data-home-opening] .home-wordmark { animation: home-copy-in 240ms ease-out; }
+  [data-home-opening] .home-wordmark { animation: home-copy-in 240ms ease-out backwards; }
+}
+
+/* Keep the hero geometry in place while the terminal still covers it. */
+[data-awaiting-intro] .home-signature,
+[data-awaiting-intro] .home-statement {
+  opacity: .25;
 }

@@ -148,10 +148,10 @@
 
 .contact-submit-btn:hover {
   transform: translateY(-2px);
-  border-color: rgba(97, 220, 163, 0.28);
+  border-color: rgb(var(--accent-rgb) / 0.28);
   box-shadow:
     0 18px 42px rgba(0, 0, 0, 0.52),
-    0 0 18px rgba(97, 220, 163, 0.10);
+    0 0 18px rgb(var(--accent-rgb) / 0.1);
 }
 
 .contact-submit-btn:active {

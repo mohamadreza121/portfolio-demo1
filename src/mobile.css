@@ -4,11 +4,6 @@
   --mobile-dock-clearance: calc(84px + env(safe-area-inset-bottom));
 }
 
-.app-root[data-compact="true"] .site-visible {
-  transform: none;
-  filter: none;
-}
-
 .mobile-dock {
   position: fixed;
   z-index: 1100;

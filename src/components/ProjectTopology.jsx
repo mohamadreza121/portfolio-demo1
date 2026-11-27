@@ -64,7 +64,7 @@ function drawLinks(canvas, stage, active, pulse) {
   const palette = getComputedStyle(stage);
   const color = (name, fallback) => palette.getPropertyValue("--topology-" + name).trim() || fallback;
   const colors = {
-    physical: color("physical", "#9aafa6"), bgp: color("bgp", "#68dca8"),
+    physical: color("physical", "#9aafa6"), bgp: color("bgp", "#4bbc89"),
     vpn: color("vpn", "#73bee9"), standby: color("standby", "#9c9eaa"),
   };
   const links = project1.connections.map((link) => ({
