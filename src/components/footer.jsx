@@ -22,7 +22,7 @@ function Chip({ kind, children }) {
   );
 }
 
-export default function Footer({ onRequestQuote }) {
+export default function Footer() {
   const navigate = useNavigate();
 
   return (
@@ -43,11 +43,6 @@ export default function Footer({ onRequestQuote }) {
             <a href={profile.linkedin} target="_blank" rel="noreferrer" className="cursor-target">
               <FaLinkedin aria-hidden="true" />LinkedIn
             </a>
-            {onRequestQuote && (
-              <button type="button" className="footer-quote cursor-target" onClick={() => onRequestQuote()}>
-                Request a quote
-              </button>
-            )}
           </address>
         </Chip>
 

@@ -12,9 +12,7 @@ import { getProjectPosition, portfolioSections } from "../utils/scrollToSection"
 export default function Main({
   setActive,
   revealKey,
-  onRequestQuote,
   onEnterLab,
-  isQuoteOpen,
   compact = false,
   ready = Boolean(revealKey),
 }) {
@@ -33,7 +31,7 @@ export default function Main({
     <Projects key="projects" onEnterLab={onEnterLab} />,
     <div key="certifications">
       <Certifications />
-      <Footer onRequestQuote={onRequestQuote} />
+      <Footer />
     </div>,
   ];
 
@@ -46,7 +44,6 @@ export default function Main({
       ) : (
         <ScrollDeck
           setActive={setActive}
-          isQuoteOpen={isQuoteOpen}
           revealKey={revealKey}
           ready={ready}
           request={request}

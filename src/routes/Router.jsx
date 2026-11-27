@@ -16,8 +16,6 @@ export default function Router({
   ready,
   setActive,
   revealKey,
-  onRequestQuote,
-  isQuoteOpen,
 }) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -42,8 +40,6 @@ export default function Router({
                 setActive={setActive}
                 revealKey={revealKey}
                 onEnterLab={startRackFlight}
-                onRequestQuote={onRequestQuote}
-                isQuoteOpen={isQuoteOpen}
               />
             </PageTransition>
           }

@@ -92,8 +92,7 @@
 }
 .footer-contacts svg, .footer-email svg { flex: none; font-size: .84rem; }
 .footer-contacts svg { color: var(--chip-metal); }
-.footer-contacts :is(a, button):hover { color: var(--accent); }
-.footer-quote { color: var(--chip-metal); text-decoration: underline; text-underline-offset: 4px; }
+.footer-contacts a:hover { color: var(--accent); }
 
 .footer-links {
   display: grid;

@@ -6,7 +6,7 @@ import Main from "../pages/Main";
 test("renders all major sections", async () => {
   render(
     <MemoryRouter initialEntries={["/"]}>
-      <Main setActive={vi.fn()} revealKey={1} isQuoteOpen={false} />
+      <Main setActive={vi.fn()} revealKey={1} />
     </MemoryRouter>
   );
 
@@ -22,5 +22,6 @@ test("renders all major sections", async () => {
   ).toBeInTheDocument();
 
   expect(screen.getByRole("heading", { name: "Get in touch" })).toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: /request a quote/i })).not.toBeInTheDocument();
   expect(screen.queryByRole("heading", { name: /professional it & network services/i })).not.toBeInTheDocument();
 });

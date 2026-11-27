@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { FaArrowUp } from "react-icons/fa";
 import { useLocation } from "react-router-dom";
-import { sendQuoteMessage } from "./services/messaging";
 
 import Router from "./routes/Router";
 import LetterGlitch from "./components/LetterGlitch";
@@ -9,7 +8,6 @@ import TargetCursor from "./components/TargetCursor";
 import Preloader from "./components/Preloader";
 import Navbar from "./components/Navbar";
 import CurtainOverlay from "./components/CurtainOverlay";
-import QuoteModal from "./components/QuoteModal";
 import useCompactLayout from "./hooks/useCompactLayout";
 
 import "./index.css";
@@ -57,24 +55,6 @@ export default function App() {
      UI STATE
   ===================================================== */
   const [showScrollTop, setShowScrollTop] = useState(false);
-
-  /* =====================================================
-     QUOTE MODAL STATE
-  ===================================================== */
-  const [quoteOpen, setQuoteOpen] = useState(false);
-  const [quoteService, setQuoteService] = useState("");
-  const closeQuote = useCallback(() => setQuoteOpen(false), []);
-
-  useEffect(() => {
-    const onOpen = (e) => {
-      const svc = e?.detail?.service ?? "";
-      setQuoteService(svc);
-      setQuoteOpen(true);
-    };
-
-    window.addEventListener("openQuoteModal", onOpen);
-    return () => window.removeEventListener("openQuoteModal", onOpen);
-  }, []);
 
   /* =====================================================
      DISABLE BROWSER SCROLL RESTORATION (CRITICAL)
@@ -187,7 +167,6 @@ export default function App() {
           <Navbar
             active={location.pathname.startsWith("/projects/") ? "Projects" : active}
             compact={compact}
-            hidden={quoteOpen}
           />
 
           {!compact && showScrollTop && (
@@ -233,19 +212,6 @@ export default function App() {
           ready={phase === "ready"}
           setActive={setActive}
           revealKey={revealKey}
-          onRequestQuote={(service) => {
-            setQuoteService(service || "");
-            setQuoteOpen(true);
-          }}
-          isQuoteOpen={quoteOpen}
-        />
-
-        <QuoteModal
-          open={quoteOpen}
-          compact={compact}
-          service={quoteService}
-          onClose={closeQuote}
-          onSubmit={(data) => sendQuoteMessage(data, quoteService)}
         />
       </div>
     </div>

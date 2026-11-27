@@ -74,6 +74,15 @@
   transform: translate(50%, -50%);
   background: currentColor;
   box-shadow: 0 0 0 4px var(--bg-color), 0 0 0 5px var(--home-edge), 0 0 14px var(--accent-glow);
+  transition: background-color 320ms ease-out, box-shadow 320ms ease-out;
+}
+.app-root:not([data-home-opening]) .home-trace__lamp {
+  background-color: color-mix(in srgb, var(--home-signal) 66%, var(--text-color));
+  box-shadow:
+    0 0 6px 2px var(--home-signal),
+    0 0 0 5px var(--home-edge),
+    0 0 18px 5px var(--accent-glow),
+    0 0 36px 9px var(--accent-shadow-soft);
 }
 .home-trace__lead, .home-trace__drop, .home-trace__baseline { background: var(--home-edge); }
 .home-trace__lead { inset: 0 0 auto auto; width: var(--bend); height: 1px; }
