@@ -3,13 +3,14 @@ import { FaEnvelope, FaLinkedin, FaMapMarkerAlt, FaPhone } from "react-icons/fa"
 import { navigateAndScroll, portfolioSections } from "../utils/scrollToSection";
 import { sendContactMessage } from "../services/messaging";
 import ContactForm from "./ContactForm";
+import "./CpuPackage.css";
 import "./footer.css";
 
 function Chip({ kind, children }) {
   return (
-    <div className={`footer-chip footer-chip--${kind}`}>
-      <div className="footer-chip__package">
-        <div className="footer-chip__lid">{children}</div>
+    <div className={`cpu-package footer-chip footer-chip--${kind}`}>
+      <div className="cpu-package__substrate">
+        <div className="cpu-package__lid">{children}</div>
       </div>
     </div>
   );

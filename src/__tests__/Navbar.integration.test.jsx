@@ -9,14 +9,14 @@ describe("Navbar integration", () => {
 
     const buttons = screen.getAllByRole("button");
 
-    expect(buttons).toHaveLength(5);
+    expect(buttons).toHaveLength(4);
   });
 
   it("labels the compact dock, marks the active section, and hides during quotes", () => {
     const { unmount } = renderWithRouter(<Navbar compact active="Projects" />);
     const projects = screen.getByRole("button", { name: "Projects" });
     expect(projects).toHaveAttribute("aria-current", "location");
-    expect(screen.getAllByRole("button")).toHaveLength(5);
+    expect(screen.getAllByRole("button")).toHaveLength(4);
 
     unmount();
     renderWithRouter(<Navbar compact active="Projects" hidden />);

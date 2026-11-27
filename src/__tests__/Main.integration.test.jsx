@@ -21,5 +21,6 @@ test("renders all major sections", async () => {
     await screen.findByRole("heading", { name: /professional certifications/i })
   ).toBeInTheDocument();
 
-  expect(await screen.findByRole("heading", { name: /services/i })).toBeInTheDocument();
+  expect(screen.getByRole("heading", { name: "Get in touch" })).toBeInTheDocument();
+  expect(screen.queryByRole("heading", { name: /professional it & network services/i })).not.toBeInTheDocument();
 });

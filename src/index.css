@@ -51,8 +51,6 @@
   /* Dock / Navbar */
   --dock-bg: #060010;
   --dock-border: #222;
-  --dock-item-bg: #060010;
-  --dock-item-border: #222;
   --dock-label-bg: #060010;
   --dock-label-border: #222;
   --dock-label-color: #ffffff;
@@ -67,13 +65,6 @@
     180deg,
     rgba(14, 14, 14, 0.95),
     rgba(8, 8, 8, 0.98)
-  );
-
-  /* Service card surface */
-  --service-card-surface: linear-gradient(
-    180deg,
-    rgba(15, 15, 15, 0.95),
-    rgba(10, 10, 10, 0.98)
   );
 
   /* Profile Card visuals (DO NOT TOUCH) */
@@ -475,8 +466,7 @@ a.btn-pill {
 
 #home,
 #projects,
-#certifications,
-#services {
+#certifications {
   scroll-margin-top: 80px;
 }
 
@@ -556,7 +546,6 @@ html:has(.lightbox-project) .site-shell {
 /* Main headings share the project story’s typography and grounded depth. */
 .about-intro h1,
 .credential-header h1,
-.services-page .services-title-center,
 .lab-stage__intro h1 {
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
   font-weight: 670;
@@ -565,12 +554,4 @@ html:has(.lightbox-project) .site-shell {
   text-wrap: balance;
   text-shadow: 0 3px 24px var(--bg-color);
 }
-.services-page .services-title-center {
-  font-size: clamp(2.7rem, 5.05vw, 5.7rem);
-  max-width: 23ch;
-  margin: 0 auto 24px;
-}
 .about-intro .about-name--surname { text-shadow: inherit; }
-@media (max-width: 720px), (pointer: coarse) {
-  .mobile-portfolio .services-page .services-title-center { font-size: clamp(2.4rem, 9vw, 3.8rem); }
-}

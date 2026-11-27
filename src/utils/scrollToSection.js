@@ -10,7 +10,6 @@ export const portfolioSections = [
   { id: "about", name: "About" },
   { id: "projects", name: "Projects" },
   { id: "certifications", name: "Certs" },
-  { id: "services", name: "Services" },
 ];
 
 const projectReturns = new Map();

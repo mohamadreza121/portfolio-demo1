@@ -57,7 +57,6 @@ export default function Home() {
             <button type="button" className="home-work cursor-target"
               onClick={() => navigateAndScroll(navigate, "projects")}>Explore my work</button>
             <div className="home-quicklinks">
-              <button type="button" onClick={() => navigateAndScroll(navigate, "services")}>Services</button>
               <button type="button" onClick={() => window.dispatchEvent(new Event("openQuoteModal"))}>Request a quote</button>
               <a href="mailto:mrheidarpoor7@gmail.com">Contact</a>
             </div>

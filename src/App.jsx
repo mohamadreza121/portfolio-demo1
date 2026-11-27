@@ -192,7 +192,7 @@ export default function App() {
 
           {!compact && showScrollTop && (
             <button
-              className="scroll-top-btn cursor-target"
+              className="scroll-top-btn"
               aria-label="Scroll to top"
               onClick={() => {
                 if (location.pathname === "/") {

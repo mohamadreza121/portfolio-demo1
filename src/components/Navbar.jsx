@@ -3,7 +3,6 @@ import {
   FaUser,
   FaProjectDiagram,
   FaCertificate,
-  FaTools,
 } from "react-icons/fa";
 
 import { useNavigate } from "react-router-dom";
@@ -53,15 +52,6 @@ export default function Navbar({ active, compact = false, hidden = false }) {
       },
       isActive: active === "Certs",
     },
-    {
-      key: "Services",
-      icon: <FaTools />,
-      label: "Services",
-      onClick: () => {
-        navigateAndScroll(navigate, "services");
-      },
-      isActive: active === "Services",
-    },
   ];
 
   if (compact) {
@@ -83,13 +73,8 @@ export default function Navbar({ active, compact = false, hidden = false }) {
   }
 
   return (
-    <nav className="navbar-shell" aria-label="Primary navigation">
-      <Dock
-        items={navItems}
-        panelHeight={64}
-        baseItemSize={44}
-        magnification={72}
-      />
+    <nav className="navbar-shell" aria-label="Primary navigation" hidden={hidden}>
+      <Dock items={navItems} />
     </nav>
   );
 }

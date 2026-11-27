@@ -1,5 +1,6 @@
-import { useEffect, useRef, useCallback, useMemo } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { portfolioSections } from "../utils/scrollToSection";
 
 /* =====================================================
    SHARED SCROLL-SPY + ROUTING HOOK (FINAL, FIXED)
@@ -17,20 +18,6 @@ export function useScrollSpyRouter(setActive, enabled = true) {
   const idleTimerRef = useRef(null);
 
   /* =====================================================
-     STABLE SECTION MAP
-  ===================================================== */
-  const sections = useMemo(
-    () => [
-      { id: "home", name: "Home" },
-      { id: "about", name: "About" },
-      { id: "projects", name: "Projects" },
-      { id: "certifications", name: "Certs" },
-      { id: "services", name: "Services" },
-    ],
-    []
-  );
-
-  /* =====================================================
      UTILITIES
   ===================================================== */
   const setHashQuietly = useCallback((hash) => {
@@ -40,13 +27,13 @@ export function useScrollSpyRouter(setActive, enabled = true) {
 
   const setActiveById = useCallback(
     (id) => {
-      const match = sections.find((s) => s.id === id);
+      const match = portfolioSections.find((s) => s.id === id);
       if (match) {
         setActive(match.name);
         setHashQuietly(`#${id}`);
       }
     },
-    [sections, setActive, setHashQuietly]
+    [setActive, setHashQuietly]
   );
 
   /* =====================================================
@@ -171,7 +158,7 @@ export function useScrollSpyRouter(setActive, enabled = true) {
 
         if (!visible) return;
 
-        const section = sections.find(
+        const section = portfolioSections.find(
           (s) => s.id === visible.target.dataset.section
         );
 
@@ -186,7 +173,7 @@ export function useScrollSpyRouter(setActive, enabled = true) {
       }
     );
 
-    sections.forEach(({ id }) => {
+    portfolioSections.forEach(({ id }) => {
       const marker = document.querySelector(`#${id} .spy-marker`);
       if (marker) {
         marker.dataset.section = id;
@@ -195,7 +182,7 @@ export function useScrollSpyRouter(setActive, enabled = true) {
     });
 
     return () => observer.disconnect();
-  }, [enabled, sections, setActive, setHashQuietly]);
+  }, [enabled, setActive, setHashQuietly]);
 
   /* =====================================================
      SCROLL-TO-TOP INTEGRATION

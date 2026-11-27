@@ -77,6 +77,11 @@ const TargetCursor = ({
     createSpinTimeline();
 
     const tickerFn = () => {
+      // A control can unmount under a stationary pointer without firing mouseleave.
+      if (activeTarget && !activeTarget.isConnected) {
+        currentLeaveHandler?.();
+        return;
+      }
       if (!targetCornerPositionsRef.current || !cursorRef.current || !cornersRef.current) {
         return;
       }
@@ -137,7 +142,7 @@ const TargetCursor = ({
         }
       }
     };
-    window.addEventListener('scroll', scrollHandler, { passive: true });
+    window.addEventListener('scroll', scrollHandler, { passive: true, capture: true });
 
     const mouseDownHandler = () => {
       if (!dotRef.current) return;
@@ -282,7 +287,7 @@ const TargetCursor = ({
 
       window.removeEventListener('mousemove', moveHandler);
       window.removeEventListener('mouseover', enterHandler);
-      window.removeEventListener('scroll', scrollHandler);
+      window.removeEventListener('scroll', scrollHandler, true);
       window.removeEventListener('mousedown', mouseDownHandler);
       window.removeEventListener('mouseup', mouseUpHandler);
 
@@ -290,6 +295,7 @@ const TargetCursor = ({
         cleanupTarget(activeTarget);
       }
 
+      clearTimeout(resumeTimeout);
       spinTl.current?.kill();
       document.body.style.cursor = originalCursor;
 
