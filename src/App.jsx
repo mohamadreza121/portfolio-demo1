@@ -88,6 +88,7 @@ export default function App() {
       {intro && <PortfolioIntro compact={compact} onHandoff={beginHomeReveal} onComplete={completeIntro} />}
 
       <LetterGlitch
+        enabled={!intro || homeOpening}
         glitchSpeed={compact ? 190 : 120}
         maxFps={compact ? 18 : 30}
         centerVignette={compact}
