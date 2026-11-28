@@ -3,6 +3,9 @@ import { FaDownload, FaEnvelope, FaClipboardList, FaShareNodes, FaTableCells } f
 import DecryptedText from "../components/DecryptedText";
 import useNearViewport from "../hooks/useNearViewport";
 import profile from "../data/professionalProfile.json";
+import portrait480 from "../assets/about-portrait-480.webp";
+import portrait960 from "../assets/about-portrait-960.webp";
+import portrait1200 from "../assets/about-portrait-1200.webp";
 import "./AboutModern.css";
 
 const repair = {
@@ -182,10 +185,10 @@ export default function About() {
           <figure className="about-portrait">
             <div className="about-portrait__image" ref={portraitRef}>
               {loadPortrait && (
-                <img src="/about-portrait-960.webp"
-                  srcSet="/about-portrait-480.webp 480w, /about-portrait-960.webp 960w, /about-portrait-1200.webp 1200w"
-                  sizes="(max-width: 880px) min(100vw - 36px, 520px), min(44vw, 600px)"
-                  alt={profile.name} width="1200" height="1600" decoding="async" />
+                <img src={portrait960}
+                  srcSet={`${portrait480} 480w, ${portrait960} 960w, ${portrait1200} 1200w`}
+                  sizes="(max-width: 880px) min(100vw - 36px, 490px), min(40vw, 590px)"
+                  alt={profile.name} width="1200" height="1263" decoding="async" />
               )}
             </div>
             <figcaption><span>{profile.name}</span><span>{profile.location}</span></figcaption>

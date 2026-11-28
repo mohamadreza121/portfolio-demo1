@@ -64,46 +64,51 @@
 .about-action:hover { border-bottom-color: var(--accent); color: var(--text-color); }
 .about-action:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 
-.about-portrait { position: relative; margin: 0; align-self: stretch; display: grid; align-content: end; }
+.about-portrait {
+  position: relative;
+  width: min(100%, 590px);
+  margin: 0;
+  justify-self: end;
+  align-self: center;
+}
 .about-portrait__image {
   position: relative;
   isolation: isolate;
-  height: min(69svh, 640px);
-  min-height: 460px;
-  margin-inline: -12% -1%;
-  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 1.04;
+  max-height: min(67svh, 575px);
 }
 .about-portrait__image::before {
   content: "";
   position: absolute;
-  inset: 3% -12% 0;
+  inset: -5% -5% 0;
   z-index: -1;
+  pointer-events: none;
   background:
-    linear-gradient(112deg, transparent 29%, #63e1ac20 54%, transparent 64%),
-    radial-gradient(ellipse at 59% 53%, #225b44af 0 14%, #0a2117a3 41%, transparent 66%);
+    radial-gradient(ellipse at 53% 38%, #347b5c87, transparent 52%),
+    radial-gradient(ellipse at 55% 61%, #174632bb, transparent 68%);
 }
 .about-portrait__image::after {
   content: "";
   position: absolute;
-  inset: 12% 0 10% 14%;
+  inset: 8% 1% 9%;
   z-index: -1;
+  pointer-events: none;
   background:
-    linear-gradient(var(--about-rule), var(--about-rule)) right top / 38px 1px no-repeat,
-    linear-gradient(var(--about-rule), var(--about-rule)) right top / 1px 38px no-repeat,
-    linear-gradient(var(--about-rule), var(--about-rule)) left bottom / 38px 1px no-repeat,
-    linear-gradient(var(--about-rule), var(--about-rule)) left bottom / 1px 38px no-repeat;
+    linear-gradient(var(--about-rule), var(--about-rule)) right top / 34px 1px no-repeat,
+    linear-gradient(var(--about-rule), var(--about-rule)) right top / 1px 34px no-repeat,
+    linear-gradient(var(--about-rule), var(--about-rule)) left bottom / 34px 1px no-repeat,
+    linear-gradient(var(--about-rule), var(--about-rule)) left bottom / 1px 34px no-repeat;
 }
 .about-portrait img {
   position: absolute;
-  left: -1%;
-  bottom: 0;
-  width: 103%;
-  max-width: none;
-  height: 123%;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
   object-position: center bottom;
-  filter: saturate(.74) drop-shadow(10px 0 24px var(--accent-border));
-  mask-image: linear-gradient(#000 78%, #000d 90%, transparent);
+  filter: saturate(.82) drop-shadow(0 0 10px var(--accent-glow)) drop-shadow(0 0 24px #2f936b66);
+  mask-image: linear-gradient(#000 76%, #000e 89%, transparent);
 }
 .about-portrait figcaption,
 .about-workbench figcaption {
@@ -242,8 +247,8 @@
   .about-intro { display: flex; flex-direction: column; align-items: stretch; min-height: 0; }
   .about-intro__copy::before { inset-inline: -4%; }
   .about-page .about-intro h1 { font-size: clamp(2.35rem, 10vw, 4.9rem); margin-block: 10px 15px; }
-  .about-portrait { width: min(100%, 520px); align-self: center; }
-  .about-portrait__image { height: clamp(290px, 82vw, 450px); min-height: 0; margin-inline: -3%; }
+  .about-portrait { width: min(100%, 490px); margin-top: clamp(20px, 5vw, 38px); }
+  .about-portrait__image { aspect-ratio: 1.02; max-height: 480px; }
   .about-repair, .about-workbench, .about-career { margin-top: 75px; }
   .about-repair { scroll-margin-top: 22px; }
   .about-repair__heading > p:last-child, .about-repair__copy > p:last-child { font-size: 1rem; }

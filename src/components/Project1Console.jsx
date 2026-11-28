@@ -175,7 +175,7 @@ export default function Project1Console({ host, open, onSelect, onClose, heading
   }
 
   return (
-    <section className="rack-console" data-open={open} aria-hidden={!open} inert={!open || undefined}
+    <section className="rack-console" data-native-cursor="" data-open={open} aria-hidden={!open} inert={!open || undefined}
       aria-labelledby="lab-console-heading" role={modal ? "dialog" : undefined} aria-modal={modal && open || undefined}
       onKeyDown={(event) => {
         if (!modal || event.key !== "Tab" || event.defaultPrevented) return;

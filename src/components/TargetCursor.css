@@ -12,7 +12,12 @@
   --lock-progress: 0;
 }
 
-html:has(.scroll-top-btn:hover) .target-cursor-wrapper {
+html:has(.scroll-top-btn:hover, [data-native-cursor]:hover) .target-cursor-wrapper {
+  visibility: hidden;
+}
+
+/* Keep the overlay hidden over the browser's native device menu too. */
+html:has([data-native-cursor] select:open) .target-cursor-wrapper {
   visibility: hidden;
 }
 
