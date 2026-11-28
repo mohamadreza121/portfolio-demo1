@@ -99,3 +99,20 @@ test("uses CSS states for the click feedback and clears them on blur", () => {
   fireEvent.blur(window);
   expect(cursor).not.toHaveAttribute("data-pressed");
 });
+
+test("leaves controls inside the native cursor region to the browser", () => {
+  const { container } = render(
+    <>
+      <TargetCursor />
+      <button type="button" className="cursor-target">Open console</button>
+      <section data-native-cursor="">
+        <button type="button" className="cursor-target">Switch device</button>
+      </section>
+    </>
+  );
+  const cursor = container.querySelector(".target-cursor-wrapper");
+  fireEvent.mouseOver(screen.getByRole("button", { name: "Open console" }));
+  expect(cursor.style.getPropertyValue("--lock-progress")).toBe("1");
+  fireEvent.mouseOver(screen.getByRole("button", { name: "Switch device" }));
+  expect(cursor.style.getPropertyValue("--lock-progress")).toBe("0");
+});

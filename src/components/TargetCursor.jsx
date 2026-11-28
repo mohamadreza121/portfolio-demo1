@@ -59,7 +59,8 @@ export default function TargetCursor({
     const lockTo = gsap.quickTo(lock, "progress", { duration: hoverDuration, ease: "power2.out", onUpdate: writeProgress });
 
     function closestTarget(element) {
-      return element instanceof Element ? element.closest(targetSelector) : null;
+      if (!(element instanceof Element) || element.closest("[data-native-cursor]")) return null;
+      return element.closest(targetSelector);
     }
 
     function measureTarget(target) {

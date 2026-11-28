@@ -1,4 +1,5 @@
 .rack-console {
+  cursor: auto;
   position: absolute;
   z-index: 4;
   top: 84px;
@@ -20,6 +21,9 @@
   box-shadow: 0 24px 60px #000a, 0 0 44px var(--accent-shadow-soft);
   transition: opacity 280ms ease, transform 550ms var(--stage-ease), clip-path 580ms var(--stage-ease), visibility 0s 560ms;
 }
+.rack-console :is(button:not(:disabled), select, a[href]) { cursor: pointer; }
+.rack-console :is(input, pre) { cursor: text; }
+
 .rack-console[data-open="true"] {
   opacity: 1;
   visibility: visible;
